@@ -1,2 +1,89 @@
 @import "tailwindcss";
 @import "uniwind";
+
+@theme {
+  --font-sans: "Poppins", "Nunito", "System", "Segoe UI", "Roboto", "Helvetica",
+    "Arial", sans-serif;
+
+  --text-display: 28px;
+  --leading-display: 34px;
+  --text-title: 22px;
+  --leading-title: 28px;
+  --text-body: 16px;
+  --leading-body: 22px;
+  --text-label: 13px;
+  --leading-label: 18px;
+  --text-caption: 12px;
+  --leading-caption: 16px;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+
+  --radius-card: 28px;
+  --radius-input: 18px;
+  --radius-button: 24px;
+  --radius-chip: 16px;
+  --radius-icon: 16px;
+  --radius-avatar: 14px;
+
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.1);
+  --shadow-card-glow: 0 8px 20px rgba(245, 193, 90, 0.15);
+  --shadow-input: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-button: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+@layer theme {
+  :root {
+    @variant light {
+      --color-bg: #e8f8ef;
+      --color-bg-2: #d5f2e2;
+      --color-surface: #ffffff;
+      --color-surface-soft: #f3fff9;
+      --color-input: #ffffff;
+      --color-chip: #e6f6ee;
+
+      --color-text: #0f1c16;
+      --color-text-muted: #3f5a4f;
+      --color-text-soft: #6b8a7d;
+      --color-border: #cfe9dc;
+      --color-border-soft: #e6f3ec;
+
+      --color-cta: #0f8f5f;
+      --color-cta-text: #ffffff;
+
+      --color-accent-yellow: #f2c94c;
+      --color-accent-lavender: #c9c7f3;
+      --color-accent-mint: #7ee0b8;
+    }
+
+    @variant dark {
+      --color-bg: #0f1a15;
+      --color-bg-2: #12211a;
+      --color-surface: #16241c;
+      --color-surface-soft: #1a2b21;
+      --color-input: #15231b;
+      --color-chip: #1e3026;
+
+      --color-text: #e8fbf2;
+      --color-text-muted: #b9d6c8;
+      --color-text-soft: #87a697;
+      --color-border: #1f3328;
+      --color-border-soft: #2a4034;
+
+      --color-cta: #39c283;
+      --color-cta-text: #07130e;
+
+      --color-accent-yellow: #f2c94c;
+      --color-accent-lavender: #b2aee8;
+      --color-accent-mint: #57cfa0;
+    }
+  }
+}
