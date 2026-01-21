@@ -43,47 +43,47 @@
 @layer theme {
   :root {
     @variant light {
-      --color-bg: #e8f8ef;
-      --color-bg-2: #d5f2e2;
+      --color-bg: #f6e3b9;
+      --color-bg-2: #f0d59a;
       --color-surface: #ffffff;
-      --color-surface-soft: #f3fff9;
+      --color-surface-soft: #fff8ea;
       --color-input: #ffffff;
-      --color-chip: #e6f6ee;
+      --color-chip: #f3f3f3;
 
-      --color-text: #0f1c16;
-      --color-text-muted: #3f5a4f;
-      --color-text-soft: #6b8a7d;
-      --color-border: #cfe9dc;
-      --color-border-soft: #e6f3ec;
+      --color-text: #111111;
+      --color-text-muted: #6e6e6e;
+      --color-text-soft: #9a9a9a;
+      --color-border: #e7e2d7;
+      --color-border-soft: #f0ece2;
 
-      --color-cta: #0f8f5f;
+      --color-cta: #111111;
       --color-cta-text: #ffffff;
 
-      --color-accent-yellow: #f2c94c;
-      --color-accent-lavender: #c9c7f3;
-      --color-accent-mint: #7ee0b8;
+      --color-accent-yellow: #f5c15a;
+      --color-accent-lavender: #d7cff4;
+      --color-accent-mint: #bfe7d7;
     }
 
     @variant dark {
-      --color-bg: #0f1a15;
-      --color-bg-2: #12211a;
-      --color-surface: #16241c;
-      --color-surface-soft: #1a2b21;
-      --color-input: #15231b;
-      --color-chip: #1e3026;
+      --color-bg: #17140f;
+      --color-bg-2: #1f1a13;
+      --color-surface: #1f1b16;
+      --color-surface-soft: #221e18;
+      --color-input: #1e1a15;
+      --color-chip: #2a241d;
 
-      --color-text: #e8fbf2;
-      --color-text-muted: #b9d6c8;
-      --color-text-soft: #87a697;
-      --color-border: #1f3328;
-      --color-border-soft: #2a4034;
+      --color-text: #f7f3ea;
+      --color-text-muted: #c1b9a8;
+      --color-text-soft: #9b9283;
+      --color-border: #2f281f;
+      --color-border-soft: #3a3227;
 
-      --color-cta: #39c283;
-      --color-cta-text: #07130e;
+      --color-cta: #f7f3ea;
+      --color-cta-text: #111111;
 
-      --color-accent-yellow: #f2c94c;
-      --color-accent-lavender: #b2aee8;
-      --color-accent-mint: #57cfa0;
+      --color-accent-yellow: #f5c15a;
+      --color-accent-lavender: #b9b0e6;
+      --color-accent-mint: #9fd3c0;
     }
   }
 }
