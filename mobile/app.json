@@ -7,6 +7,9 @@
       "output": "static"
     },
     "name": "mobile",
-    "slug": "mobile"
+    "slug": "mobile",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
