@@ -1,0 +1,224 @@
+{
+  "meta": {
+    "name": "Rovio Soft UI",
+    "intent": "Playful, soft, premium-friendly mobile UI with gentle gradients, rounded cards, and airy spacing.",
+    "voice": "Warm, inviting, clean, not toy-like; subtle depth and soft contrast."
+  },
+  "design_principles": [
+    "Large rounded surfaces with low-contrast borders for a soft, tactile feel.",
+    "Airy spacing and generous padding; never feel cramped.",
+    "Use micro-shadows and gradient halos instead of hard dividers.",
+    "Primary actions are bold, black, and pill-shaped to anchor the UI.",
+    "Illustrations are glossy/3D and remain the visual hero inside cards."
+  ],
+  "layout": {
+    "grid": {
+      "type": "mobile-single-column",
+      "gutter": 16,
+      "outer_padding": 20,
+      "max_content_width": 360
+    },
+    "sections": {
+      "card_stack_spacing": 16,
+      "card_inner_padding": 20,
+      "section_spacing": 24
+    },
+    "alignment": {
+      "default": "center",
+      "forms": "left",
+      "button": "center"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "#F6E3B9",
+      "gradient": {
+        "from": "#F6E3B9",
+        "to": "#F0D59A",
+        "angle_deg": 30
+      }
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "card_soft": "#FFF8EA",
+      "chip": "#F3F3F3",
+      "input": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#111111",
+      "secondary": "#6E6E6E",
+      "tertiary": "#9A9A9A",
+      "inverse": "#FFFFFF"
+    },
+    "stroke": {
+      "soft": "#E7E2D7",
+      "softer": "#F0ECE2"
+    },
+    "accent": {
+      "yellow": "#F5C15A",
+      "lavender": "#D7CFF4",
+      "mint": "#BFE7D7"
+    },
+    "shadow": {
+      "soft": "rgba(0, 0, 0, 0.08)",
+      "softer": "rgba(0, 0, 0, 0.04)"
+    }
+  },
+  "typography": {
+    "family": "Rounded sans-serif (e.g., Poppins or Nunito)",
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "scale": {
+      "display": { "size": 28, "line_height": 34, "weight": "bold" },
+      "title": { "size": 22, "line_height": 28, "weight": "semibold" },
+      "body": { "size": 16, "line_height": 22, "weight": "regular" },
+      "label": { "size": 13, "line_height": 18, "weight": "medium" },
+      "caption": { "size": 12, "line_height": 16, "weight": "regular" }
+    },
+    "style_notes": [
+      "Headings are centered and slightly curved by letter shape, not tracking.",
+      "Form labels are light gray and smaller than body.",
+      "Avoid aggressive contrast; keep text soft but readable."
+    ]
+  },
+  "spacing": {
+    "scale": [4, 8, 12, 16, 20, 24, 28, 32, 40],
+    "tight": 8,
+    "default": 16,
+    "loose": 24
+  },
+  "radii": {
+    "card": 28,
+    "input": 18,
+    "button": 24,
+    "chip": 16,
+    "icon_button": 16,
+    "avatar": 14
+  },
+  "elevation": {
+    "card": {
+      "shadow": "0 16px 40px rgba(0, 0, 0, 0.10)",
+      "glow": "0 8px 20px rgba(245, 193, 90, 0.15)"
+    },
+    "input": {
+      "shadow": "0 2px 8px rgba(0, 0, 0, 0.06)"
+    },
+    "button": {
+      "shadow": "0 10px 24px rgba(0, 0, 0, 0.18)"
+    }
+  },
+  "components": {
+    "screen": {
+      "background": "soft warm gradient",
+      "padding": 20,
+      "safe_area": true
+    },
+    "card": {
+      "shape": "rounded rectangle",
+      "radius": 28,
+      "background": "#FFFFFF",
+      "padding": 20,
+      "shadow": "soft",
+      "border": "none",
+      "content_alignment": "center"
+    },
+    "auth_form_card": {
+      "layout": "vertical",
+      "title": {
+        "style": "display",
+        "alignment": "center",
+        "spacing_bottom": 16
+      },
+      "fields_spacing": 12,
+      "actions_spacing": 18
+    },
+    "input_field": {
+      "height": 48,
+      "radius": 18,
+      "padding_horizontal": 16,
+      "background": "#FFFFFF",
+      "border": "1px solid #E7E2D7",
+      "text_style": "body",
+      "label_style": "label",
+      "placeholder_color": "#9A9A9A",
+      "icon_slot": "end"
+    },
+    "password_toggle_icon": {
+      "size": 20,
+      "color": "#6E6E6E",
+      "touch_target": 36
+    },
+    "primary_button": {
+      "height": 52,
+      "radius": 24,
+      "background": "#111111",
+      "text_color": "#FFFFFF",
+      "text_style": "body",
+      "shadow": "button"
+    },
+    "secondary_text_button": {
+      "text_style": "label",
+      "color": "#6E6E6E",
+      "underline": true
+    },
+    "chip": {
+      "height": 28,
+      "radius": 16,
+      "padding_horizontal": 12,
+      "background": "#F3F3F3",
+      "text_style": "caption",
+      "text_color": "#6E6E6E",
+      "border": "none"
+    },
+    "icon_button": {
+      "size": 44,
+      "radius": 16,
+      "background": "#FFFFFF",
+      "border": "1px solid #F0ECE2",
+      "shadow": "soft",
+      "icon_color": "#111111"
+    },
+    "illustration_card": {
+      "image_style": "3D, glossy, high-saturation",
+      "image_frame_radius": 18,
+      "image_padding": 0,
+      "caption_style": "body"
+    },
+    "avatar_strip": {
+      "item_size": 56,
+      "radius": 14,
+      "spacing": 10,
+      "background": "#FFFFFF",
+      "shadow": "soft"
+    },
+    "timer_badge": {
+      "height": 26,
+      "radius": 14,
+      "background": "#F1F1F1",
+      "text_style": "caption",
+      "text_color": "#6E6E6E"
+    }
+  },
+  "motion": {
+    "duration_fast_ms": 150,
+    "duration_base_ms": 220,
+    "easing": "ease-out",
+    "micro_interactions": [
+      "Buttons slightly compress on tap (scale 0.98).",
+      "Inputs glow softly on focus using warm shadow."
+    ]
+  },
+  "imagery": {
+    "style": "Toy-like 3D renders with soft reflections and clean background",
+    "palette_hint": "Prefer warm yellows and soft neutrals to match background",
+    "framing": "Centered inside rounded cards with ample whitespace"
+  },
+  "do_not": [
+    "Avoid harsh borders, tight spacing, or high-contrast neon colors.",
+    "Avoid heavy drop shadows or angular corners."
+  ]
+}
