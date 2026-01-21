@@ -5,7 +5,9 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@cancer-compass/types": ["../packages/types/src/index.ts"],
+      "@cancer-compass/types/*": ["../packages/types/src/*"]
     },
     "typeRoots": ["./node_modules/@types"],
     "types": ["node"],

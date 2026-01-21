@@ -18,7 +18,9 @@
     /* Alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@cancer-compass/types": ["../packages/types/src/index.ts"],
+      "@cancer-compass/types/*": ["../packages/types/src/*"]
     },
 
     /* Linting */
