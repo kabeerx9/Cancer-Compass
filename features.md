@@ -15,7 +15,7 @@
 - **Single user type** - No role-based permissions (patient and caregiver are treated the same)
 - **Multi-device support** - Same account can be logged in on multiple devices
 - **Shared notifications** - Both devices receive the same reminders
-- **Authentication:** Email/password
+- **Authentication:** Clerk (email/password + social options)
 
 ---
 
@@ -239,9 +239,10 @@ Smart notifications to keep treatment on track.
 
 ### Backend
 - **Database:** Supabase (PostgreSQL)
-- **Authentication:** Supabase Auth
+- **Authentication:** Clerk (token validation middleware)
 - **File Storage:** Supabase Storage (or Cloudflare R2)
-- **API:** Supabase (or Express if custom backend needed)
+- **API:** Express + Prisma
+- **User Management:** Backend stores users with Clerk user ID, validates tokens on each request
 
 ### Monorepo
 - **Tool:** Turborepo

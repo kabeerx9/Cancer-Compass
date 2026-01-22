@@ -14,19 +14,40 @@
 - [ ] Set up web app (React + Vite) - minimal for now
 - [ ] Configure Supabase project:
   - [ ] Database
-  - [ ] Authentication
   - [ ] Storage
+- [ ] Set up Clerk account:
+  - [ ] Create Clerk application
+  - [ ] Get publishable keys for web and mobile
+  - [ ] Configure Clerk webhooks (for user sync)
 - [ ] Set up shared packages (`@cancer-compass/types`, `@cancer-compass/utils`)
 - [ ] Configure TypeScript, ESLint, Prettier
 **Deliverable:** Clean monorepo with mobile and web apps running
 ---
 ### Step 2: Authentication (Day 1-2)
-- [ ] Implement Supabase Auth
-- [ ] Login screen (email/password)
-- [ ] Sign up screen
-- [ ] Logout functionality
-- [ ] Auth state management (user session)
-**Deliverable:** Users can create account and log in
+**Frontend (Web & Mobile):**
+- [ ] Set up Clerk in web app (already partially done)
+- [ ] Set up Clerk in mobile app (`@clerk/clerk-expo`)
+- [ ] Configure ClerkProvider in both apps
+- [ ] Login/sign-up screens using Clerk components
+- [ ] Auth state management (use Clerk hooks)
+- [ ] Token storage (expo-secure-store for mobile)
+
+**Backend:**
+- [ ] Install `@clerk/express` or use Clerk's token verification
+- [ ] Create auth middleware to validate Clerk tokens from Authorization header
+- [ ] Middleware extracts Clerk user ID from validated token
+- [ ] Set up user sync endpoint (webhook or on-first-login)
+- [ ] Store users in database with Clerk user ID (`clerk_user_id`)
+- [ ] Update existing auth middleware to use Clerk token validation
+- [ ] Add `req.userId` (database user ID) and `req.clerkUserId` (Clerk user ID) to request
+
+**Auth Flow:**
+1. Frontend sends Clerk session token in `Authorization: Bearer <token>` header
+2. Backend middleware validates token with Clerk
+3. Backend looks up or creates user record with Clerk user ID
+4. Backend attaches user info to `req` object for route handlers
+
+**Deliverable:** Users can create account and log in via Clerk on both platforms, backend validates tokens and syncs users
 ---
 ### Step 3: Basic App Shell (Day 2)
 - [ ] Bottom tab navigation (Home, Medications, Calendar, Documents, More)
@@ -38,9 +59,16 @@
 ### Step 4: Medication Management - Part 1 (Days 3-4)
 **Database Schema:**
 ```sql
+users table:
+- id (uuid, primary key)
+- clerk_user_id (text, unique) - Clerk's user ID
+- email (text)
+- created_at (timestamp)
+- updated_at (timestamp)
+
 medications table:
 - id (uuid)
-- user_id (uuid, foreign key)
+- user_id (uuid, foreign key to users.id)
 - name (text)
 - purpose (text)
 - dosage (text)
@@ -80,14 +108,14 @@ medications table:
 ```sql
 day_templates table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - name (text) - e.g., "Infusion Day"
 - color (text) - hex color code
 - created_at (timestamp)
 
 template_tasks table:
 - id (uuid)
-- template_id (uuid, foreign key)
+- template_id (uuid, foreign key to day_templates.id)
 - task_title (text)
 - task_description (text, nullable)
 - order (integer) - for sorting
@@ -110,9 +138,9 @@ template_tasks table:
 ```sql
 assigned_days table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - date (date)
-- template_id (uuid, foreign key)
+- template_id (uuid, foreign key to day_templates.id)
 - created_at (timestamp)
 - unique constraint on (user_id, date, template_id)
 ```
@@ -132,14 +160,14 @@ assigned_days table:
 ```sql
 daily_tasks table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - date (date)
 - task_title (text)
 - task_description (text, nullable)
 - is_completed (boolean)
 - is_template_task (boolean) - true if from template
-- template_id (uuid, nullable) - if from template
-- document_id (uuid, nullable) - optional link to document
+- template_id (uuid, nullable, foreign key to day_templates.id) - if from template
+- document_id (uuid, nullable, foreign key to documents.id) - optional link to document
 - created_at (timestamp)
 ```
 
@@ -172,7 +200,7 @@ daily_tasks table:
 ```sql
 documents table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.clerk_user_id)
 - title (text)
 - category (text) - enum: medical_records, insurance_billing, prescriptions, hospital_admin
 - file_url (text) - Supabase Storage URL
@@ -198,7 +226,7 @@ documents table:
 **Database Schema:**
 ```sql
 patient_info table:
-- user_id (uuid, primary key)
+- user_id (uuid, primary key, foreign key to users.id)
 - name (text)
 - date_of_birth (date)
 - blood_type (text)
@@ -213,7 +241,7 @@ patient_info table:
 
 contacts table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - name (text)
 - role (text) - e.g., "Doctor", "Hospital"
 - phone (text)
@@ -236,7 +264,7 @@ contacts table:
 ```sql
 treatment_cycles table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - cycle_number (integer)
 - infusion_date (date)
 - status (text) - enum: scheduled, completed, cancelled
@@ -311,7 +339,7 @@ treatment_cycles table:
 ```sql
 journal_entries table:
 - id (uuid)
-- user_id (uuid)
+- user_id (uuid, foreign key to users.id)
 - date (date)
 - entry_text (text)
 - mood (text, nullable)
@@ -340,10 +368,24 @@ journal_entries table:
 ---
 ## 🛠️ Technical Decisions
 
-### Database: Supabase
+### Authentication: Clerk
+**Why:**
+- Unified auth across web and mobile
+- Handles all auth complexity (email/password, social, etc.)
+- Secure token management
+- Built-in user management UI
+- Easy integration with Express backend
+- Free tier sufficient for MVP
+
+**Architecture:**
+- Frontend: Clerk handles all auth UI and token management
+- Backend: Express middleware validates Clerk tokens
+- Database: Stores users with Clerk user ID as foreign key
+- User sync: Webhook or on-first-login creates user record
+
+### Database: Supabase (PostgreSQL)
 **Why:**
 - PostgreSQL (robust, relational)
-- Built-in auth
 - Built-in file storage
 - Real-time sync across devices
 - Generous free tier
@@ -363,9 +405,16 @@ journal_entries table:
 - Familiar React ecosystem
 - Easy to share components with mobile (via shared packages)
 
+### Backend: Express + Prisma
+**Why:**
+- Full control over API
+- Prisma for type-safe database access
+- Clerk token validation middleware
+- Can scale independently
+
 ### Monorepo: Turborepo
 **Why:**
-- Share code between web/mobile
+- Share code between web/mobile/server
 - Efficient caching
 - Already familiar from earlier setup
 ---
@@ -395,8 +444,8 @@ journal_entries table:
 **Risk:** Too ambitious timeline
 **Mitigation:** Focus on absolute essentials first (medications, tasks). Document storage can wait if needed.
 
-**Risk:** Supabase complexity
-**Mitigation:** Use Supabase client libraries, follow their docs closely, start simple.
+**Risk:** Clerk token validation complexity
+**Mitigation:** Use Clerk's official backend SDK, follow their docs for token verification, test thoroughly.
 
 **Risk:** Notification issues
 **Mitigation:** Test notifications early and often. Have fallback (in-app reminders).
@@ -406,7 +455,8 @@ journal_entries table:
 ---
 ## 📝 Next Immediate Steps
 - ✅ Review this plan - agree on approach
-- ✅ Set up Supabase project
+- ✅ Set up Clerk account and get API keys
+- ✅ Set up Supabase project (database + storage)
 - ✅ Initialize Cancer Compass Turborepo
 - ✅ Start with Step 1: Project Setup
 
