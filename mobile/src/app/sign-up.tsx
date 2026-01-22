@@ -7,32 +7,32 @@ export default function SignUp() {
   };
 
   return (
-    <View className="flex-1 justify-center p-5 bg-bg">
-      <View className="rounded-card bg-surface border border-border p-6 shadow-lg">
-        <Text className="text-display leading-display font-bold text-center text-text">
+    <View className="flex-1 justify-center items-center p-5 bg-bg">
+      <View className="w-full max-w-[360px] rounded-card bg-surface p-5 shadow-card">
+        <Text className="text-display leading-display font-bold text-center text-text mb-4">
           Create Account
         </Text>
-        <Text className="mt-2 text-center text-text-muted">
+        <Text className="text-body leading-body text-center text-text-muted mb-6">
           Join Cancer Compass
         </Text>
 
-        <View className="mt-6">
-          <Text className="text-label leading-label text-text-soft mb-2">
+        <View className="mb-3">
+          <Text className="text-label leading-label text-text-soft mb-2 font-medium">
             Full Name
           </Text>
           <TextInput
-            className="border border-border p-4 rounded-input text-body leading-body bg-input text-text"
+            className="h-12 border border-border px-4 rounded-input text-body leading-body bg-input text-text"
             placeholder="Jordan Lee"
             placeholderTextColor="#9A9A9A"
           />
         </View>
 
-        <View className="mt-4">
-          <Text className="text-label leading-label text-text-soft mb-2">
+        <View className="mb-3">
+          <Text className="text-label leading-label text-text-soft mb-2 font-medium">
             E-mail
           </Text>
           <TextInput
-            className="border border-border p-4 rounded-input text-body leading-body bg-input text-text"
+            className="h-12 border border-border px-4 rounded-input text-body leading-body bg-input text-text"
             placeholder="hello@domain.com"
             placeholderTextColor="#9A9A9A"
             keyboardType="email-address"
@@ -40,12 +40,12 @@ export default function SignUp() {
           />
         </View>
 
-        <View className="mt-4">
-          <Text className="text-label leading-label text-text-soft mb-2">
+        <View className="mb-5">
+          <Text className="text-label leading-label text-text-soft mb-2 font-medium">
             Password
           </Text>
           <TextInput
-            className="border border-border p-4 rounded-input text-body leading-body bg-input text-text"
+            className="h-12 border border-border px-4 rounded-input text-body leading-body bg-input text-text"
             placeholder="••••••••"
             placeholderTextColor="#9A9A9A"
             secureTextEntry
@@ -53,16 +53,16 @@ export default function SignUp() {
         </View>
 
         <Pressable
-          className="bg-cta p-4 rounded-button mt-6"
+          className="h-[52px] bg-cta rounded-button shadow-button justify-center items-center mb-5"
           onPress={handleSubmit}
         >
-          <Text className="text-cta-text text-center text-lg font-semibold">
+          <Text className="text-cta-text text-body leading-body font-semibold">
             Sign up
           </Text>
         </Pressable>
 
-        <Pressable onPress={() => router.back()} className="mt-4">
-          <Text className="text-center text-text-muted text-caption underline">
+        <Pressable onPress={() => router.back()}>
+          <Text className="text-center text-text-muted text-label leading-label underline">
             Back to landing
           </Text>
         </Pressable>
