@@ -1,9 +1,10 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import { router } from "expo-router";
-import { useSession } from "../ctx";
 
 export default function SignIn() {
-  const { signIn } = useSession();
+  const handleSubmit = () => {
+    // TODO: Implement sign in logic
+  };
 
   return (
     <View className="flex-1 justify-center p-5 bg-[var(--color-bg)]">
@@ -20,7 +21,7 @@ export default function SignIn() {
             E-mail
           </Text>
           <TextInput
-            className="border border-[var(--color-border)] p-4 rounded-[18px] text-base bg-[var(--color-input)] text-[var(--color-text)]"
+            className="border border-border p-4 rounded-[18px] text-base bg-input text-text"
             placeholder="hello@domain.com"
             placeholderTextColor="#9A9A9A"
             keyboardType="email-address"
@@ -42,10 +43,7 @@ export default function SignIn() {
 
         <Pressable
           className="bg-[var(--color-cta)] p-4 rounded-[24px] mt-6"
-          onPress={() => {
-            signIn();
-            router.replace("/");
-          }}
+          onPress={handleSubmit}
         >
           <Text className="text-[var(--color-cta-text)] text-center text-lg font-semibold">
             Log in

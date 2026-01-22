@@ -1,12 +1,12 @@
 import { SplashScreen } from "expo-router";
-import { useSession } from "./ctx";
+import { useAuth } from "@clerk/clerk-expo";
 
 SplashScreen.preventAutoHideAsync();
 
 export function SplashScreenController() {
-  const { isLoading } = useSession();
+  const { isLoaded } = useAuth();
 
-  if (!isLoading) {
+  if (isLoaded) {
     SplashScreen.hide();
   }
 

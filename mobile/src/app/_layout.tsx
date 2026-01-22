@@ -1,30 +1,31 @@
 import "../global.css";
 
 import { Stack } from "expo-router";
-import { SessionProvider, useSession } from "../ctx";
 import { SplashScreenController } from "../splash";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 
 export default function Root() {
   return (
-    <SessionProvider>
+    <ClerkProvider tokenCache={tokenCache}>
       <SplashScreenController />
       <RootNavigator />
-    </SessionProvider>
+    </ClerkProvider>
   );
 }
 
 function RootNavigator() {
-  const { session } = useSession();
+  const { isSignedIn } = useAuth();
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!session}>
+      <Stack.Protected guard={!isSignedIn}>
         <Stack.Screen name="index" />
         <Stack.Screen name="sign-in" />
         <Stack.Screen name="sign-up" />
       </Stack.Protected>
 
-      <Stack.Protected guard={!!session}>
+      <Stack.Protected guard={!!isSignedIn}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
     </Stack>
