@@ -7,13 +7,18 @@ export class UserRepository {
     this.prisma = prismaClient;
   }
 
-  async findUserByEmail(email: string) {
+  async findByClerkId(clerkId: string) {
     return this.prisma.user.findUnique({
-      where: { email },
+      where: { clerkId },
       select: {
         id: true,
-        password: true,
-        role: { select: { name: true } },
+        clerkId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }
@@ -23,19 +28,64 @@ export class UserRepository {
       where: { id: userId },
       select: {
         id: true,
+        clerkId: true,
         firstName: true,
         lastName: true,
         email: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }
 
-  async createUser(data: { email: string; password: string; firstName: string }) {
+  async createFromClerkData(data: {
+    clerkId: string;
+    email?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+  }) {
     return this.prisma.user.create({
+      data: {
+        clerkId: data.clerkId,
+        email: data.email || null,
+        firstName: data.firstName || null,
+        lastName: data.lastName || null,
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async updateUser(
+    userId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      active?: boolean;
+    },
+  ) {
+    return this.prisma.user.update({
+      where: { id: userId },
       data,
       select: {
         id: true,
-        role: { select: { name: true } },
+        clerkId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }

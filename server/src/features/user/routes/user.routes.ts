@@ -1,26 +1,26 @@
 import { Router } from 'express';
 
 import { PrismaService } from '../../../config/prisma.config';
-import { auth } from '../../../middleware/auth.middleware';
-import { validateRequest } from '../../../middleware/validation.middleware';
+import { requireAuthWithSync } from '../../../middleware/auth.middleware';
 import { UserController } from '../controllers/user.controller';
 import { UserRepository } from '../repositories/user.repository';
-import { loginSchema, registerSchema } from '../schemas/user.schema';
 import { UserService } from '../services/user.service';
 
 // Dependency Injection
 const prismaService = PrismaService.getInstance();
-const prisma = prismaService.client; // Get the PrismaClient instance
+const prisma = prismaService.client;
 const userRepository = new UserRepository(prisma);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
 const router = Router();
 
+// Public routes
 router.get('/', userController.heartbeat);
-router.post('/register', validateRequest(registerSchema), userController.register);
-router.post('/login', validateRequest(loginSchema), userController.login);
+router.get('/test/public', userController.testPublic);
 
-router.get('/profile', auth, userController.getProfile);
+// Protected routes - require Clerk authentication
+router.get('/test/authenticated', requireAuthWithSync, userController.testAuthenticated);
+router.get('/profile', requireAuthWithSync, userController.getProfile);
 
 export default router;

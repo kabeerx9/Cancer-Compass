@@ -1,102 +1,163 @@
+import { clerkClient, getAuth, requireAuth } from '@clerk/express';
 import { NextFunction, Request, Response } from 'express';
-import jwt, { Secret } from 'jsonwebtoken';
 import { unifiedResponse } from 'uni-response';
 
-import { env } from '../config/env-config';
+import { PrismaService } from '../config/prisma.config';
 
-// Environment variable for JWT secret
-const secret: Secret = env.JWT_SECRET as string;
+// Get Prisma instance
+const prismaService = PrismaService.getInstance();
+const prisma = prismaService.client;
 
-// AuthPayload interface
-interface AuthPayload {
-  userId: string;
-  role: string;
-  dealerId: string;
-}
-
-// Augment the Express Request object to include custom properties
+// Augment the Express Request object to include user
 declare global {
   namespace Express {
     interface Request {
-      userId?: string;
-      role?: string;
-      dealerId?: string;
+      user?: {
+        id: string;
+        clerkId: string;
+        firstName: string | null;
+        lastName: string | null;
+        email: string | null;
+      };
     }
   }
 }
 
 /**
- * Authentication Service Class
- * Contains methods for authentication and role-based access control.
+ * Middleware that requires authentication and syncs user to database
+ * Uses Clerk's requireAuth() and auto-creates users on first request
  */
-class AuthService {
-  private secret: Secret;
-
-  constructor(secret: Secret) {
-    this.secret = secret;
-  }
-
-  /**
-   * Authenticate and validate the JWT token
-   */
-  public auth(req: Request, res: Response, next: NextFunction): void {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      res.status(401).json(unifiedResponse(false, 'No token provided'));
-      return; // Ensures the middleware ends
-    }
-
+export const requireAuthWithSync = [
+  requireAuth(),
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const decodedToken = jwt.verify(token, this.secret) as AuthPayload;
-      req.userId = decodedToken.userId;
-      req.role = decodedToken.role;
-      req.dealerId = decodedToken.dealerId;
+      // Get auth from request (userId is the clerkId)
+      const { userId } = getAuth(req);
 
-      next(); // Call the next middleware
-    } catch (error) {
-      res.status(401).json(unifiedResponse(false, 'Invalid token'));
-      return; // Ensures the middleware ends
-    }
-  }
-
-  /**
-   * Check if the user has the required role(s)
-   */
-  public checkUserRole(allowedRoles: string[]) {
-    return (req: Request, res: Response, next: NextFunction): void => {
-      const token = req.headers.authorization?.split(' ')[1];
-
-      if (!token) {
-        res.status(401).json(unifiedResponse(false, 'No token provided'));
+      if (!userId) {
+        res.status(401).json(unifiedResponse(false, 'Unauthorized'));
         return;
       }
 
-      try {
-        const decodedToken = jwt.verify(token, this.secret) as AuthPayload;
+      // Check if user exists in database
+      let user = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: {
+          id: true,
+          clerkId: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      });
 
-        if (allowedRoles.includes(decodedToken.role)) {
-          req.userId = decodedToken.userId;
-          req.role = decodedToken.role;
-          req.dealerId = decodedToken.dealerId;
+      // If user doesn't exist, fetch from Clerk and create
+      if (!user) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
 
-          next();
+          // Create user in database
+          user = await prisma.user.create({
+            data: {
+              clerkId: userId,
+              email: clerkUser.emailAddresses[0]?.emailAddress || null,
+              firstName: clerkUser.firstName || null,
+              lastName: clerkUser.lastName || null,
+            },
+            select: {
+              id: true,
+              clerkId: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          });
+
+          req.log?.info({ clerkId: userId }, 'New user synced from Clerk');
+        } catch (error) {
+          req.log?.error({ error, clerkId: userId }, 'Failed to sync user from Clerk');
+          res.status(500).json(unifiedResponse(false, 'Failed to sync user'));
           return;
         }
-
-        res.status(403).json(unifiedResponse(false, 'Forbidden: Insufficient permissions'));
-        return;
-      } catch (error) {
-        res.status(401).json(unifiedResponse(false, 'Invalid token'));
-        return;
       }
-    };
+
+      // Attach user to request
+      req.user = user;
+      next();
+    } catch (error) {
+      req.log?.error({ error }, 'Authentication error');
+      res.status(401).json(unifiedResponse(false, 'Authentication failed'));
+      return;
+    }
+  },
+];
+
+/**
+ * Optional auth middleware that syncs user if authenticated
+ * Does not require authentication - continues even if not authenticated
+ */
+export const optionalAuthWithSync = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { userId } = getAuth(req);
+
+    if (!userId) {
+      // Not authenticated - continue without user
+      next();
+      return;
+    }
+
+    // Check if user exists in database
+    let user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: {
+        id: true,
+        clerkId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      },
+    });
+
+    // If user doesn't exist, fetch from Clerk and create
+    if (!user) {
+      try {
+        const clerkUser = await clerkClient.users.getUser(userId);
+
+        user = await prisma.user.create({
+          data: {
+            clerkId: userId,
+            email: clerkUser.emailAddresses[0]?.emailAddress || null,
+            firstName: clerkUser.firstName || null,
+            lastName: clerkUser.lastName || null,
+          },
+          select: {
+            id: true,
+            clerkId: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        });
+
+        req.log?.info({ clerkId: userId }, 'New user synced from Clerk');
+      } catch (error) {
+        req.log?.error({ error, clerkId: userId }, 'Failed to sync user from Clerk');
+        // Continue without user rather than failing the request
+      }
+    }
+
+    if (user) {
+      req.user = user;
+    }
+
+    next();
+  } catch (error) {
+    req.log?.error({ error }, 'Optional auth error');
+    // Continue without user rather than failing the request
+    next();
   }
-}
-
-// Instantiate AuthService
-const authService = new AuthService(secret);
-
-// Export methods for use in routes
-export const auth = authService.auth.bind(authService);
-export const checkUserRole = authService.checkUserRole.bind(authService);
+};

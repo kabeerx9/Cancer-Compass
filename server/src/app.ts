@@ -1,3 +1,4 @@
+import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import helmet from 'helmet';
@@ -10,6 +11,9 @@ import { pinoLogger, loggerMiddleware } from './middleware/pino-logger';
 import { hostWhitelist, rateLimiter } from './middleware/security.middleware';
 
 const app: Application = express();
+
+// Clerk middleware - must be first to attach auth to every request
+app.use(clerkMiddleware());
 
 // Security middleware
 // app.use(hostWhitelist);
