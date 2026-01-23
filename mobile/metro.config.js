@@ -1,4 +1,5 @@
 const { getDefaultConfig } = require("expo/metro-config");
+const { withNativeWind } = require('nativewind/metro');
 const path = require("path");
 
 // Path to shared packages
@@ -6,6 +7,8 @@ const packagesPath = path.resolve(__dirname, "../packages");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
+
+module.exports = withNativeWind(config, { input: './global.css' })
 
 // Watch the packages folder for changes
 config.watchFolders = [packagesPath];

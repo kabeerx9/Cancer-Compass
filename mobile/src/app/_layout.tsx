@@ -3,6 +3,7 @@ import { SplashScreenController } from "../splash";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { QueryProvider } from "../providers/query-provider";
+import '../global.css'
 
 export default function Root() {
   return (
