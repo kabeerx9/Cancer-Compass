@@ -4,6 +4,7 @@ import express, { Application, Request, Response } from 'express';
 import helmet from 'helmet';
 
 import { env } from './config/env-config';
+import medicationRoutes from './features/medication/routes/medication.routes';
 import userRoutes from './features/user/routes/user.routes';
 import { apiErrorHandler, unmatchedRoutes } from './middleware/api-error.middleware';
 import { pinoLogger, loggerMiddleware } from './middleware/pino-logger';
@@ -44,6 +45,7 @@ app.get('/heartbeat', (req: Request, res: Response): void => {
 
 // API Routes
 app.use('/v1/users', userRoutes);
+app.use('/v1/medications', medicationRoutes);
 
 // Error Handling Middleware (Optional)
 // For prisma error and other error

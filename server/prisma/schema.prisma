@@ -12,12 +12,47 @@ datasource db {
 }
 
 model User {
+  id          String       @id @default(uuid())
+  clerkId     String       @unique @map("clerk_id")
+  firstName   String?      @map("first_name")
+  lastName    String?      @map("last_name")
+  email       String?
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  medications Medication[]
+
+  @@map("users")
+}
+
+model Medication {
   id        String   @id @default(uuid())
-  clerkId   String   @unique
-  firstName String?
-  lastName  String?
-  email     String?
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  userId    String   @map("user_id")
+  name      String
+  purpose   String?
+  dosage    String?
+  time      String?  // Optional "HH:MM" format
+  timeLabel String?  @map("time_label") // "Before Breakfast", etc.
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs MedicationLog[]
+
+  @@map("medications")
+}
+
+model MedicationLog {
+  id           String    @id @default(uuid())
+  medicationId String    @map("medication_id")
+  date         DateTime  @db.Date
+  status       String    // "taken" | "skipped"
+  takenAt      DateTime? @map("taken_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@unique([medicationId, date])
+  @@map("medication_logs")
 }
