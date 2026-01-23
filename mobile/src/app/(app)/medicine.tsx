@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,15 @@ import type {
   UpdateMedicationData,
 } from "../../features/medications/types";
 
+const GREEN = "#16A34A";
+const GREEN_LIGHT = "#DCFCE7";
+const SLATE_50 = "#F8FAFC";
+const SLATE_100 = "#F1F5F9";
+const SLATE_200 = "#E2E8F0";
+const SLATE_400 = "#94A3B8";
+const SLATE_500 = "#64748B";
+const SLATE_800 = "#1E293B";
+
 export default function MedicinePage() {
   const queryClient = useQueryClient();
 
@@ -32,7 +42,6 @@ export default function MedicinePage() {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [editingMedication, setEditingMedication] = React.useState<Medication | null>(null);
 
-  // Form state
   const [formData, setFormData] = React.useState<CreateMedicationData>({
     name: "",
     purpose: "",
@@ -43,13 +52,7 @@ export default function MedicinePage() {
 
   const openAddModal = () => {
     setEditingMedication(null);
-    setFormData({
-      name: "",
-      purpose: "",
-      dosage: "",
-      time: "",
-      timeLabel: "",
-    });
+    setFormData({ name: "", purpose: "", dosage: "", time: "", timeLabel: "" });
     setModalVisible(true);
   };
 
@@ -68,13 +71,7 @@ export default function MedicinePage() {
   const closeModal = () => {
     setModalVisible(false);
     setEditingMedication(null);
-    setFormData({
-      name: "",
-      purpose: "",
-      dosage: "",
-      time: "",
-      timeLabel: "",
-    });
+    setFormData({ name: "", purpose: "", dosage: "", time: "", timeLabel: "" });
   };
 
   const handleSave = () => {
@@ -94,12 +91,8 @@ export default function MedicinePage() {
       updateMutation.mutate(
         { id: editingMedication.id, data: updateData },
         {
-          onSuccess: () => {
-            closeModal();
-          },
-          onError: (error: Error) => {
-            Alert.alert("Error", error.message || "Failed to update medication");
-          },
+          onSuccess: closeModal,
+          onError: (error: Error) => Alert.alert("Error", error.message || "Failed to update medication"),
         }
       );
     } else {
@@ -111,336 +104,301 @@ export default function MedicinePage() {
         timeLabel: formData.timeLabel?.trim() || undefined,
       };
       createMutation.mutate(createData, {
-        onSuccess: () => {
-          closeModal();
-        },
-        onError: (error: Error) => {
-          Alert.alert("Error", error.message || "Failed to create medication");
-        },
+        onSuccess: closeModal,
+        onError: (error: Error) => Alert.alert("Error", error.message || "Failed to create medication"),
       });
     }
   };
 
   const handleDelete = (medication: Medication) => {
-    Alert.alert(
-      "Delete Medication",
-      `Are you sure you want to delete "${medication.name}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            deleteMutation.mutate(medication.id, {
-              onError: (error: Error) => {
-                Alert.alert("Error", error.message || "Failed to delete medication");
-              },
-            });
-          },
+    Alert.alert("Delete Medication", `Are you sure you want to delete "${medication.name}"?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          deleteMutation.mutate(medication.id, {
+            onError: (error: Error) => Alert.alert("Error", error.message || "Failed to delete medication"),
+          });
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleToggleActive = (medication: Medication) => {
-    updateMutation.mutate({
-      id: medication.id,
-      data: { isActive: !medication.isActive },
-    });
+    updateMutation.mutate({ id: medication.id, data: { isActive: !medication.isActive } });
   };
 
-  const isLoading = isLoadingMedications || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
   const saving = createMutation.isPending || updateMutation.isPending;
 
   if (isLoadingMedications && medications.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-bg justify-center items-center">
-        <ActivityIndicator size="large" color="#4A90A4" />
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={GREEN} />
       </SafeAreaView>
     );
   }
 
+  const quickLabels = [
+    "Before Breakfast",
+    "After Breakfast",
+    "Before Lunch",
+    "After Lunch",
+    "Before Dinner",
+    "After Dinner",
+    "Before Bed",
+  ];
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F6E3B9" }}>
-      {/* Header */}
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111111" }}>Medications</Text>
-        <Pressable
-          style={{ backgroundColor: "#4A90A4", width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" }}
-          onPress={openAddModal}
-        >
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Medications</Text>
+        <Pressable style={styles.addButton} onPress={openAddModal}>
           <Ionicons name="add" size={28} color="#FFFFFF" />
         </Pressable>
       </View>
 
-      {/* Medication List */}
       <ScrollView
-        style={{ flex: 1, paddingHorizontal: 20 }}
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} />
-        }
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} tintColor={GREEN} />}
       >
         {medications.length === 0 ? (
-          <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, padding: 24, alignItems: "center" }}>
-            <Ionicons name="medical-outline" size={48} color="#9A9A9A" />
-            <Text style={{ color: "#6e6e6e", textAlign: "center", marginTop: 16 }}>
-              No medications added yet
-            </Text>
-            <Text style={{ color: "#6e6e6e", textAlign: "center", fontSize: 14, marginTop: 4 }}>
-              Tap the + button to add your first medication
-            </Text>
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIconWrapper}>
+              <Ionicons name="medical-outline" size={32} color={GREEN} />
+            </View>
+            <Text style={styles.emptyTitle}>No medications added yet</Text>
+            <Text style={styles.emptySubtitle}>Tap the + button to add your first medication</Text>
           </View>
         ) : (
           medications.map((medication) => (
             <Pressable
               key={medication.id}
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: 16,
-                padding: 16,
-                marginBottom: 12,
-                opacity: medication.isActive ? 1 : 0.5,
-              }}
+              style={[styles.medicationCard, !medication.isActive && styles.medicationCardInactive]}
               onPress={() => openEditModal(medication)}
               onLongPress={() => handleDelete(medication)}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
-                    {medication.name}
-                  </Text>
-                  {medication.dosage && (
-                    <Text style={{ color: "#6e6e6e", marginTop: 4 }}>
-                      {medication.dosage}
-                    </Text>
-                  )}
-                  {medication.purpose && (
-                    <Text style={{ color: "#9a9a9a", fontSize: 14, marginTop: 4 }}>
-                      {medication.purpose}
-                    </Text>
-                  )}
-                  <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
+              <View style={styles.medicationRow}>
+                <View style={styles.medicationInfo}>
+                  <Text style={styles.medicationName}>{medication.name}</Text>
+                  {medication.dosage && <Text style={styles.medicationDosage}>{medication.dosage}</Text>}
+                  {medication.purpose && <Text style={styles.medicationPurpose}>{medication.purpose}</Text>}
+                  <View style={styles.chipsRow}>
                     {medication.time && (
-                      <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, marginRight: 8 }}>
-                        <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
-                          {medication.time}
-                        </Text>
+                      <View style={styles.chip}>
+                        <Text style={styles.chipText}>{medication.time}</Text>
                       </View>
                     )}
                     {medication.timeLabel && (
-                      <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 }}>
-                        <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
-                          {medication.timeLabel}
-                        </Text>
+                      <View style={styles.chip}>
+                        <Text style={styles.chipText}>{medication.timeLabel}</Text>
                       </View>
                     )}
                   </View>
                 </View>
-                <Pressable
-                  style={{ padding: 8 }}
-                  onPress={() => handleToggleActive(medication)}
-                >
+                <Pressable style={styles.toggleButton} onPress={() => handleToggleActive(medication)}>
                   <Ionicons
                     name={medication.isActive ? "checkmark-circle" : "ellipse-outline"}
                     size={28}
-                    color={medication.isActive ? "#4CAF50" : "#9A9A9A"}
+                    color={medication.isActive ? GREEN : SLATE_400}
                   />
                 </Pressable>
               </View>
             </Pressable>
           ))
         )}
-        <View style={{ height: 24 }} />
       </ScrollView>
 
-      {/* Add/Edit Modal */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={closeModal}
-      >
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
-          {/* Modal Header */}
-          <View style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: 20,
-            paddingVertical: 16,
-            borderBottomWidth: 1,
-            borderBottomColor: "#E7E2D7",
-            backgroundColor: "#FFFFFF",
-          }}>
+      <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={closeModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
             <Pressable onPress={closeModal}>
-              <Text style={{ color: "#4A90A4", fontSize: 16 }}>Cancel</Text>
+              <Text style={styles.modalCancel}>Cancel</Text>
             </Pressable>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
-              {editingMedication ? "Edit Medication" : "Add Medication"}
-            </Text>
+            <Text style={styles.modalTitle}>{editingMedication ? "Edit Medication" : "Add Medication"}</Text>
             <Pressable onPress={handleSave} disabled={saving}>
               {saving ? (
-                <ActivityIndicator size="small" color="#4A90A4" />
+                <ActivityIndicator size="small" color={GREEN} />
               ) : (
-                <Text style={{ color: "#4A90A4", fontSize: 16, fontWeight: "600" }}>Save</Text>
+                <Text style={styles.modalSave}>Save</Text>
               )}
             </Pressable>
           </View>
 
-          {/* Form */}
-          <ScrollView className="flex-1 px-5 py-4">
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Medication Name *
-              </Text>
+          <ScrollView style={styles.formScrollView} contentContainerStyle={styles.formContent}>
+            <Text style={styles.formSectionTitle}>Details</Text>
+            <View style={styles.formCard}>
+              <Text style={styles.formLabel}>Name *</Text>
               <TextInput
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  borderWidth: 1,
-                  borderColor: "#E7E2D7",
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  fontSize: 16,
-                  color: "#111111",
-                }}
+                style={styles.formInput}
                 placeholder="e.g., Aspirin"
-                placeholderTextColor="#9A9A9A"
+                placeholderTextColor={SLATE_400}
                 value={formData.name}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, name: text }))}
               />
-            </View>
-
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Dosage
-              </Text>
+              <Text style={[styles.formLabel, { marginTop: 16 }]}>Dosage</Text>
               <TextInput
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  borderWidth: 1,
-                  borderColor: "#E7E2D7",
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  fontSize: 16,
-                  color: "#111111",
-                }}
-                placeholder="e.g., 500mg, 1 tablet"
-                placeholderTextColor="#9A9A9A"
+                style={styles.formInput}
+                placeholder="e.g., 500mg"
+                placeholderTextColor={SLATE_400}
                 value={formData.dosage}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, dosage: text }))}
               />
             </View>
 
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Purpose
-              </Text>
+            <Text style={styles.formSectionTitle}>Optional Info</Text>
+            <View style={styles.formCard}>
+              <Text style={styles.formLabel}>Purpose</Text>
               <TextInput
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  borderWidth: 1,
-                  borderColor: "#E7E2D7",
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  fontSize: 16,
-                  color: "#111111",
-                }}
-                placeholder="e.g., For headaches"
-                placeholderTextColor="#9A9A9A"
+                style={styles.formInput}
+                placeholder="e.g., Headache"
+                placeholderTextColor={SLATE_400}
                 value={formData.purpose}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, purpose: text }))}
               />
-            </View>
-
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Time (optional)
-              </Text>
+              <Text style={[styles.formLabel, { marginTop: 16 }]}>Time</Text>
               <TextInput
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  borderWidth: 1,
-                  borderColor: "#E7E2D7",
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  fontSize: 16,
-                  color: "#111111",
-                }}
+                style={styles.formInput}
                 placeholder="e.g., 08:00"
-                placeholderTextColor="#9A9A9A"
+                placeholderTextColor={SLATE_400}
                 value={formData.time}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, time: text }))}
               />
-            </View>
-
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Time Label
-              </Text>
+              <Text style={[styles.formLabel, { marginTop: 16 }]}>Time Label</Text>
               <TextInput
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  borderWidth: 1,
-                  borderColor: "#E7E2D7",
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  fontSize: 16,
-                  color: "#111111",
-                }}
-                placeholder="e.g., Before Breakfast"
-                placeholderTextColor="#9A9A9A"
+                style={styles.formInput}
+                placeholder="e.g., Morning"
+                placeholderTextColor={SLATE_400}
                 value={formData.timeLabel}
                 onChangeText={(text) => setFormData((prev) => ({ ...prev, timeLabel: text }))}
               />
             </View>
 
-            {/* Quick Labels */}
-            <View className="mb-4">
-              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
-                Quick Labels
-              </Text>
-              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                {[
-                  "Before Breakfast",
-                  "After Breakfast",
-                  "Before Lunch",
-                  "After Lunch",
-                  "Before Dinner",
-                  "After Dinner",
-                  "Before Bed",
-                ].map((label) => (
-                  <Pressable
-                    key={label}
-                    style={{
-                      paddingHorizontal: 12,
-                      paddingVertical: 8,
-                      borderRadius: 20,
-                      marginRight: 8,
-                      marginBottom: 8,
-                      backgroundColor: formData.timeLabel === label ? "#4A90A4" : "#F3F3F3",
-                    }}
-                    onPress={() => setFormData((prev) => ({ ...prev, timeLabel: label }))}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        color: formData.timeLabel === label ? "#FFFFFF" : "#6e6e6e",
-                      }}
-                    >
-                      {label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+            <Text style={styles.formSectionTitle}>Quick Labels</Text>
+            <View style={styles.quickLabelsContainer}>
+              {quickLabels.map((label) => (
+                <Pressable
+                  key={label}
+                  style={[styles.quickLabelChip, formData.timeLabel === label && styles.quickLabelChipSelected]}
+                  onPress={() => setFormData((prev) => ({ ...prev, timeLabel: label }))}
+                >
+                  <Text style={[styles.quickLabelText, formData.timeLabel === label && styles.quickLabelTextSelected]}>
+                    {label}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </ScrollView>
-        </SafeAreaView>
+        </View>
       </Modal>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: SLATE_50 },
+  loadingContainer: { flex: 1, backgroundColor: SLATE_50, justifyContent: "center", alignItems: "center" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: SLATE_100,
+  },
+  headerTitle: { fontSize: 28, fontWeight: "bold", color: SLATE_800 },
+  addButton: {
+    backgroundColor: GREEN,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollView: { flex: 1 },
+  scrollContent: { padding: 24 },
+  emptyState: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 32,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: SLATE_200,
+    borderStyle: "dashed",
+  },
+  emptyIconWrapper: { backgroundColor: GREEN_LIGHT, padding: 16, borderRadius: 999, marginBottom: 16 },
+  emptyTitle: { fontSize: 16, fontWeight: "bold", color: SLATE_800 },
+  emptySubtitle: { fontSize: 14, color: SLATE_500, marginTop: 4, textAlign: "center" },
+  medicationCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: SLATE_200,
+  },
+  medicationCardInactive: { opacity: 0.5 },
+  medicationRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  medicationInfo: { flex: 1 },
+  medicationName: { fontSize: 16, fontWeight: "bold", color: SLATE_800 },
+  medicationDosage: { fontSize: 14, color: SLATE_500, marginTop: 4 },
+  medicationPurpose: { fontSize: 12, color: SLATE_400, marginTop: 4, fontStyle: "italic" },
+  chipsRow: { flexDirection: "row", marginTop: 8 },
+  chip: { backgroundColor: SLATE_100, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginRight: 8 },
+  chipText: { fontSize: 12, fontWeight: "600", color: SLATE_500 },
+  toggleButton: { padding: 4 },
+  modalContainer: { flex: 1, backgroundColor: SLATE_50 },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: SLATE_200,
+  },
+  modalCancel: { fontSize: 16, color: SLATE_500 },
+  modalTitle: { fontSize: 18, fontWeight: "bold", color: SLATE_800 },
+  modalSave: { fontSize: 16, fontWeight: "bold", color: GREEN },
+  formScrollView: { flex: 1 },
+  formContent: { padding: 24 },
+  formSectionTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: SLATE_500,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  formCard: { backgroundColor: "#FFFFFF", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: SLATE_200 },
+  formLabel: { fontSize: 12, fontWeight: "bold", color: SLATE_500, marginBottom: 6 },
+  formInput: {
+    backgroundColor: SLATE_50,
+    borderWidth: 1,
+    borderColor: SLATE_200,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: SLATE_800,
+  },
+  quickLabelsContainer: { flexDirection: "row", flexWrap: "wrap" },
+  quickLabelChip: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: SLATE_200,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  quickLabelChipSelected: { backgroundColor: GREEN, borderColor: GREEN },
+  quickLabelText: { fontSize: 12, fontWeight: "bold", color: SLATE_500 },
+  quickLabelTextSelected: { color: "#FFFFFF" },
+});
