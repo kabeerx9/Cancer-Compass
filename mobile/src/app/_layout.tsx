@@ -1,5 +1,3 @@
-import "../global.css";
-
 import { Stack } from "expo-router";
 import { SplashScreenController } from "../splash";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";

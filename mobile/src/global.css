@@ -1,7 +1,0 @@
-@import "tailwindcss";
-@import "uniwind";
-
-/*
-  Removed custom @theme block to ensure compatibility.
-  Using standard Tailwind utility classes in components.
-*/

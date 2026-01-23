@@ -1,5 +1,4 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const { withUniwindConfig } = require("uniwind/metro"); // make sure this import exists
 const path = require("path");
 
 // Path to shared packages
@@ -22,12 +21,4 @@ config.resolver.extraNodeModules = {
   "@cancer-compass/types": path.resolve(packagesPath, "types/src"),
 };
 
-// Apply uniwind modifications before exporting
-const uniwindConfig = withUniwindConfig(config, {
-  // relative path to your global.css file
-  cssEntryFile: "./src/global.css",
-  // optional: path to typings
-  dtsFile: "./src/uniwind-types.d.ts",
-});
-
-module.exports = uniwindConfig;
+module.exports = config;
