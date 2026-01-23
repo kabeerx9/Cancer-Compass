@@ -1,9 +1,40 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import * as React from "react";
+import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
+import { useSignIn } from "@clerk/clerk-expo";
 
 export default function SignIn() {
-  const handleSubmit = () => {
-    // TODO: Implement sign in logic
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  const onSignInPress = async () => {
+    if (!isLoaded) return;
+
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: emailAddress,
+        password,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace("/(app)");
+      } else {
+        setError("Sign in incomplete. Please try again.");
+        console.error(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (err: any) {
+      setError(err?.errors?.[0]?.message || "Invalid email or password. Please try again.");
+      console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -16,6 +47,14 @@ export default function SignIn() {
           Log in to continue
         </Text>
 
+        {error ? (
+          <View className="mb-4 p-3 rounded-input bg-red-50 border border-red-200">
+            <Text className="text-body leading-body text-red-600 text-center">
+              {error}
+            </Text>
+          </View>
+        ) : null}
+
         <View className="mb-3">
           <Text className="text-label leading-label text-text-soft mb-2 font-medium">
             E-mail
@@ -26,6 +65,8 @@ export default function SignIn() {
             placeholderTextColor="#9A9A9A"
             keyboardType="email-address"
             autoCapitalize="none"
+            value={emailAddress}
+            onChangeText={setEmailAddress}
           />
         </View>
 
@@ -38,16 +79,23 @@ export default function SignIn() {
             placeholder="••••••••"
             placeholderTextColor="#9A9A9A"
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
 
         <Pressable
           className="h-[52px] bg-cta rounded-button shadow-button justify-center items-center mb-5"
-          onPress={handleSubmit}
+          onPress={onSignInPress}
+          disabled={isLoading || !emailAddress || !password}
         >
-          <Text className="text-cta-text text-body leading-body font-semibold">
-            Log in
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text className="text-cta-text text-body leading-body font-semibold">
+              Log in
+            </Text>
+          )}
         </Pressable>
 
         <Pressable onPress={() => router.back()}>
