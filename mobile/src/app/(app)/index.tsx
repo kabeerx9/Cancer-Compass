@@ -20,7 +20,7 @@ export default function HomePage() {
   const [refreshing, setRefreshing] = React.useState(false);
   const [loggingId, setLoggingId] = React.useState<string | null>(null);
 
-  const fetchTodayMedications = React.useCallback(async () => {
+  const fetchTodayMedications = async () => {
     try {
       const token = await getToken();
       if (!token) return;
@@ -35,11 +35,12 @@ export default function HomePage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [getToken]);
+  };
 
   React.useEffect(() => {
     fetchTodayMedications();
-  }, [fetchTodayMedications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -81,47 +82,46 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-bg justify-center items-center">
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#F6E3B9", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#4A90A4" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F6E3B9" }}>
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {/* Header */}
-        <View className="px-5 py-4">
-          <Text className="text-text-muted text-base">{getGreeting()}</Text>
-          <Text className="text-2xl font-bold text-text">{firstName}</Text>
+        <View style={{ paddingHorizontal: 20, paddingVertical: 16 }}>
+          <Text style={{ color: "#6e6e6e", fontSize: 16 }}>{getGreeting()}</Text>
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111111" }}>{firstName}</Text>
         </View>
 
         {/* Progress Card */}
         {totalCount > 0 && (
-          <View className="mx-5 bg-surface rounded-2xl p-5 mb-4">
-            <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-lg font-semibold text-text">
+          <View style={{ marginHorizontal: 20, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 20, marginBottom: 16 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
                 Today's Progress
               </Text>
-              <Text className="text-cta font-semibold">
+              <Text style={{ color: "#4A90A4", fontWeight: "600" }}>
                 {takenCount}/{totalCount}
               </Text>
             </View>
-            <View className="h-3 bg-chip rounded-full overflow-hidden">
+            <View style={{ height: 12, backgroundColor: "#F3F3F3", borderRadius: 6, overflow: "hidden" }}>
               <View
-                className="h-full bg-cta rounded-full"
-                style={{ width: `${progress}%` }}
+                style={{ height: "100%", backgroundColor: "#4A90A4", borderRadius: 6, width: `${progress}%` }}
               />
             </View>
             {takenCount === totalCount && totalCount > 0 && (
-              <View className="flex-row items-center mt-3">
+              <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}>
                 <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
-                <Text className="text-green-600 ml-2 font-medium">
+                <Text style={{ color: "#4CAF50", marginLeft: 8, fontWeight: "500" }}>
                   All medications taken!
                 </Text>
               </View>
@@ -130,18 +130,18 @@ export default function HomePage() {
         )}
 
         {/* Today's Medications */}
-        <View className="px-5">
-          <Text className="text-lg font-semibold text-text mb-3">
+        <View style={{ paddingHorizontal: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111", marginBottom: 12 }}>
             Today's Medications
           </Text>
 
           {medications.length === 0 ? (
-            <View className="bg-surface rounded-2xl p-6 items-center">
+            <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, padding: 24, alignItems: "center" }}>
               <Ionicons name="medical-outline" size={48} color="#9A9A9A" />
-              <Text className="text-text-muted text-center mt-4">
+              <Text style={{ color: "#6e6e6e", textAlign: "center", marginTop: 16 }}>
                 No medications for today
               </Text>
-              <Text className="text-text-muted text-center text-sm mt-1">
+              <Text style={{ color: "#6e6e6e", textAlign: "center", fontSize: 14, marginTop: 4 }}>
                 Add medications in the Medications tab
               </Text>
             </View>
@@ -149,31 +149,37 @@ export default function HomePage() {
             medications.map((medication) => (
               <View
                 key={medication.id}
-                className={`bg-surface rounded-2xl p-4 mb-3 ${
-                  medication.todayStatus === "taken" ? "border-2 border-green-500" : ""
-                } ${medication.todayStatus === "skipped" ? "opacity-50" : ""}`}
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 16,
+                  padding: 16,
+                  marginBottom: 12,
+                  borderWidth: medication.todayStatus === "taken" ? 2 : 0,
+                  borderColor: medication.todayStatus === "taken" ? "#4CAF50" : "transparent",
+                  opacity: medication.todayStatus === "skipped" ? 0.5 : 1,
+                }}
               >
-                <View className="flex-row justify-between items-start">
-                  <View className="flex-1">
-                    <Text className="text-lg font-semibold text-text">
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
                       {medication.name}
                     </Text>
                     {medication.dosage && (
-                      <Text className="text-text-muted mt-1">
+                      <Text style={{ color: "#6e6e6e", marginTop: 4 }}>
                         {medication.dosage}
                       </Text>
                     )}
-                    <View className="flex-row items-center mt-2">
+                    <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
                       {medication.time && (
-                        <View className="bg-chip px-3 py-1 rounded-full mr-2">
-                          <Text className="text-text-soft text-sm">
+                        <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, marginRight: 8 }}>
+                          <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
                             {medication.time}
                           </Text>
                         </View>
                       )}
                       {medication.timeLabel && (
-                        <View className="bg-chip px-3 py-1 rounded-full">
-                          <Text className="text-text-soft text-sm">
+                        <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 }}>
+                          <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
                             {medication.timeLabel}
                           </Text>
                         </View>
@@ -185,48 +191,48 @@ export default function HomePage() {
                   {loggingId === medication.id ? (
                     <ActivityIndicator size="small" color="#4A90A4" />
                   ) : medication.todayStatus ? (
-                    <View className="flex-row items-center">
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
                       {medication.todayStatus === "taken" ? (
-                        <View className="flex-row items-center">
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
                           <Ionicons
                             name="checkmark-circle"
                             size={28}
                             color="#4CAF50"
                           />
-                          <Text className="text-green-600 ml-2 text-sm">
+                          <Text style={{ color: "#4CAF50", marginLeft: 8, fontSize: 14 }}>
                             Taken
                           </Text>
                         </View>
                       ) : (
-                        <View className="flex-row items-center">
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
                           <Ionicons
                             name="close-circle"
                             size={28}
                             color="#9A9A9A"
                           />
-                          <Text className="text-text-muted ml-2 text-sm">
+                          <Text style={{ color: "#6e6e6e", marginLeft: 8, fontSize: 14 }}>
                             Skipped
                           </Text>
                         </View>
                       )}
                     </View>
                   ) : (
-                    <View className="flex-row">
+                    <View style={{ flexDirection: "row" }}>
                       <Pressable
-                        className="bg-green-500 px-4 py-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#4CAF50", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8 }}
                         onPress={() =>
                           handleLogMedication(medication.id, "taken")
                         }
                       >
-                        <Text className="text-white font-medium">Take</Text>
+                        <Text style={{ color: "#FFFFFF", fontWeight: "500" }}>Take</Text>
                       </Pressable>
                       <Pressable
-                        className="bg-chip px-4 py-2 rounded-full"
+                        style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}
                         onPress={() =>
                           handleLogMedication(medication.id, "skipped")
                         }
                       >
-                        <Text className="text-text-soft font-medium">Skip</Text>
+                        <Text style={{ color: "#6e6e6e", fontWeight: "500" }}>Skip</Text>
                       </Pressable>
                     </View>
                   )}
@@ -236,7 +242,7 @@ export default function HomePage() {
           )}
         </View>
 
-        <View className="h-6" />
+        <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>
   );

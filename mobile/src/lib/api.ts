@@ -1,7 +1,7 @@
 // API configuration
 // TODO: Update this URL when you deploy your backend
 // const API_BASE_URL = "http://localhost:5000/v1";
-const API_BASE_URL = "https://8db1f2d8f4fe.ngrok-free.appv1";
+const API_BASE_URL = "https://9851aba2c8bc.ngrok-free.app/v1";
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -17,6 +17,7 @@ export async function apiRequest<T = any>(
 
   const headers: HeadersInit = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true", // Skip ngrok's browser warning page
     ...(token && { Authorization: `Bearer ${token}` }),
     ...fetchOptions.headers,
   };
@@ -27,8 +28,20 @@ export async function apiRequest<T = any>(
       headers,
     });
 
-    const data = await response.json();
-    return data;
+    const text = await response.text();
+
+    // Try to parse as JSON
+    try {
+      const data = JSON.parse(text);
+      return data;
+    } catch {
+      // If not JSON, log the response for debugging
+      console.error("Non-JSON response:", text.substring(0, 200));
+      return {
+        success: false,
+        message: "Server returned an invalid response",
+      };
+    }
   } catch (error) {
     console.error("API Error:", error);
     return {
@@ -56,7 +69,7 @@ export const medicationApi = {
       token,
     }),
 
-  update: (id: string, data: Partial<CreateMedicationData>, token: string) =>
+  update: (id: string, data: UpdateMedicationData, token: string) =>
     apiRequest(`/medications/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
@@ -84,6 +97,15 @@ export interface CreateMedicationData {
   dosage?: string;
   time?: string;
   timeLabel?: string;
+}
+
+export interface UpdateMedicationData {
+  name?: string;
+  purpose?: string;
+  dosage?: string;
+  time?: string;
+  timeLabel?: string;
+  isActive?: boolean;
 }
 
 export interface Medication {

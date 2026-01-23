@@ -13,7 +13,7 @@ import {
 import { useAuth } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { medicationApi, Medication, CreateMedicationData } from "../../lib/api";
+import { medicationApi, Medication, CreateMedicationData, UpdateMedicationData } from "../../lib/api";
 
 export default function MedicinePage() {
   const { getToken } = useAuth();
@@ -33,7 +33,7 @@ export default function MedicinePage() {
     timeLabel: "",
   });
 
-  const fetchMedications = React.useCallback(async () => {
+  const fetchMedications = async () => {
     try {
       const token = await getToken();
       if (!token) return;
@@ -48,11 +48,12 @@ export default function MedicinePage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [getToken]);
+  };
 
   React.useEffect(() => {
     fetchMedications();
-  }, [fetchMedications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -193,12 +194,12 @@ export default function MedicinePage() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F6E3B9" }}>
       {/* Header */}
-      <View className="flex-row justify-between items-center px-5 py-4">
-        <Text className="text-2xl font-bold text-text">Medications</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold", color: "#111111" }}>Medications</Text>
         <Pressable
-          className="bg-cta w-12 h-12 rounded-full justify-center items-center"
+          style={{ backgroundColor: "#4A90A4", width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" }}
           onPress={openAddModal}
         >
           <Ionicons name="add" size={28} color="#FFFFFF" />
@@ -207,18 +208,18 @@ export default function MedicinePage() {
 
       {/* Medication List */}
       <ScrollView
-        className="flex-1 px-5"
+        style={{ flex: 1, paddingHorizontal: 20 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {medications.length === 0 ? (
-          <View className="bg-surface rounded-2xl p-6 items-center">
+          <View style={{ backgroundColor: "#FFFFFF", borderRadius: 16, padding: 24, alignItems: "center" }}>
             <Ionicons name="medical-outline" size={48} color="#9A9A9A" />
-            <Text className="text-text-muted text-center mt-4">
+            <Text style={{ color: "#6e6e6e", textAlign: "center", marginTop: 16 }}>
               No medications added yet
             </Text>
-            <Text className="text-text-muted text-center text-sm mt-1">
+            <Text style={{ color: "#6e6e6e", textAlign: "center", fontSize: 14, marginTop: 4 }}>
               Tap the + button to add your first medication
             </Text>
           </View>
@@ -226,38 +227,42 @@ export default function MedicinePage() {
           medications.map((medication) => (
             <Pressable
               key={medication.id}
-              className={`bg-surface rounded-2xl p-4 mb-3 ${
-                !medication.isActive ? "opacity-50" : ""
-              }`}
+              style={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: 16,
+                padding: 16,
+                marginBottom: 12,
+                opacity: medication.isActive ? 1 : 0.5,
+              }}
               onPress={() => openEditModal(medication)}
               onLongPress={() => handleDelete(medication)}
             >
-              <View className="flex-row justify-between items-start">
-                <View className="flex-1">
-                  <Text className="text-lg font-semibold text-text">
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
                     {medication.name}
                   </Text>
                   {medication.dosage && (
-                    <Text className="text-text-muted mt-1">
+                    <Text style={{ color: "#6e6e6e", marginTop: 4 }}>
                       {medication.dosage}
                     </Text>
                   )}
                   {medication.purpose && (
-                    <Text className="text-text-soft text-sm mt-1">
+                    <Text style={{ color: "#9a9a9a", fontSize: 14, marginTop: 4 }}>
                       {medication.purpose}
                     </Text>
                   )}
-                  <View className="flex-row items-center mt-2">
+                  <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
                     {medication.time && (
-                      <View className="bg-chip px-3 py-1 rounded-full mr-2">
-                        <Text className="text-text-soft text-sm">
+                      <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, marginRight: 8 }}>
+                        <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
                           {medication.time}
                         </Text>
                       </View>
                     )}
                     {medication.timeLabel && (
-                      <View className="bg-chip px-3 py-1 rounded-full">
-                        <Text className="text-text-soft text-sm">
+                      <View style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 }}>
+                        <Text style={{ color: "#6e6e6e", fontSize: 14 }}>
                           {medication.timeLabel}
                         </Text>
                       </View>
@@ -265,7 +270,7 @@ export default function MedicinePage() {
                   </View>
                 </View>
                 <Pressable
-                  className="p-2"
+                  style={{ padding: 8 }}
                   onPress={() => handleToggleActive(medication)}
                 >
                   <Ionicons
@@ -278,7 +283,7 @@ export default function MedicinePage() {
             </Pressable>
           ))
         )}
-        <View className="h-6" />
+        <View style={{ height: 24 }} />
       </ScrollView>
 
       {/* Add/Edit Modal */}
@@ -288,20 +293,29 @@ export default function MedicinePage() {
         presentationStyle="pageSheet"
         onRequestClose={closeModal}
       >
-        <SafeAreaView className="flex-1 bg-bg">
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
           {/* Modal Header */}
-          <View className="flex-row justify-between items-center px-5 py-4 border-b border-border">
+          <View style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 20,
+            paddingVertical: 16,
+            borderBottomWidth: 1,
+            borderBottomColor: "#E7E2D7",
+            backgroundColor: "#FFFFFF",
+          }}>
             <Pressable onPress={closeModal}>
-              <Text className="text-cta text-base">Cancel</Text>
+              <Text style={{ color: "#4A90A4", fontSize: 16 }}>Cancel</Text>
             </Pressable>
-            <Text className="text-lg font-semibold text-text">
+            <Text style={{ fontSize: 18, fontWeight: "600", color: "#111111" }}>
               {editingMedication ? "Edit Medication" : "Add Medication"}
             </Text>
             <Pressable onPress={handleSave} disabled={saving}>
               {saving ? (
                 <ActivityIndicator size="small" color="#4A90A4" />
               ) : (
-                <Text className="text-cta text-base font-semibold">Save</Text>
+                <Text style={{ color: "#4A90A4", fontSize: 16, fontWeight: "600" }}>Save</Text>
               )}
             </Pressable>
           </View>
@@ -309,11 +323,20 @@ export default function MedicinePage() {
           {/* Form */}
           <ScrollView className="flex-1 px-5 py-4">
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Medication Name *
               </Text>
               <TextInput
-                className="bg-surface border border-border rounded-xl px-4 py-3 text-text text-base"
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: 1,
+                  borderColor: "#E7E2D7",
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  fontSize: 16,
+                  color: "#111111",
+                }}
                 placeholder="e.g., Aspirin"
                 placeholderTextColor="#9A9A9A"
                 value={formData.name}
@@ -322,11 +345,20 @@ export default function MedicinePage() {
             </View>
 
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Dosage
               </Text>
               <TextInput
-                className="bg-surface border border-border rounded-xl px-4 py-3 text-text text-base"
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: 1,
+                  borderColor: "#E7E2D7",
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  fontSize: 16,
+                  color: "#111111",
+                }}
                 placeholder="e.g., 500mg, 1 tablet"
                 placeholderTextColor="#9A9A9A"
                 value={formData.dosage}
@@ -335,11 +367,20 @@ export default function MedicinePage() {
             </View>
 
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Purpose
               </Text>
               <TextInput
-                className="bg-surface border border-border rounded-xl px-4 py-3 text-text text-base"
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: 1,
+                  borderColor: "#E7E2D7",
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  fontSize: 16,
+                  color: "#111111",
+                }}
                 placeholder="e.g., For headaches"
                 placeholderTextColor="#9A9A9A"
                 value={formData.purpose}
@@ -348,11 +389,20 @@ export default function MedicinePage() {
             </View>
 
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Time (optional)
               </Text>
               <TextInput
-                className="bg-surface border border-border rounded-xl px-4 py-3 text-text text-base"
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: 1,
+                  borderColor: "#E7E2D7",
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  fontSize: 16,
+                  color: "#111111",
+                }}
                 placeholder="e.g., 08:00"
                 placeholderTextColor="#9A9A9A"
                 value={formData.time}
@@ -361,11 +411,20 @@ export default function MedicinePage() {
             </View>
 
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Time Label
               </Text>
               <TextInput
-                className="bg-surface border border-border rounded-xl px-4 py-3 text-text text-base"
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  borderWidth: 1,
+                  borderColor: "#E7E2D7",
+                  borderRadius: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  fontSize: 16,
+                  color: "#111111",
+                }}
                 placeholder="e.g., Before Breakfast"
                 placeholderTextColor="#9A9A9A"
                 value={formData.timeLabel}
@@ -375,10 +434,10 @@ export default function MedicinePage() {
 
             {/* Quick Labels */}
             <View className="mb-4">
-              <Text className="text-text-soft text-sm mb-2 font-medium">
+              <Text style={{ color: "#6e6e6e", fontSize: 14, marginBottom: 8, fontWeight: "500" }}>
                 Quick Labels
               </Text>
-              <View className="flex-row flex-wrap">
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                 {[
                   "Before Breakfast",
                   "After Breakfast",
@@ -390,15 +449,21 @@ export default function MedicinePage() {
                 ].map((label) => (
                   <Pressable
                     key={label}
-                    className={`px-3 py-2 rounded-full mr-2 mb-2 ${
-                      formData.timeLabel === label ? "bg-cta" : "bg-chip"
-                    }`}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderRadius: 20,
+                      marginRight: 8,
+                      marginBottom: 8,
+                      backgroundColor: formData.timeLabel === label ? "#4A90A4" : "#F3F3F3",
+                    }}
                     onPress={() => setFormData((prev) => ({ ...prev, timeLabel: label }))}
                   >
                     <Text
-                      className={`text-sm ${
-                        formData.timeLabel === label ? "text-white" : "text-text-soft"
-                      }`}
+                      style={{
+                        fontSize: 14,
+                        color: formData.timeLabel === label ? "#FFFFFF" : "#6e6e6e",
+                      }}
                     >
                       {label}
                     </Text>
