@@ -4,12 +4,15 @@ import { Stack } from "expo-router";
 import { SplashScreenController } from "../splash";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import { QueryProvider } from "../providers/query-provider";
 
 export default function Root() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <SplashScreenController />
-      <RootNavigator />
+      <QueryProvider>
+        <SplashScreenController />
+        <RootNavigator />
+      </QueryProvider>
     </ClerkProvider>
   );
 }

@@ -10,19 +10,27 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
-import { useAuth } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { medicationApi, Medication, CreateMedicationData, UpdateMedicationData } from "../../lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { medicationQueries } from "../../features/medications/queries";
+import { medicationMutations } from "../../features/medications/mutations";
+import type {
+  Medication,
+  CreateMedicationData,
+  UpdateMedicationData,
+} from "../../features/medications/types";
 
 export default function MedicinePage() {
-  const { getToken } = useAuth();
-  const [medications, setMedications] = React.useState<Medication[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: medications = [], isLoading: isLoadingMedications, refetch, isRefetching } = useQuery(medicationQueries.all());
+  const createMutation = useMutation(medicationMutations.create(queryClient));
+  const updateMutation = useMutation(medicationMutations.update(queryClient));
+  const deleteMutation = useMutation(medicationMutations.delete(queryClient));
+
   const [modalVisible, setModalVisible] = React.useState(false);
   const [editingMedication, setEditingMedication] = React.useState<Medication | null>(null);
-  const [saving, setSaving] = React.useState(false);
 
   // Form state
   const [formData, setFormData] = React.useState<CreateMedicationData>({
@@ -32,33 +40,6 @@ export default function MedicinePage() {
     time: "",
     timeLabel: "",
   });
-
-  const fetchMedications = async () => {
-    try {
-      const token = await getToken();
-      if (!token) return;
-
-      const response = await medicationApi.getAll(token);
-      if (response.success && response.data) {
-        setMedications(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching medications:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchMedications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchMedications();
-  };
 
   const openAddModal = () => {
     setEditingMedication(null);
@@ -96,43 +77,47 @@ export default function MedicinePage() {
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!formData.name.trim()) {
       Alert.alert("Error", "Medication name is required");
       return;
     }
 
-    setSaving(true);
-    try {
-      const token = await getToken();
-      if (!token) return;
-
-      const dataToSend = {
+    if (editingMedication) {
+      const updateData: UpdateMedicationData = {
         name: formData.name.trim(),
         purpose: formData.purpose?.trim() || undefined,
         dosage: formData.dosage?.trim() || undefined,
         time: formData.time?.trim() || undefined,
         timeLabel: formData.timeLabel?.trim() || undefined,
       };
-
-      let response;
-      if (editingMedication) {
-        response = await medicationApi.update(editingMedication.id, dataToSend, token);
-      } else {
-        response = await medicationApi.create(dataToSend, token);
-      }
-
-      if (response.success) {
-        closeModal();
-        fetchMedications();
-      } else {
-        Alert.alert("Error", response.message || "Failed to save medication");
-      }
-    } catch (error) {
-      console.error("Error saving medication:", error);
-      Alert.alert("Error", "Failed to save medication");
-    } finally {
-      setSaving(false);
+      updateMutation.mutate(
+        { id: editingMedication.id, data: updateData },
+        {
+          onSuccess: () => {
+            closeModal();
+          },
+          onError: (error: Error) => {
+            Alert.alert("Error", error.message || "Failed to update medication");
+          },
+        }
+      );
+    } else {
+      const createData: CreateMedicationData = {
+        name: formData.name.trim(),
+        purpose: formData.purpose?.trim() || undefined,
+        dosage: formData.dosage?.trim() || undefined,
+        time: formData.time?.trim() || undefined,
+        timeLabel: formData.timeLabel?.trim() || undefined,
+      };
+      createMutation.mutate(createData, {
+        onSuccess: () => {
+          closeModal();
+        },
+        onError: (error: Error) => {
+          Alert.alert("Error", error.message || "Failed to create medication");
+        },
+      });
     }
   };
 
@@ -145,47 +130,29 @@ export default function MedicinePage() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: async () => {
-            try {
-              const token = await getToken();
-              if (!token) return;
-
-              const response = await medicationApi.delete(medication.id, token);
-              if (response.success) {
-                fetchMedications();
-              } else {
-                Alert.alert("Error", response.message || "Failed to delete medication");
-              }
-            } catch (error) {
-              console.error("Error deleting medication:", error);
-              Alert.alert("Error", "Failed to delete medication");
-            }
+          onPress: () => {
+            deleteMutation.mutate(medication.id, {
+              onError: (error: Error) => {
+                Alert.alert("Error", error.message || "Failed to delete medication");
+              },
+            });
           },
         },
       ]
     );
   };
 
-  const handleToggleActive = async (medication: Medication) => {
-    try {
-      const token = await getToken();
-      if (!token) return;
-
-      const response = await medicationApi.update(
-        medication.id,
-        { isActive: !medication.isActive },
-        token
-      );
-
-      if (response.success) {
-        fetchMedications();
-      }
-    } catch (error) {
-      console.error("Error toggling medication:", error);
-    }
+  const handleToggleActive = (medication: Medication) => {
+    updateMutation.mutate({
+      id: medication.id,
+      data: { isActive: !medication.isActive },
+    });
   };
 
-  if (loading) {
+  const isLoading = isLoadingMedications || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+  const saving = createMutation.isPending || updateMutation.isPending;
+
+  if (isLoadingMedications && medications.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-bg justify-center items-center">
         <ActivityIndicator size="large" color="#4A90A4" />
@@ -210,7 +177,7 @@ export default function MedicinePage() {
       <ScrollView
         style={{ flex: 1, paddingHorizontal: 20 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} />
         }
       >
         {medications.length === 0 ? (

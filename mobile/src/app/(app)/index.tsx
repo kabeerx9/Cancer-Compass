@@ -7,64 +7,23 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { medicationApi, Medication } from "../../lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { medicationQueries } from "../../features/medications/queries";
+import { medicationMutations } from "../../features/medications/mutations";
+import type { Medication } from "../../features/medications/types";
 
 export default function HomePage() {
-  const { getToken } = useAuth();
   const { user } = useUser();
-  const [medications, setMedications] = React.useState<Medication[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [loggingId, setLoggingId] = React.useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchTodayMedications = async () => {
-    try {
-      const token = await getToken();
-      if (!token) return;
+  const { data: medications = [], isLoading, refetch, isRefetching } = useQuery(medicationQueries.today());
+  const logMutation = useMutation(medicationMutations.log(queryClient));
 
-      const response = await medicationApi.getToday(token);
-      if (response.success && response.data) {
-        setMedications(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching medications:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchTodayMedications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchTodayMedications();
-  };
-
-  const handleLogMedication = async (
-    medicationId: string,
-    status: "taken" | "skipped"
-  ) => {
-    setLoggingId(medicationId);
-    try {
-      const token = await getToken();
-      if (!token) return;
-
-      const response = await medicationApi.log(medicationId, status, token);
-      if (response.success) {
-        fetchTodayMedications();
-      }
-    } catch (error) {
-      console.error("Error logging medication:", error);
-    } finally {
-      setLoggingId(null);
-    }
+  const handleLogMedication = (medicationId: string, status: "taken" | "skipped") => {
+    logMutation.mutate({ id: medicationId, status });
   };
 
   const getGreeting = () => {
@@ -80,7 +39,7 @@ export default function HomePage() {
   const totalCount = medications.length;
   const progress = totalCount > 0 ? (takenCount / totalCount) * 100 : 0;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "#F6E3B9", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#4A90A4" />
@@ -93,7 +52,7 @@ export default function HomePage() {
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} />
         }
       >
         {/* Header */}
@@ -188,7 +147,7 @@ export default function HomePage() {
                   </View>
 
                   {/* Action Buttons */}
-                  {loggingId === medication.id ? (
+                  {logMutation.isPending && logMutation.variables?.id === medication.id ? (
                     <ActivityIndicator size="small" color="#4A90A4" />
                   ) : medication.todayStatus ? (
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -220,17 +179,15 @@ export default function HomePage() {
                     <View style={{ flexDirection: "row" }}>
                       <Pressable
                         style={{ backgroundColor: "#4CAF50", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8 }}
-                        onPress={() =>
-                          handleLogMedication(medication.id, "taken")
-                        }
+                        onPress={() => handleLogMedication(medication.id, "taken")}
+                        disabled={logMutation.isPending}
                       >
                         <Text style={{ color: "#FFFFFF", fontWeight: "500" }}>Take</Text>
                       </Pressable>
                       <Pressable
                         style={{ backgroundColor: "#F3F3F3", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}
-                        onPress={() =>
-                          handleLogMedication(medication.id, "skipped")
-                        }
+                        onPress={() => handleLogMedication(medication.id, "skipped")}
+                        disabled={logMutation.isPending}
                       >
                         <Text style={{ color: "#6e6e6e", fontWeight: "500" }}>Skip</Text>
                       </Pressable>
