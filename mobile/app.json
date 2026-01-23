@@ -10,6 +10,12 @@
     "slug": "mobile",
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.kabeerx9.mobile"
+    },
+    "android": {
+      "package": "com.kabeerx9.mobile"
+    }
   }
 }
