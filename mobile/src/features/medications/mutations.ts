@@ -1,7 +1,12 @@
 import type { QueryClient } from '@tanstack/react-query';
+
 import { medicationApi } from './api';
 import { medicationKeys } from './keys';
-import type { CreateMedicationData, UpdateMedicationData, Medication } from './types';
+import type {
+  CreateMedicationData,
+  Medication,
+  UpdateMedicationData,
+} from './types';
 
 export const medicationMutations = {
   create: (queryClient: QueryClient) => ({
@@ -16,11 +21,16 @@ export const medicationMutations = {
   update: (queryClient: QueryClient) => ({
     mutationFn: ({ id, data }: { id: string; data: UpdateMedicationData }) =>
       medicationApi.update(id, data),
-    onSuccess: (_data: Medication, variables: { id: string; data: UpdateMedicationData }) => {
+    onSuccess: (
+      _data: Medication,
+      variables: { id: string; data: UpdateMedicationData }
+    ) => {
       // Invalidate both today and all to keep data in sync
       queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
       queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
-      queryClient.invalidateQueries({ queryKey: medicationKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: medicationKeys.detail(variables.id),
+      });
     },
   }),
 

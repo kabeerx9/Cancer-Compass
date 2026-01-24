@@ -27,7 +27,7 @@ export interface Medication {
   createdAt: string;
   updatedAt: string;
   logs?: MedicationLog[];
-  todayStatus?: "taken" | "skipped" | null;
+  todayStatus?: 'taken' | 'skipped' | null;
   todayTakenAt?: string | null;
 }
 
@@ -35,12 +35,12 @@ export interface MedicationLog {
   id: string;
   medicationId: string;
   date: string;
-  status: "taken" | "skipped";
+  status: 'taken' | 'skipped';
   takenAt: string | null;
   createdAt: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;

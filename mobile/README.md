@@ -1,20 +1,49 @@
-# Expo Router and Uniwind 
+<h1 align="center">
+  <img alt="logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/><br/>
+Mobile App </h1>
 
-Use [Expo Router](https://docs.expo.dev/router/introduction/) with [Uniwind](https://docs.uniwind.dev/) styling.
+> This Project is based on [Obytes starter](https://starter.obytes.com)
 
-## Launch your own
+## Requirements
 
-[![Launch with Expo](https://github.com/expo/examples/blob/master/.gh-assets/launch.svg?raw=true)](https://launch.expo.dev/?github=https://github.com/expo/examples/tree/master/with-router-uniwind)
+- [React Native dev environment ](https://reactnative.dev/docs/environment-setup)
+- [Node.js LTS release](https://nodejs.org/en/)
+- [Git](https://git-scm.com/)
+- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall), required only for macOS or Linux users
+- [Pnpm](https://pnpm.io/installation)
+- [Cursor](https://www.cursor.com/) or [VS Code Editor](https://code.visualstudio.com/download) ⚠️ Make sure to install all recommended extension from `.vscode/extensions.json`
 
-## 🚀 How to use
+## 👋 Quick start
+
+Clone the repo to your machine and install deps :
 
 ```sh
-npx create-expo-app -e with-router-uniwind
+git clone https://github.com/user/repo-name
+
+cd ./repo-name
+
+pnpm install
 ```
 
-## Deploy
+To run the app on ios
 
-Deploy on all platforms with Expo Application Services (EAS).
+```sh
+pnpm ios
+```
 
-- Deploy the website: `npx eas-cli deploy` — [Learn more](https://docs.expo.dev/eas/hosting/get-started/)
-- Deploy on iOS and Android using: `npx eas-cli build` — [Learn more](https://expo.dev/eas)
+To run the app on Android
+
+```sh
+pnpm android
+```
+
+## ✍️ Documentation
+
+- [Rules and Conventions](https://starter.obytes.com/getting-started/rules-and-conventions/)
+- [Project structure](https://starter.obytes.com/getting-started/project-structure)
+- [Environment vars and config](https://starter.obytes.com/getting-started/environment-vars-config)
+- [UI and Theming](https://starter.obytes.com/ui-and-theme/ui-theming)
+- [Components](https://starter.obytes.com/ui-and-theme/components)
+- [Forms](https://starter.obytes.com/ui-and-theme/Forms)
+- [Data fetching](https://starter.obytes.com/guides/data-fetching)
+- [Contribute to starter](https://starter.obytes.com/how-to-contribute/)
