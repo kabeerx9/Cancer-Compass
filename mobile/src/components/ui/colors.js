@@ -3,53 +3,76 @@ module.exports = {
   black: '#000000',
   transparent: 'transparent',
 
-  // Base neutrals - Clean and crisp
+  // Warm neutrals - Slight warm undertone
   neutral: {
-    50: '#F9FAFB',
-    100: '#F3F4F6',
-    200: '#E5E7EB',
-    300: '#D1D5DB',
-    400: '#9CA3AF',
-    500: '#6B7280',
-    600: '#4B5563',
-    700: '#374151',
-    800: '#1F2937',
-    900: '#111827',
-    950: '#030712',
+    50: '#FFFBF9',  // Very warm off-white
+    100: '#F5F0EB',
+    200: '#E8E0D8',
+    300: '#D4C8BC',
+    400: '#B8A89A',
+    500: '#9C8B7B',
+    600: '#827263',
+    700: '#6B5D50',
+    800: '#554940',
+    900: '#443A34',
+    950: '#2A2421',
   },
 
-  // Primary - Royal Blue (Trustworthy & Clean)
+  // Primary - Warm Teal (Healing & Calming)
   primary: {
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6',
-    600: '#2563EB', // Main Primary
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
+    50: '#F0FDFA',
+    100: '#CCFBF1',
+    200: '#99F6E4',
+    300: '#5EEAD4',
+    400: '#2DD4BF',
+    500: '#14B8A6', // Main Primary
+    600: '#0D9488',
+    700: '#0F766E',
+    800: '#115E59',
+    900: '#134E4A',
   },
 
-  // Secondary/Accent
+  // Secondary - Warm Coral (Comfort & Hope)
+  secondary: {
+    50: '#FFF1F2',
+    100: '#FFE4E6',
+    200: '#FECDD3',
+    300: '#FDA4AF',
+    400: '#FB7185',
+    500: '#F43F5E', // Main Secondary
+    600: '#E11D48',
+    700: '#BE123C',
+    800: '#9F1239',
+    900: '#881337',
+  },
+
+  // Accent - Soft Sage (Growth & Nature)
   accent: {
-    DEFAULT: '#8B5CF6', // Soft Violet
-    light: '#DDD6FE',
+    50: '#F0FDF4',
+    100: '#DCFCE7',
+    200: '#BBF7D0',
+    300: '#86EFAC',
+    400: '#4ADE80',
+    500: '#22C55E',
+    600: '#16A34A',
+    700: '#15803D',
+    800: '#166534',
+    900: '#14532D',
   },
 
-  // Status
-  success: '#10B981', // Emerald
-  warning: '#F59E0B', // Amber
-  danger: '#EF4444',  // Red
+  // Status - Warmer versions
+  success: '#10B981',
+  warning: '#F59E0B',
+  danger: '#DC2626',
+  info: '#0EA5E9',
 
-  // Semantic
-  background: '#F9FAFB', // Very light gray/white
-  surface: '#ffffff',
+  // Semantic - Warmer tones
+  background: '#FFFBF9', // Warm cream
+  surface: '#FFFFFF',
   text: {
-    heading: '#111827',
-    body: '#4B5563',
-    muted: '#9CA3AF',
+    heading: '#2D2824',
+    body: '#6B5D50',
+    muted: '#B8A89A',
   },
-  border: '#E5E7EB',
+  border: '#E8E0D8',
 };
