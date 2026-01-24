@@ -64,6 +64,12 @@ export class TemplateService {
     return unifiedResponse(true, 'Template assigned successfully', result);
   }
 
+  async unassignTemplateFromDate(templateId: string, dateString: string, userId: string) {
+    const date = new Date(dateString);
+    await this.templateRepository.unassignFromDate(templateId, date, userId);
+    return unifiedResponse(true, 'Template unassigned successfully');
+  }
+
   async deleteTemplate(id: string, userId: string) {
     const existing = await this.templateRepository.findById(id);
     if (!existing || existing.userId !== userId) {

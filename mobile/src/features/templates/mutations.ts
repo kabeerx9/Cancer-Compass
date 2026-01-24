@@ -31,4 +31,10 @@ export const templateMutations = {
        queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
     },
   }),
+  unassign: (queryClient: QueryClient) => ({
+    mutationFn: ({ id, date }: { id: string; date: string }) => templateApi.unassign(id, date),
+    onSuccess: (_: unknown, variables: { id: string; date: string }) => {
+       queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+    },
+  }),
 };

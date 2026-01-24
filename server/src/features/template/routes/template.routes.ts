@@ -30,4 +30,7 @@ router.delete('/:id', templateController.delete);
 // POST /templates/:id/assign
 router.post('/:id/assign', templateController.assign);
 
+// POST /templates/:id/unassign
+router.post('/:id/unassign', templateController.unassign);
+
 export default router;

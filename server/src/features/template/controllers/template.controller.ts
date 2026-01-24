@@ -59,4 +59,22 @@ export class TemplateController {
     const result = await this.templateService.assignTemplateToDate(id as string, date, req.user.id);
     res.status(result.success ? 200 : 400).json(result);
   };
+
+  unassign = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { date } = req.body; // YYYY-MM-DD
+
+    if (!req.user) {
+      res.status(401).json({ success: false, message: 'Unauthorized' });
+      return;
+    }
+
+    if (!date) {
+        res.status(400).json({ success: false, message: 'Date is required' });
+        return;
+    }
+
+    const result = await this.templateService.unassignTemplateFromDate(id as string, date, req.user.id);
+    res.status(result.success ? 200 : 400).json(result);
+  };
 }

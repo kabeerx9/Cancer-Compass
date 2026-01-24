@@ -11,6 +11,11 @@ export interface DailyTask {
   templateTaskId: string | null;
   createdAt: string;
   updatedAt: string;
+  template?: {
+    id: string;
+    name: string;
+    color: string;
+  } | null;
 }
 
 export interface CreateTaskData {

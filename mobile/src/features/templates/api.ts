@@ -27,4 +27,8 @@ export const templateApi = {
       // date should be YYYY-MM-DD
     await client.post<ApiResponse>(`/templates/${id}/assign`, { date });
   },
+
+  unassign: async (id: string, date: string): Promise<void> => {
+    await client.post<ApiResponse>(`/templates/${id}/unassign`, { date });
+  },
 };

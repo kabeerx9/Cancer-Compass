@@ -177,4 +177,28 @@ export class TemplateRepository {
       return assigned;
     });
   }
+
+  async unassignFromDate(templateId: string, date: Date, userId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Delete associated tasks
+      await tx.dailyTask.deleteMany({
+        where: {
+          userId,
+          date,
+          templateId,
+        }
+      });
+
+      // 2. Delete assignment record
+      return tx.assignedDay.delete({
+        where: {
+          userId_date_templateId: {
+            userId,
+            date,
+            templateId
+          }
+        }
+      });
+    });
+  }
 }

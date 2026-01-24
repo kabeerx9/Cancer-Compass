@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'expo-router'; // <--- Added
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Modal,
   Pressable,
   RefreshControl,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
@@ -23,7 +23,7 @@ import {
   taskMutations,
   taskQueries,
 } from '@/features/tasks';
-import { templateMutations } from '@/features/templates'; // Add import
+import { templateMutations } from '@/features/templates';
 
 const THEME = {
   primary: '#2563EB',
@@ -36,7 +36,7 @@ const THEME = {
 };
 
 export default function TasksPage() {
-  const router = useRouter(); // Keep router for manage nav inside modal if needed, but modal handles it.
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [date, setDate] = React.useState(new Date());
 
@@ -54,11 +54,55 @@ export default function TasksPage() {
   const toggleMutation = useMutation(taskMutations.toggleComplete(queryClient));
   const deleteMutation = useMutation(taskMutations.delete(queryClient));
   const assignTemplateMutation = useMutation(templateMutations.assign(queryClient));
+  const unassignTemplateMutation = useMutation(templateMutations.unassign(queryClient));
 
-  // Add Task Modal
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [applyVisible, setApplyVisible] = React.useState(false); // Template Modal
+  // Modals
+  const [modalVisible, setModalVisible] = React.useState(false); // Add Task
+  const [applyVisible, setApplyVisible] = React.useState(false); // Apply Template
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
+
+  // Group tasks
+  interface TaskSection {
+    title: string;
+    template?: any;
+    data: DailyTask[];
+  }
+
+  const groupedTasks = React.useMemo(() => {
+    const sections: TaskSection[] = [];
+    const customTasks = tasks.filter((t) => t.sourceType === 'custom');
+    const templateTasks = tasks.filter((t) => t.sourceType === 'template');
+
+    // Always put "My Tasks" first if it has any
+    if (customTasks.length > 0) {
+      sections.push({ title: 'My Tasks', data: customTasks });
+    }
+
+    // Group by template
+    const templateGroups = new Map<string, DailyTask[]>();
+    const templateInfos = new Map<string, any>();
+
+    templateTasks.forEach((t) => {
+      if (t.templateId) {
+        if (!templateGroups.has(t.templateId)) {
+          templateGroups.set(t.templateId, []);
+          templateInfos.set(t.templateId, t.template);
+        }
+        templateGroups.get(t.templateId)?.push(t);
+      }
+    });
+
+    templateGroups.forEach((groupTasks, templateId) => {
+      const template = templateInfos.get(templateId);
+      sections.push({
+        title: template?.name || 'Template Tasks',
+        template: template,
+        data: groupTasks.sort((a,b) => a.order - b.order),
+      });
+    });
+
+    return sections;
+  }, [tasks]);
 
   const handlePrevDay = () => {
     const newDate = new Date(date);
@@ -81,9 +125,28 @@ export default function TasksPage() {
           Alert.alert('Success', `Applied ${template.name} to this day.`);
         },
         onError: (err: Error) => {
-          Alert.alert('Error', err.message || 'Failed to apply template');
+           // check if error message contains "already assigned"
+           const msg = err.message || 'Failed';
+           Alert.alert('Error', msg);
         }
       }
+    );
+  };
+
+  const handleUnassign = (template: any) => {
+    Alert.alert(
+      'Remove Template',
+      `Remove "${template.name}" and all its tasks from today?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => {
+             unassignTemplateMutation.mutate({ id: template.id, date: dateString });
+          }
+        }
+      ]
     );
   };
 
@@ -141,6 +204,19 @@ export default function TasksPage() {
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
+  const renderSectionHeader = ({ section }: { section: any }) => (
+     <View style={[styles.sectionHeader, section.template && { borderLeftColor: section.template.color, borderLeftWidth: 4 }]}>
+        <View style={{flex: 1}}>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+        </View>
+        {section.template && (
+           <Pressable onPress={() => handleUnassign(section.template)} style={styles.trashBtn}>
+             <Ionicons name="trash-outline" size={18} color={THEME.textMuted} />
+           </Pressable>
+        )}
+     </View>
+  );
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -176,8 +252,8 @@ export default function TasksPage() {
             <ActivityIndicator size="large" color={THEME.primary} />
           </View>
         ) : (
-          <FlatList
-            data={tasks}
+          <SectionList
+            sections={groupedTasks}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TaskItem
@@ -187,10 +263,12 @@ export default function TasksPage() {
                 isToggling={toggleMutation.isPending && toggleMutation.variables?.id === item.id}
               />
             )}
+            renderSectionHeader={renderSectionHeader}
             contentContainerStyle={styles.listContent}
             refreshControl={
               <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={THEME.primary} />
             }
+            stickySectionHeadersEnabled={false}
             ListEmptyComponent={
               <View style={styles.emptyState}>
                 <Ionicons name="checkmark-circle-outline" size={48} color={THEME.textMuted} />
@@ -204,12 +282,14 @@ export default function TasksPage() {
         )}
       </SafeAreaView>
 
+      {/* Apply Template Modal */}
       <ApplyTemplateModal
          visible={applyVisible}
          onClose={() => setApplyVisible(false)}
          onApply={handleApplyTemplate}
       />
 
+      {/* Add Task Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -338,6 +418,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 8,
   },
+
+  // Section Header
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    marginTop: 8,
+    marginBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.border,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: THEME.textHeading,
+    paddingLeft: 8,
+  },
+  trashBtn: {
+    padding: 8,
+  },
+
   // Modal
   modalContainer: {
     flex: 1,
