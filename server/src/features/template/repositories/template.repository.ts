@@ -201,4 +201,22 @@ export class TemplateRepository {
       });
     });
   }
+
+  async getAssignedDaysForRange(userId: string, startDate: Date, endDate: Date) {
+    return this.prisma.assignedDay.findMany({
+      where: {
+        userId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        template: true,
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+  }
 }

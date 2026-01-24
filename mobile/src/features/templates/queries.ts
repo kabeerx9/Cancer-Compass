@@ -8,4 +8,10 @@ export const templateQueries = {
       queryKey: templateKeys.root,
       queryFn: templateApi.getAll,
     }),
+
+  assignedDays: (startDate: string, endDate: string) =>
+    queryOptions({
+      queryKey: ['assigned-days', startDate, endDate],
+      queryFn: () => templateApi.getAssignedDays(startDate, endDate),
+    }),
 };

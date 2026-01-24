@@ -77,4 +77,25 @@ export class TemplateController {
     const result = await this.templateService.unassignTemplateFromDate(id as string, date, req.user.id);
     res.status(result.success ? 200 : 400).json(result);
   };
+
+  getAssignedDays = async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query; // YYYY-MM-DD
+
+    if (!req.user) {
+      res.status(401).json({ success: false, message: 'Unauthorized' });
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      res.status(400).json({ success: false, message: 'Start date and end date are required' });
+      return;
+    }
+
+    const result = await this.templateService.getAssignedDaysForRange(
+      req.user.id,
+      new Date(startDate as string),
+      new Date(endDate as string)
+    );
+    res.status(result.success ? 200 : 400).json(result);
+  };
 }

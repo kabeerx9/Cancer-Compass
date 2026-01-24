@@ -35,6 +35,18 @@ export interface UpdateTemplateData {
   }[];
 }
 
+export interface AssignedDay {
+  id: string;
+  userId: string;
+  date: string;
+  templateId: string;
+  template: {
+    id: string;
+    name: string;
+    color: string;
+  };
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;

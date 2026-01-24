@@ -79,4 +79,9 @@ export class TemplateService {
     await this.templateRepository.delete(id);
     return unifiedResponse(true, 'Template deleted');
   }
+
+  async getAssignedDaysForRange(userId: string, startDate: Date, endDate: Date) {
+    const assignedDays = await this.templateRepository.getAssignedDaysForRange(userId, startDate, endDate);
+    return unifiedResponse(true, 'Assigned days retrieved', assignedDays);
+  }
 }

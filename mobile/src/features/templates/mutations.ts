@@ -29,12 +29,16 @@ export const templateMutations = {
        // Circular dependency? taskKeys is in tasks/keys.ts. template is in templates/.
        // It's fine to import keys from another feature.
        queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+       // Invalidate all assigned-days queries for calendar
+       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
   }),
   unassign: (queryClient: QueryClient) => ({
     mutationFn: ({ id, date }: { id: string; date: string }) => templateApi.unassign(id, date),
     onSuccess: (_: unknown, variables: { id: string; date: string }) => {
        queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+       // Invalidate all assigned-days queries for calendar
+       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
   }),
 };

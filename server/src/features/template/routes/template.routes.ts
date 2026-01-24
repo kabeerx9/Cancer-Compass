@@ -33,4 +33,7 @@ router.post('/:id/assign', templateController.assign);
 // POST /templates/:id/unassign
 router.post('/:id/unassign', templateController.unassign);
 
+// GET /templates/assigned-days
+router.get('/assigned-days', templateController.getAssignedDays);
+
 export default router;

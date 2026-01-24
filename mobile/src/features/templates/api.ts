@@ -1,5 +1,5 @@
 import { client } from '@/api';
-import { ApiResponse, CreateTemplateData, DayTemplate, UpdateTemplateData } from './types';
+import { ApiResponse, AssignedDay, CreateTemplateData, DayTemplate, UpdateTemplateData } from './types';
 
 export const templateApi = {
   getAll: async (): Promise<DayTemplate[]> => {
@@ -30,5 +30,12 @@ export const templateApi = {
 
   unassign: async (id: string, date: string): Promise<void> => {
     await client.post<ApiResponse>(`/templates/${id}/unassign`, { date });
+  },
+
+  getAssignedDays: async (startDate: string, endDate: string): Promise<AssignedDay[]> => {
+    const response = await client.get<ApiResponse<AssignedDay[]>>('/templates/assigned-days', {
+      params: { startDate, endDate },
+    });
+    return response.data.data || [];
   },
 };
