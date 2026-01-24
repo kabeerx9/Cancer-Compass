@@ -44,12 +44,40 @@ export const medicationMutations = {
   }),
 
   log: (queryClient: QueryClient) => ({
+    mutationKey: ['medications'],
     mutationFn: ({ id, status }: { id: string; status: 'taken' | 'skipped' }) =>
       medicationApi.log(id, status),
-    onSuccess: () => {
-      // Invalidate both today and all to keep data in sync
-      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
-      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+    onMutate: async ({ id, status }) => {
+      // Cancel any in-flight queries to prevent race conditions
+      await queryClient.cancelQueries({ queryKey: medicationKeys.today() });
+
+      // Snapshot previous value for rollback
+      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.today());
+
+      // Optimistically update today's medications
+      queryClient.setQueryData<Medication[]>(
+        medicationKeys.today(),
+        (old = []) =>
+          old.map((med) =>
+            med.id === id ? { ...med, todayStatus: status } : med
+          )
+      );
+
+      // Return context with previous value for rollback
+      return { previousMeds };
+    },
+    onError: (error, variables, context) => {
+      // Rollback to previous value on error
+      if (context?.previousMeds) {
+        queryClient.setQueryData(medicationKeys.today(), context.previousMeds);
+      }
+    },
+    onSettled: () => {
+      // Only invalidate if this is the last medication mutation running
+      // This prevents concurrent mutations from overwriting each other
+      if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
+      }
     },
   }),
 };

@@ -135,9 +135,7 @@ export default function HomePage() {
               )}
             </View>
 
-            {logMutation.isPending && logMutation.variables?.id === medication.id ? (
-              <ActivityIndicator size="small" color={THEME.primary} />
-            ) : medication.todayStatus ? (
+            {medication.todayStatus ? (
               <View style={[styles.statusBadge, { backgroundColor: medication.todayStatus === 'taken' ? '#DCFCE7' : '#F5F0EB' }]}>
                 <Ionicons
                   name={medication.todayStatus === 'taken' ? 'checkmark-circle' : 'close-circle'}
@@ -153,14 +151,12 @@ export default function HomePage() {
                 <Pressable
                   style={styles.skipBtn}
                   onPress={() => handleLogMedication(medication.id, 'skipped')}
-                  disabled={logMutation.isPending}
                 >
                   <Ionicons name="close-outline" size={18} color={THEME.textMuted} />
                 </Pressable>
                 <Pressable
                   style={styles.takeBtn}
                   onPress={() => handleLogMedication(medication.id, 'taken')}
-                  disabled={logMutation.isPending}
                 >
                   <Ionicons name="checkmark" size={18} color="#FFFFFF" />
                   <Text style={styles.takeText}>Take</Text>
