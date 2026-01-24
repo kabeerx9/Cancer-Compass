@@ -2,10 +2,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 import { useAuth } from '@clerk/clerk-expo';
 import { useIsFirstTime } from '@/lib';
+
+// Theme colors from our palette
+const ACTIVE_COLOR = '#2563EB'; // primary-600
+const INACTIVE_COLOR = '#9CA3AF'; // neutral-400
 
 export default function TabLayout() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -35,9 +39,10 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: true,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#0D9488', // primary-600
-        tabBarInactiveTintColor: '#94A3B8', // slate-400
+        tabBarActiveTintColor: ACTIVE_COLOR,
+        tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarLabelStyle: styles.tabBarLabel,
       }}
     >
@@ -45,48 +50,58 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={size}
+              color={color}
+            />
           ),
-          tabBarButtonTestID: 'home-tab',
         }}
       />
       <Tabs.Screen
         name="medications"
         options={{
           title: 'Medications',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="medical-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "medical" : "medical-outline"}
+              size={size}
+              color={color}
+            />
           ),
-          tabBarButtonTestID: 'medications-tab',
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
+              size={size}
+              color={color}
+            />
           ),
-          tabBarButtonTestID: 'settings-tab',
         }}
       />
-
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FAFAFA',
-    borderTopColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    borderTopColor: '#F3F4F6',
     borderTopWidth: 1,
-    height: 85,
+    height: Platform.OS === 'ios' ? 88 : 68,
     paddingTop: 8,
-    paddingBottom: 28,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+    elevation: 0,
   },
   tabBarLabel: {
     fontSize: 12,
     fontWeight: '500',
+    marginTop: 2,
   },
 });

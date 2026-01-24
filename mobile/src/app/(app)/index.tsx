@@ -19,14 +19,18 @@ import {
   type Medication,
 } from '@/features/medications';
 
-const PRIMARY = '#0D9488';
-const SUCCESS = '#16A34A';
-const SUCCESS_LIGHT = '#DCFCE7';
-const SLATE_50 = '#F8FAFC';
-const SLATE_100 = '#F1F5F9';
-const SLATE_200 = '#E2E8F0';
-const SLATE_500 = '#64748B';
-const SLATE_800 = '#1E293B';
+// Theme Constants (Clean Light Theme)
+const THEME = {
+  primary: '#2563EB', // Royal Blue
+  primaryLight: '#EFF6FF',
+  background: '#F9FAFB', // Background
+  surface: '#ffffff',
+  textHeading: '#111827',
+  textBody: '#4B5563',
+  textMuted: '#9CA3AF',
+  success: '#10B981',
+  border: '#F3F4F6',
+};
 
 export default function HomePage() {
   const { user } = useUser();
@@ -64,329 +68,392 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={PRIMARY} />
-      </SafeAreaView>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={THEME.primary} />
+      </View>
     );
   }
 
   const renderMedicationItem = ({ item: medication }: { item: Medication }) => (
     <View
       style={[
-        styles.medicationCard,
-        medication.todayStatus === 'taken' && styles.medicationCardTaken,
-        medication.todayStatus === 'skipped' && styles.medicationCardSkipped,
+        styles.card,
+        medication.todayStatus === 'taken' && styles.cardTaken,
+        medication.todayStatus === 'skipped' && styles.cardSkipped,
       ]}
     >
-      <View style={styles.medicationRow}>
-        <View style={styles.medicationInfo}>
-          <Text style={styles.medicationName}>{medication.name}</Text>
-          {medication.dosage && (
-            <Text style={styles.medicationDosage}>{medication.dosage}</Text>
-          )}
-          <View style={styles.chipsRow}>
-            {medication.time && (
-              <View style={styles.chip}>
-                <Text style={styles.chipText}>{medication.time}</Text>
-              </View>
-            )}
-            {medication.timeLabel && (
-              <View style={styles.chip}>
-                <Text style={styles.chipText}>{medication.timeLabel}</Text>
-              </View>
+      <View style={styles.cardContent}>
+        <View style={styles.cardHeader}>
+          <View style={styles.iconBox}>
+             <Ionicons name="medical" size={20} color={THEME.primary} />
+          </View>
+          <View style={{flex: 1}}>
+            <Text style={styles.medName}>{medication.name}</Text>
+            {medication.dosage && (
+              <Text style={styles.medDose}>{medication.dosage}</Text>
             )}
           </View>
+
+          {medication.time && (
+            <View style={styles.timePill}>
+              <Text style={styles.timeText}>{medication.time}</Text>
+            </View>
+          )}
         </View>
 
-        {logMutation.isPending &&
-        logMutation.variables?.id === medication.id ? (
-          <ActivityIndicator size="small" color={PRIMARY} />
-        ) : medication.todayStatus ? (
-          <View style={styles.statusBadge}>
-            {medication.todayStatus === 'taken' ? (
-              <>
-                <Ionicons name="checkmark-circle" size={20} color={SUCCESS} />
-                <Text style={[styles.statusText, { color: SUCCESS }]}>
-                  Taken
-                </Text>
-              </>
-            ) : (
-              <>
-                <Ionicons name="close-circle" size={20} color={SLATE_500} />
-                <Text style={[styles.statusText, { color: SLATE_500 }]}>
-                  Skipped
-                </Text>
-              </>
-            )}
+        <View style={styles.cardActions}>
+          <View style={styles.leftTags}>
+             {medication.timeLabel && (
+               <Text style={styles.labelText}>{medication.timeLabel}</Text>
+             )}
           </View>
-        ) : (
-          <View style={styles.buttonsRow}>
-            <Pressable
-              style={styles.takeButton}
-              onPress={() => handleLogMedication(medication.id, 'taken')}
-              disabled={logMutation.isPending}
-            >
-              <Text style={styles.takeButtonText}>Take</Text>
-            </Pressable>
-            <Pressable
-              style={styles.skipButton}
-              onPress={() => handleLogMedication(medication.id, 'skipped')}
-              disabled={logMutation.isPending}
-            >
-              <Text style={styles.skipButtonText}>Skip</Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
-    </View>
-  );
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyIconWrapper}>
-        <Ionicons name="medical-outline" size={32} color={PRIMARY} />
+          {logMutation.isPending &&
+          logMutation.variables?.id === medication.id ? (
+            <ActivityIndicator size="small" color={THEME.primary} />
+          ) : medication.todayStatus ? (
+            <View style={styles.statusRow}>
+              <Ionicons
+                name={medication.todayStatus === 'taken' ? "checkmark-circle" : "close-circle"}
+                size={20}
+                color={medication.todayStatus === 'taken' ? THEME.success : THEME.textMuted}
+              />
+              <Text style={[styles.statusText,
+                { color: medication.todayStatus === 'taken' ? THEME.success : THEME.textMuted }
+              ]}>
+                {medication.todayStatus === 'taken' ? "Done" : "Skipped"}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.buttons}>
+              <Pressable
+                style={styles.skipBtn}
+                onPress={() => handleLogMedication(medication.id, 'skipped')}
+                disabled={logMutation.isPending}
+              >
+                <Text style={styles.skipText}>Skip</Text>
+              </Pressable>
+              <Pressable
+                style={styles.takeBtn}
+                onPress={() => handleLogMedication(medication.id, 'taken')}
+                disabled={logMutation.isPending}
+              >
+                <Text style={styles.takeText}>Take</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
       </View>
-      <Text style={styles.emptyTitle}>No medications for today</Text>
-      <Text style={styles.emptySubtitle}>Your schedule is clear.</Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>{getGreeting()}</Text>
-        <Text style={styles.userName}>{firstName}</Text>
-      </View>
-
-      {totalCount > 0 && (
-        <View style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Daily Progress</Text>
-            <Text style={styles.progressPercent}>{Math.round(progress)}%</Text>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        {/* Simple Clean Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>{getGreeting()},</Text>
+            <Text style={styles.title}>{firstName}</Text>
           </View>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+          <View style={styles.avatar}>
+             <Text style={styles.avatarText}>{firstName[0]}</Text>
           </View>
-          <Text style={styles.progressSubtext}>
-            {takenCount} of {totalCount} completed
-          </Text>
         </View>
-      )}
 
-      <View style={styles.listContainer}>
-        <Text style={styles.sectionTitle}>Today's Schedule</Text>
+        {/* Compact Progress Card */}
+        {totalCount > 0 && (
+          <View style={styles.progressSection}>
+            <View style={styles.progressRow}>
+              <View>
+                <Text style={styles.progressLabel}>Daily Progress</Text>
+                <Text style={styles.progressCount}>{takenCount} / {totalCount} completed</Text>
+              </View>
+              <Text style={styles.progressPercent}>{Math.round(progress)}%</Text>
+            </View>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+            </View>
+          </View>
+        )}
+
+        {/* Content - Tight Spacing */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Up Next</Text>
+        </View>
+
         <FlatList
           data={medications}
           renderItem={renderMedicationItem}
           keyExtractor={(item) => item.id}
-          ListEmptyComponent={renderEmptyState}
+          contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={() => refetch()}
-              tintColor={PRIMARY}
-            />
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={THEME.primary} />
           }
-          contentContainerStyle={{ paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyTitle}>No medications pending</Text>
+              <Text style={styles.emptySub}>You're all set for now!</Text>
+            </View>
+          }
         />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: SLATE_50,
+    backgroundColor: '#FFFFFF', // Pure white background
+  },
+  safeArea: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: SLATE_50,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
   },
+
+  // Header
   header: {
     paddingHorizontal: 24,
-    paddingVertical: 24,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: SLATE_100,
-  },
-  greeting: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: SLATE_500,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  userName: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: SLATE_800,
-  },
-  progressCard: {
-    marginHorizontal: 24,
-    marginTop: 16,
-    backgroundColor: PRIMARY,
-    borderRadius: 20,
-    padding: 20,
-  },
-  progressHeader: {
+    paddingVertical: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  greeting: {
+    fontSize: 16,
+    color: THEME.textMuted,
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '800', // Bolder
+    color: THEME.textHeading,
+    letterSpacing: -0.5,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: THEME.textHeading,
+  },
+
+  // Progress Component
+  progressSection: {
+    marginHorizontal: 24,
+    marginTop: 8,
+    marginBottom: 24,
+    backgroundColor: THEME.primary, // Blue card for contrast
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2, // Stronger shadow
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
-  progressTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.8)',
+    marginBottom: 4,
+  },
+  progressCount: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '500',
   },
   progressPercent: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#FFFFFF',
   },
   progressBarBg: {
-    height: 8,
+    height: 6,
     backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 4,
+    borderRadius: 3,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 4,
+    borderRadius: 3,
   },
-  progressSubtext: {
-    marginTop: 12,
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-  },
-  listContainer: {
-    flex: 1,
+
+  // List
+  sectionHeader: {
     paddingHorizontal: 24,
-    marginTop: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: SLATE_800,
-    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: '700',
+    color: THEME.textHeading,
   },
-  medicationCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: SLATE_200,
+  listContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
-  medicationCardTaken: {
-    borderColor: SUCCESS,
-    backgroundColor: SUCCESS_LIGHT,
-  },
-  medicationCardSkipped: {
-    opacity: 0.6,
-  },
-  medicationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  medicationInfo: {
-    flex: 1,
-  },
-  medicationName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: SLATE_800,
-  },
-  medicationDosage: {
-    fontSize: 14,
-    color: SLATE_500,
-    marginTop: 4,
-  },
-  chipsRow: {
-    flexDirection: 'row',
-    marginTop: 8,
-  },
-  chip: {
-    backgroundColor: SLATE_100,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
-  },
-  chipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: SLATE_500,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: SUCCESS_LIGHT,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  statusText: {
-    marginLeft: 6,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  buttonsRow: {
-    flexDirection: 'row',
-  },
-  takeButton: {
-    backgroundColor: PRIMARY,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginRight: 8,
-  },
-  takeButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  skipButton: {
-    backgroundColor: SLATE_100,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
-  },
-  skipButtonText: {
-    color: SLATE_500,
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  emptyState: {
+
+  // Redesigned Card
+  card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 32,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: SLATE_200,
-    borderStyle: 'dashed',
-  },
-  emptyIconWrapper: {
-    backgroundColor: '#F0FDFA', // primary-50
-    padding: 16,
-    borderRadius: 999,
     marginBottom: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardTaken: {
+    backgroundColor: '#F0FDF4', // Very subtle green tint
+    borderColor: '#DCFCE7',
+  },
+  cardSkipped: {
+    opacity: 0.5,
+    backgroundColor: '#F9FAFB',
+  },
+  cardContent: {
+    gap: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: '#EFF6FF', // Light blue bg
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  medName: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: THEME.textHeading,
+    marginBottom: 4,
+  },
+  medDose: {
+    fontSize: 14,
+    color: THEME.textMuted,
+    fontWeight: '500',
+  },
+  timePill: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  timeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: THEME.textBody,
+  },
+
+  cardActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.03)', // Very subtle divider
+  },
+  leftTags: {
+    flex: 1,
+  },
+  labelText: {
+    fontSize: 13,
+    color: THEME.textMuted,
+    fontWeight: '600',
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  skipBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+  },
+  skipText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: THEME.textBody,
+  },
+  takeBtn: {
+    backgroundColor: THEME.textHeading, // Dark button for contrast
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  takeText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+
+  // Empty
+  emptyContainer: {
+    alignItems: 'center',
+    paddingTop: 60,
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: SLATE_800,
+    fontSize: 18,
+    fontWeight: '700',
+    color: THEME.textHeading,
+    marginBottom: 8,
   },
-  emptySubtitle: {
-    fontSize: 14,
-    color: SLATE_500,
-    marginTop: 4,
+  emptySub: {
+    fontSize: 15,
+    color: THEME.textMuted,
+    textAlign: 'center',
+    maxWidth: '80%',
+    lineHeight: 22,
   },
 });

@@ -23,14 +23,19 @@ import {
   type UpdateMedicationData,
 } from '@/features/medications';
 
-const PRIMARY = '#0D9488';
-const PRIMARY_LIGHT = '#F0FDFA';
-const SLATE_50 = '#F8FAFC';
-const SLATE_100 = '#F1F5F9';
-const SLATE_200 = '#E2E8F0';
-const SLATE_400 = '#94A3B8';
-const SLATE_500 = '#64748B';
-const SLATE_800 = '#1E293B';
+// Theme Constants (Clean Light Theme)
+const THEME = {
+  primary: '#2563EB', // Royal Blue
+  primaryLight: '#EFF6FF',
+  background: '#F9FAFB',
+  surface: '#ffffff',
+  textHeading: '#111827',
+  textBody: '#4B5563',
+  textMuted: '#9CA3AF',
+  border: '#F3F4F6',
+  accent: '#10B981',
+  success: '#10B981', // Added success color
+};
 
 export default function MedicationsPage() {
   const queryClient = useQueryClient();
@@ -156,9 +161,9 @@ export default function MedicationsPage() {
 
   if (isLoadingMedications && medications.length === 0) {
     return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={PRIMARY} />
-      </SafeAreaView>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={THEME.primary} />
+      </View>
     );
   }
 
@@ -173,94 +178,86 @@ export default function MedicationsPage() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Medications</Text>
-        <Pressable style={styles.addButton} onPress={openAddModal}>
-          <Ionicons name="add" size={28} color="#FFFFFF" />
-        </Pressable>
-      </View>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Cabinet</Text>
+          <Pressable style={styles.iconBtn} onPress={openAddModal}>
+            <Ionicons name="add" size={24} color={THEME.primary} />
+          </Pressable>
+        </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={() => refetch()}
-            tintColor={PRIMARY}
-          />
-        }
-      >
-        {medications.length === 0 ? (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIconWrapper}>
-              <Ionicons name="medical-outline" size={32} color={PRIMARY} />
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => refetch()}
+              tintColor={THEME.primary}
+            />
+          }
+        >
+          {medications.length === 0 ? (
+            <View style={styles.emptyState}>
+              <View style={styles.emptyIconCircle}>
+                <Ionicons name="medical-outline" size={32} color={THEME.primary} />
+              </View>
+              <Text style={styles.emptyTitle}>Your Cabinet is Empty</Text>
+              <Text style={styles.emptySubtitle}>
+                Add medications here to track them
+              </Text>
             </View>
-            <Text style={styles.emptyTitle}>No medications added yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Tap the + button to add your first medication
-            </Text>
-          </View>
-        ) : (
-          medications.map((medication) => (
-            <Pressable
-              key={medication.id}
-              style={[
-                styles.medicationCard,
-                !medication.isActive && styles.medicationCardInactive,
-              ]}
-              onPress={() => openEditModal(medication)}
-              onLongPress={() => handleDelete(medication)}
-            >
-              <View style={styles.medicationRow}>
-                <View style={styles.medicationInfo}>
-                  <Text style={styles.medicationName}>{medication.name}</Text>
-                  {medication.dosage && (
-                    <Text style={styles.medicationDosage}>
-                      {medication.dosage}
-                    </Text>
-                  )}
-                  {medication.purpose && (
-                    <Text style={styles.medicationPurpose}>
-                      {medication.purpose}
-                    </Text>
-                  )}
-                  <View style={styles.chipsRow}>
+          ) : (
+            medications.map((medication) => (
+              <Pressable
+                key={medication.id}
+                style={[
+                  styles.card,
+                  !medication.isActive && styles.cardInactive,
+                ]}
+                onPress={() => openEditModal(medication)}
+                onLongPress={() => handleDelete(medication)}
+              >
+                <View style={styles.cardLeft}>
+                  <View style={[styles.iconBox, !medication.isActive && styles.iconBoxInactive]}>
+                     <Ionicons name="medical" size={18} color={medication.isActive ? THEME.primary : THEME.textMuted} />
+                  </View>
+                </View>
+
+                <View style={styles.cardCenter}>
+                  <Text style={[styles.medName, !medication.isActive && styles.textInactive]}>{medication.name}</Text>
+                  <View style={styles.metaRow}>
+                    <Text style={styles.medMeta}>{medication.dosage || 'No dosage'}</Text>
                     {medication.time && (
-                      <View style={styles.chip}>
-                        <Text style={styles.chipText}>{medication.time}</Text>
-                      </View>
-                    )}
-                    {medication.timeLabel && (
-                      <View style={styles.chip}>
-                        <Text style={styles.chipText}>
-                          {medication.timeLabel}
-                        </Text>
-                      </View>
+                      <>
+                        <Text style={styles.dot}>•</Text>
+                        <Text style={styles.medMeta}>{medication.time}</Text>
+                      </>
                     )}
                   </View>
                 </View>
+
                 <Pressable
-                  style={styles.toggleButton}
-                  onPress={() => handleToggleActive(medication)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleToggleActive(medication);
+                  }}
+                  style={styles.toggleBtn}
                 >
                   <Ionicons
-                    name={
-                      medication.isActive
-                        ? 'checkmark-circle'
-                        : 'ellipse-outline'
-                    }
+                    name={medication.isActive ? "toggle" : "toggle-outline"}
                     size={28}
-                    color={medication.isActive ? PRIMARY : SLATE_400}
+                    color={medication.isActive ? THEME.success : THEME.textMuted}
                   />
                 </Pressable>
-              </View>
-            </Pressable>
-          ))
-        )}
-      </ScrollView>
+              </Pressable>
+            ))
+          )}
+        </ScrollView>
+      </SafeAreaView>
 
+      {/* Clean Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -269,262 +266,227 @@ export default function MedicationsPage() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Pressable onPress={closeModal}>
-              <Text style={styles.modalCancel}>Cancel</Text>
-            </Pressable>
             <Text style={styles.modalTitle}>
               {editingMedication ? 'Edit Medication' : 'Add Medication'}
             </Text>
-            <Pressable onPress={handleSave} disabled={saving}>
-              {saving ? (
-                <ActivityIndicator size="small" color={PRIMARY} />
-              ) : (
-                <Text style={styles.modalSave}>Save</Text>
-              )}
+            <Pressable onPress={closeModal} style={styles.closeBtn}>
+              <Ionicons name="close" size={24} color={THEME.textHeading} />
             </Pressable>
           </View>
 
-          <ScrollView
-            style={styles.formScrollView}
-            contentContainerStyle={styles.formContent}
-          >
-            <Text style={styles.formSectionTitle}>Details</Text>
-            <View style={styles.formCard}>
-              <Text style={styles.formLabel}>Name *</Text>
+          <ScrollView style={styles.modalBody}>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Name</Text>
               <TextInput
-                style={styles.formInput}
-                placeholder="e.g., Aspirin"
-                placeholderTextColor={SLATE_400}
+                style={styles.input}
+                placeholder="Medication name"
                 value={formData.name}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({ ...prev, name: text }))
-                }
-              />
-              <Text style={[styles.formLabel, { marginTop: 16 }]}>Dosage</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="e.g., 500mg"
-                placeholderTextColor={SLATE_400}
-                value={formData.dosage}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({ ...prev, dosage: text }))
-                }
+                onChangeText={(t) => setFormData({...formData, name: t})}
+                placeholderTextColor={THEME.textMuted}
               />
             </View>
 
-            <Text style={styles.formSectionTitle}>Optional Info</Text>
-            <View style={styles.formCard}>
-              <Text style={styles.formLabel}>Purpose</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="e.g., Headache"
-                placeholderTextColor={SLATE_400}
-                value={formData.purpose}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({ ...prev, purpose: text }))
-                }
-              />
-              <Text style={[styles.formLabel, { marginTop: 16 }]}>Time</Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="e.g., 08:00"
-                placeholderTextColor={SLATE_400}
-                value={formData.time}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({ ...prev, time: text }))
-                }
-              />
-              <Text style={[styles.formLabel, { marginTop: 16 }]}>
-                Time Label
-              </Text>
-              <TextInput
-                style={styles.formInput}
-                placeholder="e.g., Morning"
-                placeholderTextColor={SLATE_400}
-                value={formData.timeLabel}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({ ...prev, timeLabel: text }))
-                }
-              />
+            <View style={styles.row}>
+              <View style={[styles.formGroup, {flex: 1, marginRight: 12}]}>
+                <Text style={styles.label}>Dosage</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. 50mg"
+                  value={formData.dosage}
+                  onChangeText={(t) => setFormData({...formData, dosage: t})}
+                  placeholderTextColor={THEME.textMuted}
+                />
+              </View>
+              <View style={[styles.formGroup, {flex: 1}]}>
+                <Text style={styles.label}>Time</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="08:00"
+                  value={formData.time}
+                  onChangeText={(t) => setFormData({...formData, time: t})}
+                  placeholderTextColor={THEME.textMuted}
+                />
+              </View>
             </View>
 
-            <Text style={styles.formSectionTitle}>Quick Labels</Text>
-            <View style={styles.quickLabelsContainer}>
-              {quickLabels.map((label) => (
-                <Pressable
-                  key={label}
-                  style={[
-                    styles.quickLabelChip,
-                    formData.timeLabel === label &&
-                      styles.quickLabelChipSelected,
-                  ]}
-                  onPress={() =>
-                    setFormData((prev) => ({ ...prev, timeLabel: label }))
-                  }
-                >
-                  <Text
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Frequency Label</Text>
+              <View style={styles.chips}>
+                {quickLabels.map((label) => (
+                  <Pressable
+                    key={label}
                     style={[
-                      styles.quickLabelText,
-                      formData.timeLabel === label &&
-                        styles.quickLabelTextSelected,
+                      styles.chip,
+                      formData.timeLabel === label && styles.chipActive
                     ]}
+                    onPress={() => setFormData({...formData, timeLabel: label})}
                   >
-                    {label}
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text style={[
+                      styles.chipText,
+                      formData.timeLabel === label && styles.chipTextActive
+                    ]}>{label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Purpose (Optional)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="What is it for?"
+                value={formData.purpose}
+                onChangeText={(t) => setFormData({...formData, purpose: t})}
+                placeholderTextColor={THEME.textMuted}
+              />
             </View>
           </ScrollView>
+
+          <View style={styles.modalFooter}>
+            <Pressable
+              style={styles.saveBtn}
+              onPress={handleSave}
+              disabled={saving}
+            >
+              {saving ? <ActivityIndicator color="white" /> : <Text style={styles.saveText}>Save</Text>}
+            </Pressable>
+          </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: SLATE_50 },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: SLATE_50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingVertical: 24,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: SLATE_100,
+    paddingVertical: 16,
   },
-  headerTitle: { fontSize: 28, fontWeight: 'bold', color: SLATE_800 },
-  addButton: {
-    backgroundColor: PRIMARY,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  headerTitle: { fontSize: 24, fontWeight: '700', color: THEME.textHeading },
+  iconBtn: { padding: 12, backgroundColor: '#F3F4F6', borderRadius: 12 },
+
+  scrollView: { flex: 1 },
+  scrollContent: { padding: 24, paddingBottom: 24 },
+
+  // Empty
+  emptyState: { alignItems: 'center', paddingTop: 60 },
+  emptyIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  scrollView: { flex: 1 },
-  scrollContent: { padding: 24 },
-  emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 32,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: SLATE_200,
-    borderStyle: 'dashed',
-  },
-  emptyIconWrapper: {
-    backgroundColor: PRIMARY_LIGHT,
-    padding: 16,
-    borderRadius: 999,
     marginBottom: 16,
   },
-  emptyTitle: { fontSize: 16, fontWeight: 'bold', color: SLATE_800 },
-  emptySubtitle: {
-    fontSize: 14,
-    color: SLATE_500,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  medicationCard: {
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: THEME.textHeading, marginBottom: 8 },
+  emptySubtitle: { fontSize: 15, color: THEME.textMuted },
+
+  // Cards - Horizontal Layout
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: SLATE_200,
+    borderColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  medicationCardInactive: { opacity: 0.5 },
-  medicationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+  cardInactive: {
+    backgroundColor: '#FAFAFA',
+    opacity: 0.6,
   },
-  medicationInfo: { flex: 1 },
-  medicationName: { fontSize: 16, fontWeight: 'bold', color: SLATE_800 },
-  medicationDosage: { fontSize: 14, color: SLATE_500, marginTop: 4 },
-  medicationPurpose: {
-    fontSize: 12,
-    color: SLATE_400,
-    marginTop: 4,
-    fontStyle: 'italic',
+  cardLeft: { marginRight: 16 },
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  chipsRow: { flexDirection: 'row', marginTop: 8 },
-  chip: {
-    backgroundColor: SLATE_100,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  iconBoxInactive: { backgroundColor: '#F3F4F6' },
+
+  cardCenter: { flex: 1 },
+  medName: { fontSize: 16, fontWeight: '700', color: THEME.textHeading, marginBottom: 4 },
+  textInactive: { color: THEME.textMuted, textDecorationLine: 'line-through' },
+
+  metaRow: { flexDirection: 'row', alignItems: 'center' },
+  medMeta: { fontSize: 13, color: THEME.textMuted, fontWeight: '600' },
+  dot: { marginHorizontal: 6, color: THEME.textMuted, fontSize: 12 },
+
+  toggleBtn: {
+    padding: 8,
+    backgroundColor: '#F9FAFB',
     borderRadius: 12,
-    marginRight: 8,
   },
-  chipText: { fontSize: 12, fontWeight: '600', color: SLATE_500 },
-  toggleButton: { padding: 4 },
-  modalContainer: { flex: 1, backgroundColor: SLATE_50 },
+
+  // Modal styling (unchanged mostly but cleaner bg)
+  modalContainer: { flex: 1, backgroundColor: '#FFFFFF' },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    backgroundColor: '#FFFFFF',
+    padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: SLATE_200,
+    borderBottomColor: '#F3F4F6',
   },
-  modalCancel: { fontSize: 16, color: SLATE_500 },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: SLATE_800 },
-  modalSave: { fontSize: 16, fontWeight: 'bold', color: PRIMARY },
-  formScrollView: { flex: 1 },
-  formContent: { padding: 24 },
-  formSectionTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: SLATE_500,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  formCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+  modalTitle: { fontSize: 18, fontWeight: '700', color: THEME.textHeading },
+  closeBtn: { padding: 4 },
+  modalBody: { flex: 1, padding: 24 },
+
+  formGroup: { marginBottom: 20 },
+  row: { flexDirection: 'row' },
+  label: { fontSize: 13, fontWeight: '700', color: THEME.textHeading, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
+  input: {
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: SLATE_200,
-  },
-  formLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: SLATE_500,
-    marginBottom: 6,
-  },
-  formInput: {
-    backgroundColor: SLATE_50,
-    borderWidth: 1,
-    borderColor: SLATE_200,
+    borderColor: '#E5E7EB',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     fontSize: 16,
-    color: SLATE_800,
+    color: THEME.textHeading,
   },
-  quickLabelsContainer: { flexDirection: 'row', flexWrap: 'wrap' },
-  quickLabelChip: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: SLATE_200,
+
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
   },
-  quickLabelChipSelected: { backgroundColor: PRIMARY, borderColor: PRIMARY },
-  quickLabelText: { fontSize: 12, fontWeight: 'bold', color: SLATE_500 },
-  quickLabelTextSelected: { color: '#FFFFFF' },
+  chipActive: { backgroundColor: THEME.textHeading, borderColor: THEME.textHeading },
+  chipText: { fontSize: 13, fontWeight: '600', color: THEME.textBody },
+  chipTextActive: { color: '#FFFFFF' },
+
+  modalFooter: { padding: 24, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  saveBtn: {
+    backgroundColor: THEME.primary,
+    height: 52,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  saveText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
 });
