@@ -15,18 +15,6 @@ export default function TabLayout() {
   const { isSignedIn, isLoaded } = useAuth();
   const [isFirstTime] = useIsFirstTime();
 
-  const hideSplash = useCallback(async () => {
-    await SplashScreen.hideAsync();
-  }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      setTimeout(() => {
-        hideSplash();
-      }, 1000);
-    }
-  }, [hideSplash, isLoaded]);
-
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;
   }

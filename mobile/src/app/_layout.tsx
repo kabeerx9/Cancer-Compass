@@ -46,6 +46,12 @@ export default function RootLayout() {
 function RootNavigator() {
   const { isSignedIn, isLoaded } = useAuth();
 
+  React.useEffect(() => {
+    if (isLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [isLoaded]);
+
   // Wait for auth to load before rendering navigation
   if (!isLoaded) {
     return null;

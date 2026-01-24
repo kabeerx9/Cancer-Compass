@@ -1,7 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 
+
+const BASE_URL = 'https://728492366542.ngrok-free.app/v1';
+
 export const client: AxiosInstance = axios.create({
-  baseURL: 'https://fbada038aa9f.ngrok-free.app/v1',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
