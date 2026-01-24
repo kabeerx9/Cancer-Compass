@@ -19,8 +19,37 @@ export const medicationMutations = {
   }),
 
   update: (queryClient: QueryClient) => ({
+    mutationKey: ['medications'],
     mutationFn: ({ id, data }: { id: string; data: UpdateMedicationData }) =>
       medicationApi.update(id, data),
+    onMutate: async ({ id, data }: { id: string; data: UpdateMedicationData }) => {
+      // Cancel any in-flight queries to prevent race conditions
+      await queryClient.cancelQueries({ queryKey: medicationKeys.all() });
+
+      // Snapshot previous value for rollback
+      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.all());
+
+      // Optimistically update medications list
+      queryClient.setQueryData<Medication[]>(
+        medicationKeys.all(),
+        (old = []) =>
+          old.map((med) =>
+            med.id === id ? { ...med, ...data } : med
+          )
+      );
+
+      return { previousMeds };
+    },
+    onError: (
+      error: Error,
+      variables: { id: string; data: UpdateMedicationData },
+      context: { previousMeds: Medication[] | undefined }
+    ) => {
+      // Rollback to previous value on error
+      if (context?.previousMeds) {
+        queryClient.setQueryData(medicationKeys.all(), context.previousMeds);
+      }
+    },
     onSuccess: (
       _data: Medication,
       variables: { id: string; data: UpdateMedicationData }
@@ -32,14 +61,51 @@ export const medicationMutations = {
         queryKey: medicationKeys.detail(variables.id),
       });
     },
+    onSettled: () => {
+      // Only invalidate if this is the last medication mutation running
+      if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+      }
+    },
   }),
 
   delete: (queryClient: QueryClient) => ({
+    mutationKey: ['medications'],
     mutationFn: (id: string) => medicationApi.delete(id),
+    onMutate: async (id: string) => {
+      // Cancel any in-flight queries to prevent race conditions
+      await queryClient.cancelQueries({ queryKey: medicationKeys.all() });
+
+      // Snapshot previous value for rollback
+      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.all());
+
+      // Optimistically remove from medications list
+      queryClient.setQueryData<Medication[]>(
+        medicationKeys.all(),
+        (old = []) => old.filter((med) => med.id !== id)
+      );
+
+      return { previousMeds };
+    },
+    onError: (
+      error: Error,
+      variables: unknown,
+      context: { previousMeds: Medication[] | undefined }
+    ) => {
+      // Rollback to previous value on error
+      if (context?.previousMeds) {
+        queryClient.setQueryData(medicationKeys.all(), context.previousMeds);
+      }
+    },
     onSuccess: () => {
       // Invalidate both today and all to keep data in sync
       queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
-      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+    },
+    onSettled: () => {
+      // Only invalidate if this is the last medication mutation running
+      if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+      }
     },
   }),
 
@@ -47,7 +113,7 @@ export const medicationMutations = {
     mutationKey: ['medications'],
     mutationFn: ({ id, status }: { id: string; status: 'taken' | 'skipped' }) =>
       medicationApi.log(id, status),
-    onMutate: async ({ id, status }) => {
+    onMutate: async ({ id, status }: { id: string; status: 'taken' | 'skipped' }) => {
       // Cancel any in-flight queries to prevent race conditions
       await queryClient.cancelQueries({ queryKey: medicationKeys.today() });
 
@@ -66,7 +132,11 @@ export const medicationMutations = {
       // Return context with previous value for rollback
       return { previousMeds };
     },
-    onError: (error, variables, context) => {
+    onError: (
+      error: Error,
+      variables: unknown,
+      context: { previousMeds: Medication[] | undefined }
+    ) => {
       // Rollback to previous value on error
       if (context?.previousMeds) {
         queryClient.setQueryData(medicationKeys.today(), context.previousMeds);

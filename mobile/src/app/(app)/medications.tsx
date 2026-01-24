@@ -305,26 +305,20 @@ export default function MedicationsPage() {
                         handleToggleActive(medication);
                       }}
                       style={styles.toggleBtn}
-                      disabled={updateMutation.isPending}
                     >
-                      {updateMutation.isPending &&
-                      updateMutation.variables?.id === medication.id ? (
-                        <ActivityIndicator size="small" color={THEME.primary} />
-                      ) : (
+                      <View
+                        style={[
+                          styles.toggleTrack,
+                          medication.isActive && styles.toggleTrackActive,
+                        ]}
+                      >
                         <View
                           style={[
-                            styles.toggleTrack,
-                            medication.isActive && styles.toggleTrackActive,
+                            styles.toggleThumb,
+                            medication.isActive && styles.toggleThumbActive,
                           ]}
-                        >
-                          <View
-                            style={[
-                              styles.toggleThumb,
-                              medication.isActive && styles.toggleThumbActive,
-                            ]}
-                          />
-                        </View>
-                      )}
+                        />
+                      </View>
                     </Pressable>
                   </Pressable>
                 </Animated.View>
