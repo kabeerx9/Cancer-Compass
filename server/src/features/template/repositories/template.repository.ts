@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 export interface CreateTemplateInput {
   userId: string;
@@ -59,7 +59,7 @@ export class TemplateRepository {
         name: data.name,
         color: data.color,
         tasks: {
-          create: data.tasks.map((task) => ({
+          create: data.tasks.map(task => ({
             title: task.title,
             description: task.description,
             order: task.order,
@@ -107,24 +107,27 @@ export class TemplateRepository {
   }
 
   // Helper to replace all tasks for a template (useful for complete re-ordering/editing)
-  async replaceTasks(templateId: string, tasks: { title: string; description?: string; order: number }[]) {
-     return this.prisma.$transaction(async (tx) => {
-       // Delete all existing tasks
-       await tx.templateTask.deleteMany({
-         where: { templateId }
-       });
+  async replaceTasks(
+    templateId: string,
+    tasks: { title: string; description?: string; order: number }[],
+  ) {
+    return this.prisma.$transaction(async tx => {
+      // Delete all existing tasks
+      await tx.templateTask.deleteMany({
+        where: { templateId },
+      });
 
-       // Create new ones
-       return tx.dayTemplate.update({
-         where: { id: templateId },
-         data: {
-           tasks: {
-             create: tasks
-           }
-         },
-         include: { tasks: true }
-       });
-     });
+      // Create new ones
+      return tx.dayTemplate.update({
+        where: { id: templateId },
+        data: {
+          tasks: {
+            create: tasks,
+          },
+        },
+        include: { tasks: true },
+      });
+    });
   }
 
   async delete(id: string) {
@@ -133,13 +136,18 @@ export class TemplateRepository {
     });
   }
 
-  async assignToDate(templateId: string, date: Date, userId: string, tasks: { id: string; title: string; description?: string | null; order: number }[]) {
-    return this.prisma.$transaction(async (tx) => {
+  async assignToDate(
+    templateId: string,
+    date: Date,
+    userId: string,
+    tasks: { id: string; title: string; description?: string | null; order: number }[],
+  ) {
+    return this.prisma.$transaction(async tx => {
       // Check if already assigned
       const existing = await tx.assignedDay.findUnique({
         where: {
-          userId_date_templateId: { userId, date, templateId }
-        }
+          userId_date_templateId: { userId, date, templateId },
+        },
       });
 
       if (existing) {
@@ -154,7 +162,7 @@ export class TemplateRepository {
           userId,
           date,
           templateId,
-        }
+        },
       });
 
       // Copy tasks
@@ -170,7 +178,7 @@ export class TemplateRepository {
             templateId,
             templateTaskId: t.id,
             isCompleted: false,
-          }))
+          })),
         });
       }
 
@@ -179,14 +187,14 @@ export class TemplateRepository {
   }
 
   async unassignFromDate(templateId: string, date: Date, userId: string) {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async tx => {
       // 1. Delete associated tasks
       await tx.dailyTask.deleteMany({
         where: {
           userId,
           date,
           templateId,
-        }
+        },
       });
 
       // 2. Delete assignment record
@@ -195,9 +203,9 @@ export class TemplateRepository {
           userId_date_templateId: {
             userId,
             date,
-            templateId
-          }
-        }
+            templateId,
+          },
+        },
       });
     });
   }

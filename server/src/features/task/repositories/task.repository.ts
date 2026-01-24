@@ -60,7 +60,7 @@ export class TaskRepository {
       ],
       include: {
         template: true, // Include template info if needed (e.g. color)
-      }
+      },
     });
   }
 
