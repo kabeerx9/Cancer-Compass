@@ -49,6 +49,21 @@ export class TemplateService {
     return unifiedResponse(true, 'Template updated', updatedTemplate);
   }
 
+  async assignTemplateToDate(templateId: string, dateString: string, userId: string) {
+    const template = await this.templateRepository.findById(templateId);
+    if (!template || template.userId !== userId) {
+      return unifiedResponse(false, 'Template not found');
+    }
+
+    // Date handling
+    const date = new Date(dateString);
+
+    // Use a transaction to ensure both assignment and task copying happen or neither
+    const result = await this.templateRepository.assignToDate(templateId, date, userId, template.tasks);
+
+    return unifiedResponse(true, 'Template assigned successfully', result);
+  }
+
   async deleteTemplate(id: string, userId: string) {
     const existing = await this.templateRepository.findById(id);
     if (!existing || existing.userId !== userId) {

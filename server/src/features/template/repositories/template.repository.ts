@@ -132,4 +132,49 @@ export class TemplateRepository {
       where: { id },
     });
   }
+
+  async assignToDate(templateId: string, date: Date, userId: string, tasks: { id: string; title: string; description?: string | null; order: number }[]) {
+    return this.prisma.$transaction(async (tx) => {
+      // Check if already assigned
+      const existing = await tx.assignedDay.findUnique({
+        where: {
+          userId_date_templateId: { userId, date, templateId }
+        }
+      });
+
+      if (existing) {
+        // If already assigned, maybe we shouldn't throw error but just return it?
+        // Or throw to let user know.
+        throw new Error('This template is already assigned to this date');
+      }
+
+      // Create assignment record
+      const assigned = await tx.assignedDay.create({
+        data: {
+          userId,
+          date,
+          templateId,
+        }
+      });
+
+      // Copy tasks
+      if (tasks.length > 0) {
+        await tx.dailyTask.createMany({
+          data: tasks.map(t => ({
+            userId,
+            date,
+            title: t.title,
+            description: t.description || null,
+            order: t.order,
+            sourceType: 'template',
+            templateId,
+            templateTaskId: t.id,
+            isCompleted: false,
+          }))
+        });
+      }
+
+      return assigned;
+    });
+  }
 }

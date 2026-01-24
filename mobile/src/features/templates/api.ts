@@ -22,4 +22,9 @@ export const templateApi = {
   delete: async (id: string): Promise<void> => {
     await client.delete<ApiResponse>(`/templates/${id}`);
   },
+
+  assign: async (id: string, date: string): Promise<void> => {
+      // date should be YYYY-MM-DD
+    await client.post<ApiResponse>(`/templates/${id}/assign`, { date });
+  },
 };

@@ -17,11 +17,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskItem } from '@/components/tasks';
+import { ApplyTemplateModal } from '@/components/templates';
 import {
   DailyTask,
   taskMutations,
   taskQueries,
 } from '@/features/tasks';
+import { templateMutations } from '@/features/templates'; // Add import
 
 const THEME = {
   primary: '#2563EB',
@@ -34,7 +36,7 @@ const THEME = {
 };
 
 export default function TasksPage() {
-  const router = useRouter(); // <--- Added hook
+  const router = useRouter(); // Keep router for manage nav inside modal if needed, but modal handles it.
   const queryClient = useQueryClient();
   const [date, setDate] = React.useState(new Date());
 
@@ -51,9 +53,11 @@ export default function TasksPage() {
   const createMutation = useMutation(taskMutations.create(queryClient));
   const toggleMutation = useMutation(taskMutations.toggleComplete(queryClient));
   const deleteMutation = useMutation(taskMutations.delete(queryClient));
+  const assignTemplateMutation = useMutation(templateMutations.assign(queryClient));
 
   // Add Task Modal
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [applyVisible, setApplyVisible] = React.useState(false); // Template Modal
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
 
   const handlePrevDay = () => {
@@ -66,6 +70,21 @@ export default function TasksPage() {
     const newDate = new Date(date);
     newDate.setDate(date.getDate() + 1);
     setDate(newDate);
+  };
+
+  const handleApplyTemplate = (template: any) => {
+    setApplyVisible(false);
+    assignTemplateMutation.mutate(
+      { id: template.id, date: dateString },
+      {
+        onSuccess: () => {
+          Alert.alert('Success', `Applied ${template.name} to this day.`);
+        },
+        onError: (err: Error) => {
+          Alert.alert('Error', err.message || 'Failed to apply template');
+        }
+      }
+    );
   };
 
   const handleAddTask = () => {
@@ -128,9 +147,9 @@ export default function TasksPage() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Daily Tasks</Text>
           <View style={{flexDirection: 'row', gap: 12}}>
-            <Pressable style={styles.manageBtn} onPress={() => router.push('/manage-templates')}>
-               <Ionicons name="list" size={20} color={THEME.primary} />
-               <Text style={styles.manageBtnText}>Templates</Text>
+            <Pressable style={styles.manageBtn} onPress={() => setApplyVisible(true)}>
+               <Ionicons name="duplicate-outline" size={20} color={THEME.primary} />
+               <Text style={styles.manageBtnText}>Apply Template</Text>
             </Pressable>
             <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
                <Ionicons name="add" size={24} color="#FFF" />
@@ -184,6 +203,12 @@ export default function TasksPage() {
           />
         )}
       </SafeAreaView>
+
+      <ApplyTemplateModal
+         visible={applyVisible}
+         onClose={() => setApplyVisible(false)}
+         onApply={handleApplyTemplate}
+      />
 
       <Modal
         visible={modalVisible}

@@ -27,4 +27,7 @@ router.put('/:id', templateController.update);
 // DELETE /templates/:id
 router.delete('/:id', templateController.delete);
 
+// POST /templates/:id/assign
+router.post('/:id/assign', templateController.assign);
+
 export default router;
