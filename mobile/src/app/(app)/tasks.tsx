@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router'; // <--- Added
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -33,6 +34,7 @@ const THEME = {
 };
 
 export default function TasksPage() {
+  const router = useRouter(); // <--- Added hook
   const queryClient = useQueryClient();
   const [date, setDate] = React.useState(new Date());
 
@@ -125,9 +127,15 @@ export default function TasksPage() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Daily Tasks</Text>
-          <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
-             <Ionicons name="add" size={24} color="#FFF" />
-          </Pressable>
+          <View style={{flexDirection: 'row', gap: 12}}>
+            <Pressable style={styles.manageBtn} onPress={() => router.push('/manage-templates')}>
+               <Ionicons name="list" size={20} color={THEME.primary} />
+               <Text style={styles.manageBtnText}>Templates</Text>
+            </Pressable>
+            <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
+               <Ionicons name="add" size={24} color="#FFF" />
+            </Pressable>
+          </View>
         </View>
 
         {/* Date Navigator */}
@@ -242,6 +250,20 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.primary,
     padding: 8,
     borderRadius: 12,
+  },
+  manageBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: THEME.primaryLight,
+  },
+  manageBtnText: {
+    color: THEME.primary,
+    fontWeight: '600',
+    fontSize: 14,
   },
   dateNav: {
     flexDirection: 'row',

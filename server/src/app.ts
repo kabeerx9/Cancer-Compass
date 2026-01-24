@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import { env } from './config/env-config';
 import medicationRoutes from './features/medication/routes/medication.routes';
 import taskRoutes from './features/task/routes/task.routes';
+import templateRoutes from './features/template/routes/template.routes';
 import userRoutes from './features/user/routes/user.routes';
 import { apiErrorHandler, unmatchedRoutes } from './middleware/api-error.middleware';
 import { pinoLogger, loggerMiddleware } from './middleware/pino-logger';
@@ -48,6 +49,7 @@ app.get('/heartbeat', (req: Request, res: Response): void => {
 app.use('/v1/users', userRoutes);
 app.use('/v1/medications', medicationRoutes);
 app.use('/v1/tasks', taskRoutes);
+app.use('/v1/templates', templateRoutes);
 
 // Error Handling Middleware (Optional)
 // For prisma error and other error
