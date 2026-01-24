@@ -1,8 +1,7 @@
-import { Env } from '@env';
 import axios, { AxiosInstance } from 'axios';
 
 export const client: AxiosInstance = axios.create({
-  baseURL: Env.API_URL,
+  baseURL: 'https://fbada038aa9f.ngrok-free.app/v1',
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
