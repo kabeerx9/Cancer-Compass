@@ -23,9 +23,16 @@ export const templateApi = {
     await client.delete<ApiResponse>(`/templates/${id}`);
   },
 
-  assign: async (id: string, date: string): Promise<void> => {
-      // date should be YYYY-MM-DD
-    await client.post<ApiResponse>(`/templates/${id}/assign`, { date });
+  assign: async (id: string, date: string): Promise<AssignedDay> => {
+    // date should be YYYY-MM-DD
+    const response = await client.post<ApiResponse<AssignedDay>>(`/templates/${id}/assign`, { date });
+
+    // Check success flag - if false, throw error to trigger onError
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to assign template');
+    }
+
+    return response.data.data;
   },
 
   unassign: async (id: string, date: string): Promise<void> => {

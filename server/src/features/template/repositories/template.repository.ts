@@ -150,10 +150,9 @@ export class TemplateRepository {
         },
       });
 
+      // If already assigned, return it (idempotent - safe to call multiple times)
       if (existing) {
-        // If already assigned, maybe we shouldn't throw error but just return it?
-        // Or throw to let user know.
-        throw new Error('This template is already assigned to this date');
+        return existing;
       }
 
       // Create assignment record

@@ -9,36 +9,42 @@ export const templateMutations = {
       queryClient.invalidateQueries({ queryKey: templateKeys.root });
     },
   }),
+
   update: (queryClient: QueryClient) => ({
-    mutationFn: ({ id, data }: { id: string; data: any }) => templateApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      templateApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: templateKeys.root });
     },
   }),
+
   delete: (queryClient: QueryClient) => ({
     mutationFn: templateApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: templateKeys.root });
     },
   }),
+
   assign: (queryClient: QueryClient) => ({
-    mutationFn: ({ id, date }: { id: string; date: string }) => templateApi.assign(id, date),
-    onSuccess: (_: unknown, variables: { id: string; date: string }) => {
-       // Invalidate tasks for that date!
-       // We need to import taskKeys.
-       // Circular dependency? taskKeys is in tasks/keys.ts. template is in templates/.
-       // It's fine to import keys from another feature.
-       queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
-       // Invalidate all assigned-days queries for calendar
-       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
+    mutationFn: ({ id, date }: { id: string; date: string }) =>
+      templateApi.assign(id, date),
+    onSuccess: (_data, variables: { id: string; date: string }) => {
+      // Invalidate tasks for that date!
+      // We need to import taskKeys.
+      // Circular dependency? taskKeys is in tasks/keys.ts. template is in templates/.
+      // It's fine to import keys from another feature.
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+      // Invalidate all assigned-days queries for calendar
+      queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
   }),
+
   unassign: (queryClient: QueryClient) => ({
-    mutationFn: ({ id, date }: { id: string; date: string }) => templateApi.unassign(id, date),
-    onSuccess: (_: unknown, variables: { id: string; date: string }) => {
-       queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
-       // Invalidate all assigned-days queries for calendar
-       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
+    mutationFn: ({ id, date }: { id: string; date: string }) =>
+      templateApi.unassign(id, date),
+    onSuccess: (_data, variables: { id: string; date: string }) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+      queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
   }),
 };

@@ -114,7 +114,7 @@ export default function TasksPage() {
           Alert.alert('Success', `Applied ${template.name} to this day.`);
         },
         onError: (err: Error) => {
-           const msg = err.message || 'Failed';
+           const msg = err.message || 'Failed to assign template';
            Alert.alert('Error', msg);
         }
       }
@@ -147,13 +147,14 @@ export default function TasksPage() {
         title: newTaskTitle.trim(),
       },
       {
-        onSuccess: () => {
+          onSuccess: () => {
           setNewTaskTitle('');
           setModalVisible(false);
         },
         onError: (error: Error) => {
-          Alert.alert('Error', error.message || 'Failed to create task');
-        },
+          const msg = error.message || 'Failed to add task';
+          Alert.alert('Error', msg);
+        }
       }
     );
   };
