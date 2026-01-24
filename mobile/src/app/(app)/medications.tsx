@@ -244,12 +244,20 @@ export default function MedicationsPage() {
                     handleToggleActive(medication);
                   }}
                   style={styles.toggleBtn}
+                  disabled={updateMutation.isPending}
                 >
-                  <Ionicons
-                    name={medication.isActive ? "toggle" : "toggle-outline"}
-                    size={28}
-                    color={medication.isActive ? THEME.success : THEME.textMuted}
-                  />
+                  {updateMutation.isPending &&
+                  updateMutation.variables?.id === medication.id ? (
+                    <ActivityIndicator size="small" color={THEME.primary} />
+                  ) : (
+                    <Ionicons
+                      name={medication.isActive ? 'toggle' : 'toggle-outline'}
+                      size={28}
+                      color={
+                        medication.isActive ? THEME.success : THEME.textMuted
+                      }
+                    />
+                  )}
                 </Pressable>
               </Pressable>
             ))
