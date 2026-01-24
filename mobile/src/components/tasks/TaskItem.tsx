@@ -3,22 +3,11 @@ import * as React from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
 import { DailyTask } from '@/features/tasks';
-
-const THEME = {
-  primary: '#2563EB',
-  textHeading: '#111827',
-  textBody: '#4B5563',
-  textMuted: '#9CA3AF',
-  border: '#F3F4F6',
-  success: '#10B981',
-  successLight: '#D1FAE5',
-};
 
 interface TaskItemProps {
   task: DailyTask;
@@ -29,99 +18,53 @@ interface TaskItemProps {
 
 export function TaskItem({ task, onToggle, onDelete, isToggling }: TaskItemProps) {
   return (
-    <View style={[styles.container, task.isCompleted && styles.containerCompleted]}>
+    <View
+      className={`flex-row items-center bg-white p-4 rounded-xl mb-2 border border-neutral-100 ${
+        task.isCompleted ? 'bg-neutral-50 opacity-80' : ''
+      }`}
+    >
       <Pressable
-        style={styles.checkbox}
+        className="p-1 mr-3"
         onPress={() => onToggle(task)}
         disabled={isToggling}
       >
         {isToggling ? (
-          <ActivityIndicator size="small" color={THEME.primary} />
+          <ActivityIndicator size="small" color="#2563EB" />
         ) : (
           <Ionicons
             name={task.isCompleted ? 'checkbox' : 'square-outline'}
             size={24}
-            color={task.isCompleted ? THEME.success : THEME.textMuted}
+            color={task.isCompleted ? '#10B981' : '#9CA3AF'}
           />
         )}
       </Pressable>
 
-      <View style={styles.content}>
+      <View className="flex-1">
         <Text
-          style={[styles.title, task.isCompleted && styles.titleCompleted]}
+          className={`text-base font-semibold text-neutral-900 ${
+            task.isCompleted ? 'line-through text-neutral-400' : ''
+          }`}
           numberOfLines={2}
         >
           {task.title}
         </Text>
-        {task.description && (
-           <Text style={styles.description} numberOfLines={1}>
+        {task.description ? (
+           <Text className="text-sm text-neutral-500 mt-0.5" numberOfLines={1}>
              {task.description}
            </Text>
-        )}
-        {task.sourceType === 'template' && (
-           <View style={styles.badge}>
-             <Text style={styles.badgeText}>Template</Text>
+        ) : null}
+
+        {/* We don't really need a template badge if grouped by section, but keeping it small just in case it's mixed */}
+        {task.sourceType === 'template' && !task.isCompleted && (
+           <View className="mt-1 self-start bg-primary-50 px-2 py-0.5 rounded-lg">
+             <Text className="text-xs font-medium text-primary-600">Template</Text>
            </View>
         )}
       </View>
 
-      <Pressable style={styles.deleteBtn} onPress={() => onDelete(task)}>
-        <Ionicons name="trash-outline" size={20} color={THEME.textMuted} />
+      <Pressable className="p-2" onPress={() => onDelete(task)}>
+        <Ionicons name="trash-outline" size={20} color="#9CA3AF" />
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  containerCompleted: {
-    backgroundColor: '#F9FAFB',
-    opacity: 0.8,
-  },
-  checkbox: {
-    padding: 4,
-    marginRight: 12,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.textHeading,
-  },
-  titleCompleted: {
-    textDecorationLine: 'line-through',
-    color: THEME.textMuted,
-  },
-  description: {
-    fontSize: 13,
-    color: THEME.textMuted,
-    marginTop: 2,
-  },
-  badge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginTop: 4,
-  },
-  badgeText: {
-    fontSize: 11,
-    color: THEME.primary,
-    fontWeight: '500',
-  },
-  deleteBtn: {
-    padding: 8,
-  },
-});

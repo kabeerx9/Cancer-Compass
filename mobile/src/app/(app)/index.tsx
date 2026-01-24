@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router'; // Added
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 import {
@@ -33,6 +34,7 @@ const THEME = {
 };
 
 export default function HomePage() {
+  const router = useRouter(); // Added
   const { user } = useUser();
   const queryClient = useQueryClient();
 
@@ -156,9 +158,9 @@ export default function HomePage() {
             <Text style={styles.greeting}>{getGreeting()},</Text>
             <Text style={styles.title}>{firstName}</Text>
           </View>
-          <View style={styles.avatar}>
+          <Pressable style={styles.avatar} onPress={() => router.push('/profile')}>
              <Text style={styles.avatarText}>{firstName[0]}</Text>
-          </View>
+          </Pressable>
         </View>
 
         {/* Compact Progress Card */}

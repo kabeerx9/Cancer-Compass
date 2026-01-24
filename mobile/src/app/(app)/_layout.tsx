@@ -73,17 +73,23 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="manage-templates"
+        options={{
+          href: null,
+        }}
+      />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? "settings" : "settings-outline"}
-              size={size}
-              color={color}
-            />
-          ),
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

@@ -9,7 +9,6 @@ import {
   Pressable,
   RefreshControl,
   SectionList,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -25,15 +24,11 @@ import {
 } from '@/features/tasks';
 import { templateMutations } from '@/features/templates';
 
-const THEME = {
-  primary: '#2563EB',
-  primaryLight: '#EFF6FF',
-  background: '#F9FAFB',
-  textHeading: '#111827',
-  textBody: '#4B5563',
-  textMuted: '#9CA3AF',
-  border: '#F3F4F6',
-};
+interface TaskSection {
+  title: string;
+  template?: any;
+  data: DailyTask[];
+}
 
 export default function TasksPage() {
   const router = useRouter();
@@ -62,12 +57,6 @@ export default function TasksPage() {
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
 
   // Group tasks
-  interface TaskSection {
-    title: string;
-    template?: any;
-    data: DailyTask[];
-  }
-
   const groupedTasks = React.useMemo(() => {
     const sections: TaskSection[] = [];
     const customTasks = tasks.filter((t) => t.sourceType === 'custom');
@@ -125,7 +114,6 @@ export default function TasksPage() {
           Alert.alert('Success', `Applied ${template.name} to this day.`);
         },
         onError: (err: Error) => {
-           // check if error message contains "already assigned"
            const msg = err.message || 'Failed';
            Alert.alert('Error', msg);
         }
@@ -204,52 +192,58 @@ export default function TasksPage() {
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
-  const renderSectionHeader = ({ section }: { section: any }) => (
-     <View style={[styles.sectionHeader, section.template && { borderLeftColor: section.template.color, borderLeftWidth: 4 }]}>
-        <View style={{flex: 1}}>
-          <Text style={styles.sectionTitle}>{section.title}</Text>
+  const renderSectionHeader = ({ section }: { section: TaskSection }) => (
+     <View className={`flex-row items-center py-3 mt-2 mb-2 bg-neutral-50 ${section.template ? 'pl-2 border-l-4' : ''}`} style={section.template ? { borderLeftColor: section.template.color } : undefined}>
+        <View className="flex-1">
+          <Text className="text-lg font-bold text-neutral-900 pl-2">{section.title}</Text>
         </View>
         {section.template && (
-           <Pressable onPress={() => handleUnassign(section.template)} style={styles.trashBtn}>
-             <Ionicons name="trash-outline" size={18} color={THEME.textMuted} />
+           <Pressable onPress={() => handleUnassign(section.template)} className="p-2">
+             <Ionicons name="trash-outline" size={18} color="#9CA3AF" />
            </Pressable>
         )}
      </View>
   );
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Daily Tasks</Text>
-          <View style={{flexDirection: 'row', gap: 12}}>
-            <Pressable style={styles.manageBtn} onPress={() => setApplyVisible(true)}>
-               <Ionicons name="duplicate-outline" size={20} color={THEME.primary} />
-               <Text style={styles.manageBtnText}>Apply Template</Text>
+    <View className="flex-1 bg-neutral-50">
+      <SafeAreaView className="flex-1">
+        <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-neutral-100">
+          <Text className="text-2xl font-bold text-neutral-900">Plan</Text>
+          <View className="flex-row gap-3">
+            <Pressable
+              className="flex-row items-center gap-2 bg-primary-50 px-3 py-2 rounded-xl active:opacity-70"
+              onPress={() => setApplyVisible(true)}
+            >
+               <Ionicons name="duplicate-outline" size={20} color="#2563EB" />
+               <Text className="text-primary-600 font-semibold text-sm">Template</Text>
             </Pressable>
-            <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
+            <Pressable
+              className="bg-primary-600 p-2 rounded-xl active:opacity-70"
+              onPress={() => setModalVisible(true)}
+            >
                <Ionicons name="add" size={24} color="#FFF" />
             </Pressable>
           </View>
         </View>
 
         {/* Date Navigator */}
-        <View style={styles.dateNav}>
-          <Pressable onPress={handlePrevDay} style={styles.navBtn}>
-            <Ionicons name="chevron-back" size={24} color={THEME.textBody} />
+        <View className="mx-4 my-4 flex-row justify-between items-center bg-white p-2 rounded-2xl shadow-sm border border-neutral-100">
+          <Pressable onPress={handlePrevDay} className="p-2 rounded-full active:bg-neutral-100">
+            <Ionicons name="chevron-back" size={24} color="#4B5563" />
           </Pressable>
-          <View style={styles.dateDisplay}>
-             <Ionicons name="calendar-outline" size={16} color={THEME.primary} style={{marginRight: 6}} />
-             <Text style={styles.dateText}>{formatDateDisplay(date)}</Text>
+          <View className="flex-row items-center bg-primary-50 px-4 py-2 rounded-xl">
+             <Ionicons name="calendar-outline" size={16} color="#2563EB" style={{marginRight: 6}} />
+             <Text className="text-primary-600 font-semibold text-base">{formatDateDisplay(date)}</Text>
           </View>
-          <Pressable onPress={handleNextDay} style={styles.navBtn}>
-            <Ionicons name="chevron-forward" size={24} color={THEME.textBody} />
+          <Pressable onPress={handleNextDay} className="p-2 rounded-full active:bg-neutral-100">
+            <Ionicons name="chevron-forward" size={24} color="#4B5563" />
           </Pressable>
         </View>
 
         {isLoading && !tasks.length ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={THEME.primary} />
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="large" color="#2563EB" />
           </View>
         ) : (
           <SectionList
@@ -264,18 +258,35 @@ export default function TasksPage() {
               />
             )}
             renderSectionHeader={renderSectionHeader}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
             refreshControl={
-              <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={THEME.primary} />
+              <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#2563EB" />
             }
             stickySectionHeadersEnabled={false}
             ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Ionicons name="checkmark-circle-outline" size={48} color={THEME.textMuted} />
-                <Text style={styles.emptyText}>No tasks for this day</Text>
-                <Pressable onPress={() => setModalVisible(true)}>
-                   <Text style={styles.emptyAction}>+ Add a task</Text>
-                </Pressable>
+              <View className="items-center mt-12 bg-white p-8 rounded-2xl border border-dashed border-neutral-200 mx-4">
+                <View className="bg-neutral-50 p-4 rounded-full mb-4">
+                  <Ionicons name="checkmark-circle-outline" size={48} color="#D1D5DB" />
+                </View>
+                <Text className="text-neutral-500 text-base font-medium">No tasks for {formatDateDisplay(date)}</Text>
+                <Text className="text-neutral-400 text-sm text-center mt-2 mb-6">
+                  Add custom tasks or apply a template to get started.
+                </Text>
+
+                <View className="flex-row gap-4">
+                   <Pressable
+                     className="bg-primary-600 px-5 py-3 rounded-xl active:opacity-80 shadow-sm"
+                     onPress={() => setModalVisible(true)}
+                   >
+                     <Text className="text-white font-semibold">Add Task</Text>
+                   </Pressable>
+                   <Pressable
+                      className="bg-white border border-neutral-200 px-5 py-3 rounded-xl active:bg-neutral-50 shadow-sm"
+                      onPress={() => setApplyVisible(true)}
+                   >
+                     <Text className="text-neutral-700 font-semibold">Use Template</Text>
+                   </Pressable>
+                </View>
               </View>
             }
           />
@@ -296,32 +307,34 @@ export default function TasksPage() {
         presentationStyle="pageSheet"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-           <View style={styles.modalHeader}>
-             <Text style={styles.modalTitle}>New Task</Text>
-             <Pressable onPress={() => setModalVisible(false)} style={styles.closeBtn}>
-               <Ionicons name="close" size={24} color={THEME.textHeading} />
+        <View className="flex-1 bg-white">
+           <View className="flex-row justify-between items-center p-6 border-b border-neutral-100">
+             <Text className="text-xl font-bold text-neutral-900">New Task</Text>
+             <Pressable onPress={() => setModalVisible(false)} className="p-1 bg-neutral-100 rounded-full">
+               <Ionicons name="close" size={20} color="#111827" />
              </Pressable>
            </View>
 
-           <View style={styles.modalBody}>
+           <View className="p-6">
              <TextInput
-               style={styles.input}
+               className="bg-neutral-50 p-4 rounded-xl text-lg border border-neutral-200 mb-6 text-neutral-900"
                placeholder="What needs to be done?"
                value={newTaskTitle}
                onChangeText={setNewTaskTitle}
                autoFocus
-               placeholderTextColor={THEME.textMuted}
+               placeholderTextColor="#9CA3AF"
              />
              <Pressable
-                style={[styles.saveBtn, !newTaskTitle.trim() && styles.saveBtnDisabled]}
+                className={`py-4 rounded-xl items-center flex-row justify-center ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
                 onPress={handleAddTask}
                 disabled={!newTaskTitle.trim() || createMutation.isPending}
              >
                {createMutation.isPending ? (
                  <ActivityIndicator color="#FFF" />
                ) : (
-                 <Text style={styles.saveBtnText}>Create Task</Text>
+                 <Text className={`font-bold text-base ${!newTaskTitle.trim() ? 'text-neutral-400' : 'text-white'}`}>
+                   Create Task
+                 </Text>
                )}
              </Pressable>
            </View>
@@ -330,162 +343,3 @@ export default function TasksPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: THEME.textHeading,
-  },
-  addBtn: {
-    backgroundColor: THEME.primary,
-    padding: 8,
-    borderRadius: 12,
-  },
-  manageBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: THEME.primaryLight,
-  },
-  manageBtnText: {
-    color: THEME.primary,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  dateNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  navBtn: {
-    padding: 8,
-  },
-  dateDisplay: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.primaryLight,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.primary,
-  },
-  listContent: {
-    padding: 24,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyState: {
-    alignItems: 'center',
-    marginTop: 60,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: THEME.textMuted,
-    marginTop: 12,
-  },
-  emptyAction: {
-    fontSize: 16,
-    color: THEME.primary,
-    fontWeight: '600',
-    marginTop: 8,
-  },
-
-  // Section Header
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    marginTop: 8,
-    marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    paddingLeft: 8,
-  },
-  trashBtn: {
-    padding: 8,
-  },
-
-  // Modal
-  modalContainer: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textHeading,
-  },
-  closeBtn: {
-    padding: 4,
-  },
-  modalBody: {
-    padding: 24,
-  },
-  input: {
-    backgroundColor: THEME.background,
-    padding: 16,
-    borderRadius: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    marginBottom: 24,
-  },
-  saveBtn: {
-    backgroundColor: THEME.primary,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  saveBtnDisabled: {
-    backgroundColor: THEME.textMuted,
-    opacity: 0.5,
-  },
-  saveBtnText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});

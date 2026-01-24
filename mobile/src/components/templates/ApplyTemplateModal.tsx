@@ -7,20 +7,11 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
 import { DayTemplate, templateQueries } from '@/features/templates';
-
-const THEME = {
-  primary: '#2563EB',
-  textHeading: '#111827',
-  textBody: '#4B5563',
-  textMuted: '#9CA3AF',
-  border: '#F3F4F6',
-};
 
 interface ApplyTemplateModalProps {
   visible: boolean;
@@ -39,37 +30,41 @@ export function ApplyTemplateModal({ visible, onClose, onApply }: ApplyTemplateM
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Apply Template</Text>
-          <Pressable onPress={onClose}>
-            <Ionicons name="close" size={24} color={THEME.textHeading} />
+      <View className="flex-1 bg-white">
+        <View className="flex-row justify-between items-center p-6 border-b border-neutral-100">
+          <Text className="text-xl font-bold text-neutral-900">Apply Template</Text>
+          <Pressable onPress={onClose} className="p-1 bg-neutral-100 rounded-full">
+            <Ionicons name="close" size={24} color="#111827" />
           </Pressable>
         </View>
 
-        <View style={styles.body}>
-           <Text style={styles.subtitle}>Choose a template to add its tasks to this day.</Text>
+        <View className="flex-1 p-6">
+           <Text className="text-neutral-500 mb-4">Choose a template to add its tasks to this day.</Text>
 
            {isLoading ? (
-             <ActivityIndicator style={{marginTop: 20}} color={THEME.primary} />
+             <ActivityIndicator className="mt-5" color="#2563EB" />
            ) : (
-             <ScrollView style={styles.list}>
+             <ScrollView className="flex-1">
                {templates.length === 0 ? (
-                 <View style={styles.empty}>
-                   <Text style={styles.emptyText}>No templates found.</Text>
-                   <Pressable onPress={handleManage}>
-                     <Text style={styles.link}>Create one now</Text>
+                 <View className="items-center mt-10">
+                   <Text className="text-neutral-400">No templates found.</Text>
+                   <Pressable onPress={handleManage} className="mt-2">
+                     <Text className="text-primary-600 font-semibold">Create one now</Text>
                    </Pressable>
                  </View>
                ) : (
                  templates.map((t) => (
-                   <Pressable key={t.id} style={styles.item} onPress={() => onApply(t)}>
-                     <View style={[styles.colorStrip, { backgroundColor: t.color }]} />
-                     <View style={styles.itemContent}>
-                       <Text style={styles.itemName}>{t.name}</Text>
-                       <Text style={styles.itemCount}>{t.tasks.length} tasks</Text>
+                   <Pressable
+                      key={t.id}
+                      className="flex-row items-center p-4 bg-neutral-50 rounded-2xl mb-3 border border-neutral-100 active:bg-neutral-100"
+                      onPress={() => onApply(t)}
+                   >
+                     <View className="w-1 h-8 rounded-full mr-4" style={{ backgroundColor: t.color }} />
+                     <View className="flex-1">
+                       <Text className="text-base font-bold text-neutral-900">{t.name}</Text>
+                       <Text className="text-sm text-neutral-500">{t.tasks.length} tasks</Text>
                      </View>
-                     <Ionicons name="add-circle-outline" size={24} color={THEME.primary} />
+                     <Ionicons name="add-circle" size={28} color="#2563EB" />
                    </Pressable>
                  ))
                )}
@@ -77,51 +72,15 @@ export function ApplyTemplateModal({ visible, onClose, onApply }: ApplyTemplateM
            )}
         </View>
 
-        <View style={styles.footer}>
-          <Pressable style={styles.manageBtn} onPress={handleManage}>
-            <Text style={styles.manageText}>Manage Templates</Text>
+        <View className="p-6 border-t border-neutral-100">
+          <Pressable
+            className="bg-neutral-100 py-4 rounded-xl items-center active:bg-neutral-200"
+            onPress={handleManage}
+          >
+            <Text className="text-neutral-900 font-semibold text-base">Manage Templates</Text>
           </Pressable>
         </View>
       </View>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    padding: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  title: { fontSize: 18, fontWeight: '700', color: THEME.textHeading },
-  body: { flex: 1, padding: 24 },
-  subtitle: { fontSize: 14, color: THEME.textMuted, marginBottom: 16 },
-  list: { flex: 1 },
-
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  colorStrip: { width: 4, height: 24, borderRadius: 2, marginRight: 12 },
-  itemContent: { flex: 1 },
-  itemName: { fontSize: 16, fontWeight: '600', color: THEME.textHeading },
-  itemCount: { fontSize: 12, color: THEME.textMuted },
-
-  empty: { alignItems: 'center', marginTop: 40 },
-  emptyText: { color: THEME.textMuted },
-  link: { color: THEME.primary, fontWeight: '600', marginTop: 8 },
-
-  footer: { padding: 24, borderTopWidth: 1, borderTopColor: THEME.border },
-  manageBtn: { alignItems: 'center', padding: 12 },
-  manageText: { color: THEME.primary, fontWeight: '600', fontSize: 16 },
-});
