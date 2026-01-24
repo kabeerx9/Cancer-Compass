@@ -12,15 +12,18 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  clerkId     String       @unique @map("clerk_id")
-  firstName   String?      @map("first_name")
-  lastName    String?      @map("last_name")
+  id          String        @id @default(uuid())
+  clerkId     String        @unique @map("clerk_id")
+  firstName   String?       @map("first_name")
+  lastName    String?       @map("last_name")
   email       String?
-  active      Boolean      @default(true)
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  active      Boolean       @default(true)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
   medications Medication[]
+  dailyTasks  DailyTask[]
+  templates   DayTemplate[]
+  assignedDays AssignedDay[]
 
   @@map("users")
 }
@@ -55,4 +58,74 @@ model MedicationLog {
 
   @@unique([medicationId, date])
   @@map("medication_logs")
+}
+
+// ============================================
+// DAILY TASKS SYSTEM
+// ============================================
+
+model DailyTask {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  date           DateTime  @db.Date
+  title          String
+  description    String?
+  isCompleted    Boolean   @default(false) @map("is_completed")
+  order          Int       @default(0)
+  sourceType     String    @default("custom") @map("source_type") // "custom" | "template"
+  templateId     String?   @map("template_id")
+  templateTaskId String?   @map("template_task_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template     DayTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  templateTask TemplateTask? @relation(fields: [templateTaskId], references: [id], onDelete: SetNull)
+
+  @@map("daily_tasks")
+}
+
+model DayTemplate {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  color     String   @default("#3B82F6") // Default blue
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks        TemplateTask[]
+  assignedDays AssignedDay[]
+  dailyTasks   DailyTask[]
+
+  @@map("day_templates")
+}
+
+model TemplateTask {
+  id          String   @id @default(uuid())
+  templateId  String   @map("template_id")
+  title       String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  template   DayTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  dailyTasks DailyTask[]
+
+  @@map("template_tasks")
+}
+
+model AssignedDay {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  date       DateTime @db.Date
+  templateId String   @map("template_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template DayTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, templateId]) // Can't assign same template twice to same day
+  @@map("assigned_days")
 }
