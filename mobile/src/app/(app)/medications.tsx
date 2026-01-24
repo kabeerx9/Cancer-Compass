@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MedicationDetailModal } from '@/components/medications/MedicationDetailModal';
 import {
   medicationMutations,
   medicationQueries,
@@ -34,7 +35,7 @@ const THEME = {
   textMuted: '#9CA3AF',
   border: '#F3F4F6',
   accent: '#10B981',
-  success: '#10B981', // Added success color
+  success: '#10B981',
 };
 
 export default function MedicationsPage() {
@@ -50,9 +51,13 @@ export default function MedicationsPage() {
   const updateMutation = useMutation(medicationMutations.update(queryClient));
   const deleteMutation = useMutation(medicationMutations.delete(queryClient));
 
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [editingMedication, setEditingMedication] =
-    React.useState<Medication | null>(null);
+  // Detail Modal State
+  const [detailModalVisible, setDetailModalVisible] = React.useState(false);
+  const [selectedMedicationId, setSelectedMedicationId] = React.useState<string | null>(null);
+
+  // Edit Modal State
+  const [editModalVisible, setEditModalVisible] = React.useState(false);
+  const [editingMedication, setEditingMedication] = React.useState<Medication | null>(null);
 
   const [formData, setFormData] = React.useState<CreateMedicationData>({
     name: '',
@@ -62,13 +67,27 @@ export default function MedicationsPage() {
     timeLabel: '',
   });
 
+  // Open detail modal when card is tapped
+  const openDetailModal = (medication: Medication) => {
+    setSelectedMedicationId(medication.id);
+    setDetailModalVisible(true);
+  };
+
+  const closeDetailModal = () => {
+    setDetailModalVisible(false);
+    setSelectedMedicationId(null);
+  };
+
+  // Open add modal (for new medications)
   const openAddModal = () => {
     setEditingMedication(null);
     setFormData({ name: '', purpose: '', dosage: '', time: '', timeLabel: '' });
-    setModalVisible(true);
+    setEditModalVisible(true);
   };
 
+  // Open edit modal (from detail modal)
   const openEditModal = (medication: Medication) => {
+    setDetailModalVisible(false);
     setEditingMedication(medication);
     setFormData({
       name: medication.name,
@@ -77,11 +96,14 @@ export default function MedicationsPage() {
       time: medication.time || '',
       timeLabel: medication.timeLabel || '',
     });
-    setModalVisible(true);
+    // Small delay to let detail modal close
+    setTimeout(() => {
+      setEditModalVisible(true);
+    }, 100);
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
+  const closeEditModal = () => {
+    setEditModalVisible(false);
     setEditingMedication(null);
     setFormData({ name: '', purpose: '', dosage: '', time: '', timeLabel: '' });
   };
@@ -103,7 +125,7 @@ export default function MedicationsPage() {
       updateMutation.mutate(
         { id: editingMedication.id, data: updateData },
         {
-          onSuccess: closeModal,
+          onSuccess: closeEditModal,
           onError: (error: Error) =>
             Alert.alert(
               'Error',
@@ -120,7 +142,7 @@ export default function MedicationsPage() {
         timeLabel: formData.timeLabel?.trim() || undefined,
       };
       createMutation.mutate(createData, {
-        onSuccess: closeModal,
+        onSuccess: closeEditModal,
         onError: (error: Error) =>
           Alert.alert('Error', error.message || 'Failed to create medication'),
       });
@@ -128,26 +150,11 @@ export default function MedicationsPage() {
   };
 
   const handleDelete = (medication: Medication) => {
-    Alert.alert(
-      'Delete Medication',
-      `Are you sure you want to delete "${medication.name}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteMutation.mutate(medication.id, {
-              onError: (error: Error) =>
-                Alert.alert(
-                  'Error',
-                  error.message || 'Failed to delete medication'
-                ),
-            });
-          },
-        },
-      ]
-    );
+    closeDetailModal();
+    deleteMutation.mutate(medication.id, {
+      onError: (error: Error) =>
+        Alert.alert('Error', error.message || 'Failed to delete medication'),
+    });
   };
 
   const handleToggleActive = (medication: Medication) => {
@@ -216,8 +223,7 @@ export default function MedicationsPage() {
                   styles.card,
                   !medication.isActive && styles.cardInactive,
                 ]}
-                onPress={() => openEditModal(medication)}
-                onLongPress={() => handleDelete(medication)}
+                onPress={() => openDetailModal(medication)}
               >
                 <View style={styles.cardLeft}>
                   <View style={[styles.iconBox, !medication.isActive && styles.iconBoxInactive]}>
@@ -265,19 +271,28 @@ export default function MedicationsPage() {
         </ScrollView>
       </SafeAreaView>
 
-      {/* Clean Modal */}
+      {/* Detail Modal */}
+      <MedicationDetailModal
+        visible={detailModalVisible}
+        medicationId={selectedMedicationId}
+        onClose={closeDetailModal}
+        onEdit={openEditModal}
+        onDelete={handleDelete}
+      />
+
+      {/* Edit/Add Modal */}
       <Modal
-        visible={modalVisible}
+        visible={editModalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={closeModal}
+        onRequestClose={closeEditModal}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
               {editingMedication ? 'Edit Medication' : 'Add Medication'}
             </Text>
-            <Pressable onPress={closeModal} style={styles.closeBtn}>
+            <Pressable onPress={closeEditModal} style={styles.closeBtn}>
               <Ionicons name="close" size={24} color={THEME.textHeading} />
             </Pressable>
           </View>
@@ -442,7 +457,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 
-  // Modal styling (unchanged mostly but cleaner bg)
+  // Modal styling
   modalContainer: { flex: 1, backgroundColor: '#FFFFFF' },
   modalHeader: {
     flexDirection: 'row',

@@ -72,7 +72,7 @@ export class MedicationRepository {
       include: {
         logs: {
           orderBy: { date: 'desc' },
-          take: 7, // Last 7 days
+          take: 14, // Last 14 days for history view
         },
       },
     });

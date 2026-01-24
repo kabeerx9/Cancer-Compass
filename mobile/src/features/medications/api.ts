@@ -29,6 +29,16 @@ export const medicationApi = {
     return response.data.data;
   },
 
+  getHistory: async (id: string): Promise<Medication> => {
+    const response = await client.get<ApiResponse<Medication>>(
+      `/medications/${id}`
+    );
+    if (!response.data.data) {
+      throw new Error(response.data.message || 'Medication not found');
+    }
+    return response.data.data;
+  },
+
   create: async (data: CreateMedicationData): Promise<Medication> => {
     const response = await client.post<ApiResponse<Medication>>(
       '/medications',

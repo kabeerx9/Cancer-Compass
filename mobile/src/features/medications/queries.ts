@@ -25,4 +25,12 @@ export const medicationQueries = {
       queryFn: () => medicationApi.getById(id),
       staleTime: 60_000, // 1 minute
     }),
+
+  history: (id: string) =>
+    queryOptions({
+      queryKey: medicationKeys.history(id),
+      queryFn: () => medicationApi.getHistory(id),
+      staleTime: 30_000,
+      enabled: !!id,
+    }),
 };
