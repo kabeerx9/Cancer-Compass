@@ -26,9 +26,12 @@ export default function CalendarScreen() {
   const startDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const endDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
 
+  const formatDate = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
   const { data: assignedDays = [], isLoading: assignedLoading } = useQuery(templateQueries.assignedDays(
-    startDate.toISOString().split('T')[0],
-    endDate.toISOString().split('T')[0]
+    formatDate(startDate),
+    formatDate(endDate)
   ));
 
   const { data: allTemplates = [] } = useQuery(templateQueries.all());
@@ -49,7 +52,8 @@ export default function CalendarScreen() {
     const marked: Record<string, MarkedDate> = {};
 
     assignedDays.forEach((assigned) => {
-      const dateString = new Date(assigned.date).toISOString().split('T')[0];
+      // Extract date part from API response (already in YYYY-MM-DD format)
+      const dateString = assigned.date.split('T')[0];
 
       if (!marked[dateString]) {
         marked[dateString] = { dots: [] };
@@ -75,7 +79,8 @@ export default function CalendarScreen() {
 
   const getAssignedTemplatesForDate = (dateString: string) => {
     return assignedDays.filter((assigned) => {
-      const assignedDate = new Date(assigned.date).toISOString().split('T')[0];
+      // Extract date part from API response (already in YYYY-MM-DD format)
+      const assignedDate = assigned.date.split('T')[0];
       return assignedDate === dateString;
     });
   };
@@ -103,7 +108,7 @@ export default function CalendarScreen() {
     }
   };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatDate(new Date());
 
   const uniqueTemplates = Object.values(
     assignedDays.reduce((unique: { [key: string]: any }, assigned) => {

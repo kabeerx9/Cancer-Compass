@@ -35,8 +35,8 @@ export default function TasksPage() {
   const queryClient = useQueryClient();
   const [date, setDate] = React.useState(new Date());
 
-  // Format date as YYYY-MM-DD for API
-  const dateString = date.toISOString().split('T')[0];
+  // Format date as YYYY-MM-DD for API (handles timezone correctly)
+  const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
   const {
     data: tasks = [],
