@@ -51,7 +51,7 @@ export default function SignIn() {
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: unknown) {
-      const clerkError = err as { errors?: Array<{ message: string }> };
+      const clerkError = err as { errors?: { message: string }[] };
       setError(
         clerkError?.errors?.[0]?.message ||
           'Invalid email or password. Please try again.'
@@ -82,7 +82,7 @@ export default function SignIn() {
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: unknown) {
-      const clerkError = err as { errors?: Array<{ message: string }> };
+      const clerkError = err as { errors?: { message: string }[] };
       setError(
         clerkError?.errors?.[0]?.message ||
           'Invalid verification code. Please try again.'
@@ -107,8 +107,8 @@ export default function SignIn() {
             </Text>
 
             {error ? (
-              <View className="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3">
-                <Text className="text-center text-sm text-danger-600">
+              <View className="border-danger-200 bg-danger-50 mb-4 rounded-lg border p-3">
+                <Text className="text-danger-600 text-center text-sm">
                   {error}
                 </Text>
               </View>
@@ -174,8 +174,8 @@ export default function SignIn() {
           </Text>
 
           {error ? (
-            <View className="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3">
-              <Text className="text-center text-sm text-danger-600">
+            <View className="border-danger-200 bg-danger-50 mb-4 rounded-lg border p-3">
+              <Text className="text-danger-600 text-center text-sm">
                 {error}
               </Text>
             </View>

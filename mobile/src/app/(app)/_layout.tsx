@@ -1,10 +1,9 @@
-/* eslint-disable react/no-unstable-nested-components */
-import { Ionicons } from '@expo/vector-icons';
-import { Redirect, SplashScreen, Tabs } from 'expo-router';
-import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, Platform } from 'react-native';
-
 import { useAuth } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
+import { Redirect, Tabs } from 'expo-router';
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+
 import { useIsFirstTime } from '@/lib';
 
 // Theme colors from our palette
@@ -40,7 +39,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "home" : "home-outline"}
+              name={focused ? 'home' : 'home-outline'}
               size={size}
               color={color}
             />
@@ -53,7 +52,7 @@ export default function TabLayout() {
           title: 'Tasks',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "checkbox" : "checkbox-outline"}
+              name={focused ? 'checkbox' : 'checkbox-outline'}
               size={size}
               color={color}
             />
@@ -66,7 +65,7 @@ export default function TabLayout() {
           title: 'Medications',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "medical" : "medical-outline"}
+              name={focused ? 'medical' : 'medical-outline'}
               size={size}
               color={color}
             />
@@ -80,7 +79,7 @@ export default function TabLayout() {
           title: 'Calendar',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "calendar" : "calendar-outline"}
+              name={focused ? 'calendar' : 'calendar-outline'}
               size={size}
               color={color}
             />

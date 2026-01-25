@@ -17,11 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskItem } from '@/components/tasks';
 import { ApplyTemplateModal } from '@/components/templates';
-import {
-  DailyTask,
-  taskMutations,
-  taskQueries,
-} from '@/features/tasks';
+import { type DailyTask, taskMutations, taskQueries } from '@/features/tasks';
 import { templateMutations } from '@/features/templates';
 
 interface TaskSection {
@@ -48,8 +44,12 @@ export default function TasksPage() {
   const createMutation = useMutation(taskMutations.create(queryClient));
   const toggleMutation = useMutation(taskMutations.toggleComplete(queryClient));
   const deleteMutation = useMutation(taskMutations.delete(queryClient));
-  const assignTemplateMutation = useMutation(templateMutations.assign(queryClient));
-  const unassignTemplateMutation = useMutation(templateMutations.unassign(queryClient));
+  const assignTemplateMutation = useMutation(
+    templateMutations.assign(queryClient)
+  );
+  const unassignTemplateMutation = useMutation(
+    templateMutations.unassign(queryClient)
+  );
 
   // Modals
   const [modalVisible, setModalVisible] = React.useState(false); // Add Task
@@ -86,7 +86,7 @@ export default function TasksPage() {
       sections.push({
         title: template?.name || 'Template Tasks',
         template: template,
-        data: groupTasks.sort((a,b) => a.order - b.order),
+        data: groupTasks.sort((a, b) => a.order - b.order),
       });
     });
 
@@ -114,9 +114,9 @@ export default function TasksPage() {
           Alert.alert('Success', `Applied ${template.name} to this day.`);
         },
         onError: (err: Error) => {
-           const msg = err.message || 'Failed to assign template';
-           Alert.alert('Error', msg);
-        }
+          const msg = err.message || 'Failed to assign template';
+          Alert.alert('Error', msg);
+        },
       }
     );
   };
@@ -131,9 +131,12 @@ export default function TasksPage() {
           text: 'Remove',
           style: 'destructive',
           onPress: () => {
-             unassignTemplateMutation.mutate({ id: template.id, date: dateString });
-          }
-        }
+            unassignTemplateMutation.mutate({
+              id: template.id,
+              date: dateString,
+            });
+          },
+        },
       ]
     );
   };
@@ -147,38 +150,34 @@ export default function TasksPage() {
         title: newTaskTitle.trim(),
       },
       {
-          onSuccess: () => {
+        onSuccess: () => {
           setNewTaskTitle('');
           setModalVisible(false);
         },
         onError: (error: Error) => {
           const msg = error.message || 'Failed to add task';
           Alert.alert('Error', msg);
-        }
+        },
       }
     );
   };
 
   const handleDelete = (task: DailyTask) => {
-    Alert.alert(
-      'Delete Task',
-      'Are you sure you want to delete this task?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => deleteMutation.mutate(task.id),
-        },
-      ]
-    );
+    Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteMutation.mutate(task.id),
+      },
+    ]);
   };
 
   const formatDateDisplay = (d: Date) => {
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     const check = new Date(d);
-    check.setHours(0,0,0,0);
+    check.setHours(0, 0, 0, 0);
 
     if (check.getTime() === today.getTime()) return 'Today';
 
@@ -190,60 +189,91 @@ export default function TasksPage() {
     yesterday.setDate(today.getDate() - 1);
     if (check.getTime() === yesterday.getTime()) return 'Yesterday';
 
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   const renderSectionHeader = ({ section }: { section: TaskSection }) => (
-     <View className={`flex-row items-center py-3 mt-2 mb-2 bg-neutral-50 ${section.template ? 'pl-2 border-l-4' : ''}`} style={section.template ? { borderLeftColor: section.template.color } : undefined}>
-        <View className="flex-1">
-          <Text className="text-lg font-bold text-neutral-900 pl-2">{section.title}</Text>
-        </View>
-        {section.template && (
-           <Pressable onPress={() => handleUnassign(section.template)} className="p-2">
-             <Ionicons name="trash-outline" size={18} color="#9CA3AF" />
-           </Pressable>
-        )}
-     </View>
+    <View
+      className={`my-2 flex-row items-center bg-neutral-50 py-3 ${section.template ? 'border-l-4 pl-2' : ''}`}
+      style={
+        section.template
+          ? { borderLeftColor: section.template.color }
+          : undefined
+      }
+    >
+      <View className="flex-1">
+        <Text className="pl-2 text-lg font-bold text-neutral-900">
+          {section.title}
+        </Text>
+      </View>
+      {section.template && (
+        <Pressable
+          onPress={() => handleUnassign(section.template)}
+          className="p-2"
+        >
+          <Ionicons name="trash-outline" size={18} color="#9CA3AF" />
+        </Pressable>
+      )}
+    </View>
   );
 
   return (
     <View className="flex-1 bg-neutral-50">
       <SafeAreaView className="flex-1">
-        <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-neutral-100">
+        <View className="flex-row items-center justify-between border-b border-neutral-100 bg-white px-6 py-4">
           <Text className="text-2xl font-bold text-neutral-900">Plan</Text>
           <View className="flex-row gap-3">
             <Pressable
-              className="flex-row items-center gap-2 bg-primary-50 px-3 py-2 rounded-xl active:opacity-70"
+              className="flex-row items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 active:opacity-70"
               onPress={() => setApplyVisible(true)}
             >
-               <Ionicons name="duplicate-outline" size={20} color="#2563EB" />
-               <Text className="text-primary-600 font-semibold text-sm">Template</Text>
+              <Ionicons name="duplicate-outline" size={20} color="#2563EB" />
+              <Text className="text-sm font-semibold text-primary-600">
+                Template
+              </Text>
             </Pressable>
             <Pressable
-              className="bg-primary-600 p-2 rounded-xl active:opacity-70"
+              className="rounded-xl bg-primary-600 p-2 active:opacity-70"
               onPress={() => setModalVisible(true)}
             >
-               <Ionicons name="add" size={24} color="#FFF" />
+              <Ionicons name="add" size={24} color="#FFF" />
             </Pressable>
           </View>
         </View>
 
         {/* Date Navigator */}
-        <View className="mx-4 my-4 flex-row justify-between items-center bg-white p-2 rounded-2xl shadow-sm border border-neutral-100">
-          <Pressable onPress={handlePrevDay} className="p-2 rounded-full active:bg-neutral-100">
+        <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-2 shadow-sm">
+          <Pressable
+            onPress={handlePrevDay}
+            className="rounded-full p-2 active:bg-neutral-100"
+          >
             <Ionicons name="chevron-back" size={24} color="#4B5563" />
           </Pressable>
-          <View className="flex-row items-center bg-primary-50 px-4 py-2 rounded-xl">
-             <Ionicons name="calendar-outline" size={16} color="#2563EB" style={{marginRight: 6}} />
-             <Text className="text-primary-600 font-semibold text-base">{formatDateDisplay(date)}</Text>
+          <View className="flex-row items-center rounded-xl bg-primary-50 px-4 py-2">
+            <Ionicons
+              name="calendar-outline"
+              size={16}
+              color="#2563EB"
+              style={{ marginRight: 6 }}
+            />
+            <Text className="text-base font-semibold text-primary-600">
+              {formatDateDisplay(date)}
+            </Text>
           </View>
-          <Pressable onPress={handleNextDay} className="p-2 rounded-full active:bg-neutral-100">
+          <Pressable
+            onPress={handleNextDay}
+            className="rounded-full p-2 active:bg-neutral-100"
+          >
             <Ionicons name="chevron-forward" size={24} color="#4B5563" />
           </Pressable>
         </View>
 
         {isLoading && !tasks.length ? (
-          <View className="flex-1 justify-center items-center">
+          <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#2563EB" />
           </View>
         ) : (
@@ -251,41 +281,53 @@ export default function TasksPage() {
             sections={groupedTasks}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-               <TaskItem
-                 task={item}
-                 onToggle={(t) => toggleMutation.mutate({ id: t.id })}
-                 onDelete={handleDelete}
-               />
+              <TaskItem
+                task={item}
+                onToggle={(t) => toggleMutation.mutate({ id: t.id })}
+                onDelete={handleDelete}
+              />
             )}
             renderSectionHeader={renderSectionHeader}
             contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
             refreshControl={
-              <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#2563EB" />
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={refetch}
+                tintColor="#2563EB"
+              />
             }
             stickySectionHeadersEnabled={false}
             ListEmptyComponent={
-              <View className="items-center mt-12 bg-white p-8 rounded-2xl border border-dashed border-neutral-200 mx-4">
-                <View className="bg-neutral-50 p-4 rounded-full mb-4">
-                  <Ionicons name="checkmark-circle-outline" size={48} color="#D1D5DB" />
+              <View className="mx-4 mt-12 items-center rounded-2xl border border-dashed border-neutral-200 bg-white p-8">
+                <View className="mb-4 rounded-full bg-neutral-50 p-4">
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={48}
+                    color="#D1D5DB"
+                  />
                 </View>
-                <Text className="text-neutral-500 text-base font-medium">No tasks for {formatDateDisplay(date)}</Text>
-                <Text className="text-neutral-400 text-sm text-center mt-2 mb-6">
+                <Text className="text-base font-medium text-neutral-500">
+                  No tasks for {formatDateDisplay(date)}
+                </Text>
+                <Text className="mb-6 mt-2 text-center text-sm text-neutral-400">
                   Add custom tasks or apply a template to get started.
                 </Text>
 
                 <View className="flex-row gap-4">
-                   <Pressable
-                     className="bg-primary-600 px-5 py-3 rounded-xl active:opacity-80 shadow-sm"
-                     onPress={() => setModalVisible(true)}
-                   >
-                     <Text className="text-white font-semibold">Add Task</Text>
-                   </Pressable>
-                   <Pressable
-                      className="bg-white border border-neutral-200 px-5 py-3 rounded-xl active:bg-neutral-50 shadow-sm"
-                      onPress={() => setApplyVisible(true)}
-                   >
-                     <Text className="text-neutral-700 font-semibold">Use Template</Text>
-                   </Pressable>
+                  <Pressable
+                    className="rounded-xl bg-primary-600 px-5 py-3 shadow-sm active:opacity-80"
+                    onPress={() => setModalVisible(true)}
+                  >
+                    <Text className="font-semibold text-white">Add Task</Text>
+                  </Pressable>
+                  <Pressable
+                    className="rounded-xl border border-neutral-200 bg-white px-5 py-3 shadow-sm active:bg-neutral-50"
+                    onPress={() => setApplyVisible(true)}
+                  >
+                    <Text className="font-semibold text-neutral-700">
+                      Use Template
+                    </Text>
+                  </Pressable>
                 </View>
               </View>
             }
@@ -295,9 +337,9 @@ export default function TasksPage() {
 
       {/* Apply Template Modal */}
       <ApplyTemplateModal
-         visible={applyVisible}
-         onClose={() => setApplyVisible(false)}
-         onApply={handleApplyTemplate}
+        visible={applyVisible}
+        onClose={() => setApplyVisible(false)}
+        onApply={handleApplyTemplate}
       />
 
       {/* Add Task Modal */}
@@ -308,36 +350,41 @@ export default function TasksPage() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 bg-white">
-           <View className="flex-row justify-between items-center p-6 border-b border-neutral-100">
-             <Text className="text-xl font-bold text-neutral-900">New Task</Text>
-             <Pressable onPress={() => setModalVisible(false)} className="p-1 bg-neutral-100 rounded-full">
-               <Ionicons name="close" size={20} color="#111827" />
-             </Pressable>
-           </View>
+          <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
+            <Text className="text-xl font-bold text-neutral-900">New Task</Text>
+            <Pressable
+              onPress={() => setModalVisible(false)}
+              className="rounded-full bg-neutral-100 p-1"
+            >
+              <Ionicons name="close" size={20} color="#111827" />
+            </Pressable>
+          </View>
 
-           <View className="p-6">
-             <TextInput
-               className="bg-neutral-50 p-4 rounded-xl text-lg border border-neutral-200 mb-6 text-neutral-900"
-               placeholder="What needs to be done?"
-               value={newTaskTitle}
-               onChangeText={setNewTaskTitle}
-               autoFocus
-               placeholderTextColor="#9CA3AF"
-             />
-             <Pressable
-                className={`py-4 rounded-xl items-center flex-row justify-center ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
-                onPress={handleAddTask}
-                disabled={!newTaskTitle.trim() || createMutation.isPending}
-             >
-               {createMutation.isPending ? (
-                 <ActivityIndicator color="#FFF" />
-               ) : (
-                 <Text className={`font-bold text-base ${!newTaskTitle.trim() ? 'text-neutral-400' : 'text-white'}`}>
-                   Create Task
-                 </Text>
-               )}
-             </Pressable>
-           </View>
+          <View className="p-6">
+            <TextInput
+              className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-lg text-neutral-900"
+              placeholder="What needs to be done?"
+              value={newTaskTitle}
+              onChangeText={setNewTaskTitle}
+              autoFocus
+              placeholderTextColor="#9CA3AF"
+            />
+            <Pressable
+              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
+              onPress={handleAddTask}
+              disabled={!newTaskTitle.trim() || createMutation.isPending}
+            >
+              {createMutation.isPending ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text
+                  className={`text-base font-bold ${!newTaskTitle.trim() ? 'text-neutral-400' : 'text-white'}`}
+                >
+                  Create Task
+                </Text>
+              )}
+            </Pressable>
+          </View>
         </View>
       </Modal>
     </View>

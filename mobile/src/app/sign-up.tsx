@@ -38,7 +38,7 @@ export default function SignUp() {
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: unknown) {
-      const clerkError = err as { errors?: Array<{ message: string }> };
+      const clerkError = err as { errors?: { message: string }[] };
       setError(
         clerkError?.errors?.[0]?.message ||
           'Something went wrong. Please try again.'
@@ -68,7 +68,7 @@ export default function SignUp() {
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err: unknown) {
-      const clerkError = err as { errors?: Array<{ message: string }> };
+      const clerkError = err as { errors?: { message: string }[] };
       setError(
         clerkError?.errors?.[0]?.message ||
           'Invalid verification code. Please try again.'
@@ -92,8 +92,8 @@ export default function SignUp() {
             </Text>
 
             {error ? (
-              <View className="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3">
-                <Text className="text-center text-sm text-danger-600">
+              <View className="border-danger-200 bg-danger-50 mb-4 rounded-lg border p-3">
+                <Text className="text-danger-600 text-center text-sm">
                   {error}
                 </Text>
               </View>
@@ -159,8 +159,8 @@ export default function SignUp() {
           </Text>
 
           {error ? (
-            <View className="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3">
-              <Text className="text-center text-sm text-danger-600">
+            <View className="border-danger-200 bg-danger-50 mb-4 rounded-lg border p-3">
+              <Text className="text-danger-600 text-center text-sm">
                 {error}
               </Text>
             </View>

@@ -74,7 +74,11 @@ export default function Onboarding() {
 
           <View style={styles.featureRow}>
             <View style={styles.featureIcon}>
-              <Ionicons name="shield-checkmark-outline" size={24} color={PRIMARY} />
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={24}
+                color={PRIMARY}
+              />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Secure & Private</Text>
@@ -87,10 +91,7 @@ export default function Onboarding() {
 
         {/* CTA Button */}
         <View style={styles.ctaSection}>
-          <Pressable
-            style={styles.ctaButton}
-            onPress={handleGetStarted}
-          >
+          <Pressable style={styles.ctaButton} onPress={handleGetStarted}>
             <Text style={styles.ctaText}>Get Started</Text>
             <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </Pressable>

@@ -1,2 +1,2 @@
-export * from './TemplateItem';
 export * from './ApplyTemplateModal';
+export * from './TemplateItem';

@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -14,12 +15,11 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import {
+  type Medication,
   medicationMutations,
   medicationQueries,
-  type Medication,
 } from '@/features/medications';
 
 // Warm Healing Theme
@@ -89,7 +89,13 @@ export default function HomePage() {
     );
   }
 
-  const renderMedicationItem = ({ item: medication, index }: { item: Medication; index: number }) => {
+  const renderMedicationItem = ({
+    item: medication,
+    index,
+  }: {
+    item: Medication;
+    index: number;
+  }) => {
     const translateY = fadeAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [20, 0],
@@ -106,11 +112,27 @@ export default function HomePage() {
       >
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <View style={[styles.iconBox, { backgroundColor: medication.todayStatus === 'taken' ? '#DCFCE7' : THEME.primaryLight }]}>
+            <View
+              style={[
+                styles.iconBox,
+                {
+                  backgroundColor:
+                    medication.todayStatus === 'taken'
+                      ? '#DCFCE7'
+                      : THEME.primaryLight,
+                },
+              ]}
+            >
               <Ionicons
-                name={medication.todayStatus === 'taken' ? "checkmark-circle" : "medical"}
+                name={
+                  medication.todayStatus === 'taken'
+                    ? 'checkmark-circle'
+                    : 'medical'
+                }
                 size={24}
-                color={medication.todayStatus === 'taken' ? '#10B981' : THEME.primary}
+                color={
+                  medication.todayStatus === 'taken' ? '#10B981' : THEME.primary
+                }
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -122,7 +144,11 @@ export default function HomePage() {
 
             {medication.time && (
               <View style={styles.timePill}>
-                <Ionicons name="time-outline" size={14} color={THEME.textMuted} />
+                <Ionicons
+                  name="time-outline"
+                  size={14}
+                  color={THEME.textMuted}
+                />
                 <Text style={styles.timeText}>{medication.time}</Text>
               </View>
             )}
@@ -136,13 +162,41 @@ export default function HomePage() {
             </View>
 
             {medication.todayStatus ? (
-              <View style={[styles.statusBadge, { backgroundColor: medication.todayStatus === 'taken' ? '#DCFCE7' : '#F5F0EB' }]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor:
+                      medication.todayStatus === 'taken'
+                        ? '#DCFCE7'
+                        : '#F5F0EB',
+                  },
+                ]}
+              >
                 <Ionicons
-                  name={medication.todayStatus === 'taken' ? 'checkmark-circle' : 'close-circle'}
+                  name={
+                    medication.todayStatus === 'taken'
+                      ? 'checkmark-circle'
+                      : 'close-circle'
+                  }
                   size={18}
-                  color={medication.todayStatus === 'taken' ? '#10B981' : THEME.textMuted}
+                  color={
+                    medication.todayStatus === 'taken'
+                      ? '#10B981'
+                      : THEME.textMuted
+                  }
                 />
-                <Text style={[styles.statusText, { color: medication.todayStatus === 'taken' ? '#10B981' : THEME.textMuted }]}>
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color:
+                        medication.todayStatus === 'taken'
+                          ? '#10B981'
+                          : THEME.textMuted,
+                    },
+                  ]}
+                >
                   {medication.todayStatus === 'taken' ? 'Done' : 'Skipped'}
                 </Text>
               </View>
@@ -152,7 +206,11 @@ export default function HomePage() {
                   style={styles.skipBtn}
                   onPress={() => handleLogMedication(medication.id, 'skipped')}
                 >
-                  <Ionicons name="close-outline" size={18} color={THEME.textMuted} />
+                  <Ionicons
+                    name="close-outline"
+                    size={18}
+                    color={THEME.textMuted}
+                  />
                 </Pressable>
                 <Pressable
                   style={styles.takeBtn}
@@ -188,7 +246,9 @@ export default function HomePage() {
               end={{ x: 1, y: 1 }}
               style={styles.avatarGradient}
             >
-              <Text style={styles.avatarText}>{firstName[0].toUpperCase()}</Text>
+              <Text style={styles.avatarText}>
+                {firstName[0].toUpperCase()}
+              </Text>
             </LinearGradient>
           </Pressable>
         </View>
@@ -205,14 +265,20 @@ export default function HomePage() {
               <View style={styles.progressHeader}>
                 <View>
                   <Text style={styles.progressLabel}>Daily Progress</Text>
-                  <Text style={styles.progressCount}>{takenCount} of {totalCount} done</Text>
+                  <Text style={styles.progressCount}>
+                    {takenCount} of {totalCount} done
+                  </Text>
                 </View>
                 <View style={styles.progressPercentBox}>
-                  <Text style={styles.progressPercent}>{Math.round(progress)}%</Text>
+                  <Text style={styles.progressPercent}>
+                    {Math.round(progress)}%
+                  </Text>
                 </View>
               </View>
               <View style={styles.progressBarBg}>
-                <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+                <View
+                  style={[styles.progressBarFill, { width: `${progress}%` }]}
+                />
               </View>
               {progress === 100 && (
                 <View style={styles.celebrationBadge}>
@@ -235,16 +301,26 @@ export default function HomePage() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={THEME.primary} />
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={THEME.primary}
+            />
           }
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <View style={styles.emptyIcon}>
-                <Ionicons name="medical-outline" size={48} color={THEME.primary} />
+                <Ionicons
+                  name="medical-outline"
+                  size={48}
+                  color={THEME.primary}
+                />
               </View>
               <Text style={styles.emptyTitle}>All caught up!</Text>
-              <Text style={styles.emptySub}>No medications scheduled for today</Text>
+              <Text style={styles.emptySub}>
+                No medications scheduled for today
+              </Text>
             </View>
           }
         />

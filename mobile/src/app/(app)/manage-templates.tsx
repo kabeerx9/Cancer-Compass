@@ -18,12 +18,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TemplateItem } from '@/components/templates/TemplateItem';
 import {
-  DayTemplate,
+  type DayTemplate,
   templateMutations,
   templateQueries,
 } from '@/features/templates';
 
-const COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6366F1'];
+const COLORS = [
+  '#3B82F6',
+  '#EF4444',
+  '#10B981',
+  '#F59E0B',
+  '#8B5CF6',
+  '#EC4899',
+  '#6366F1',
+];
 
 export default function ManageTemplatesPage() {
   const router = useRouter();
@@ -45,7 +53,9 @@ export default function ManageTemplatesPage() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [name, setName] = React.useState('');
   const [color, setColor] = React.useState(COLORS[0]);
-  const [tasks, setTasks] = React.useState<{ title: string; order: number }[]>([]);
+  const [tasks, setTasks] = React.useState<{ title: string; order: number }[]>(
+    []
+  );
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
 
   const openCreate = () => {
@@ -60,7 +70,7 @@ export default function ManageTemplatesPage() {
     setEditingId(template.id);
     setName(template.name);
     setColor(template.color);
-    setTasks(template.tasks.map(t => ({ title: t.title, order: t.order })));
+    setTasks(template.tasks.map((t) => ({ title: t.title, order: t.order })));
     setModalVisible(true);
   };
 
@@ -82,10 +92,9 @@ export default function ManageTemplatesPage() {
         { onSuccess: () => setModalVisible(false) }
       );
     } else {
-      createMutation.mutate(
-        templateData,
-        { onSuccess: () => setModalVisible(false) }
-      );
+      createMutation.mutate(templateData, {
+        onSuccess: () => setModalVisible(false),
+      });
     }
   };
 
@@ -120,16 +129,21 @@ export default function ManageTemplatesPage() {
     <View className="flex-1 bg-white">
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView className="flex-1">
-        <View className="px-4 py-4 flex-row justify-between items-center border-b border-neutral-100">
-          <Pressable onPress={() => router.back()} className="p-2 rounded-full active:bg-neutral-100">
+        <View className="flex-row items-center justify-between border-b border-neutral-100 p-4">
+          <Pressable
+            onPress={() => router.back()}
+            className="rounded-full p-2 active:bg-neutral-100"
+          >
             <Ionicons name="arrow-back" size={24} color="#111827" />
           </Pressable>
-          <Text className="text-xl font-bold text-neutral-900">Manage Templates</Text>
+          <Text className="text-xl font-bold text-neutral-900">
+            Manage Templates
+          </Text>
           <View className="w-10" />
         </View>
 
         {isLoading ? (
-          <View className="flex-1 justify-center items-center">
+          <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#2563EB" />
           </View>
         ) : (
@@ -144,18 +158,26 @@ export default function ManageTemplatesPage() {
               />
             )}
             contentContainerStyle={{ padding: 16 }}
-            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#2563EB" />}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={refetch}
+                tintColor="#2563EB"
+              />
+            }
             ListEmptyComponent={
-              <View className="flex-1 justify-center items-center py-12">
-                <Text className="text-neutral-500 mb-2">No templates yet.</Text>
-                <Text className="text-neutral-400 text-sm">Create one to quick-start your day planning.</Text>
+              <View className="flex-1 items-center justify-center py-12">
+                <Text className="mb-2 text-neutral-500">No templates yet.</Text>
+                <Text className="text-sm text-neutral-400">
+                  Create one to quick-start your day planning.
+                </Text>
               </View>
             }
           />
         )}
 
         <Pressable
-          className="absolute bottom-6 right-6 w-14 h-14 bg-primary-600 rounded-full justify-center items-center shadow-lg active:opacity-90"
+          className="absolute bottom-6 right-6 size-14 items-center justify-center rounded-full bg-primary-600 shadow-lg active:opacity-90"
           onPress={openCreate}
         >
           <Ionicons name="add" size={32} color="#FFF" />
@@ -163,41 +185,61 @@ export default function ManageTemplatesPage() {
       </SafeAreaView>
 
       {/* Edit/Create Modal */}
-      <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
         <View className="flex-1 bg-white">
-          <View className="flex-row justify-between items-center p-6 border-b border-neutral-100">
-            <Text className="text-xl font-bold text-neutral-900">{editingId ? 'Edit Template' : 'New Template'}</Text>
-            <Pressable onPress={() => setModalVisible(false)} className="p-1 bg-neutral-100 rounded-full">
+          <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
+            <Text className="text-xl font-bold text-neutral-900">
+              {editingId ? 'Edit Template' : 'New Template'}
+            </Text>
+            <Pressable
+              onPress={() => setModalVisible(false)}
+              className="rounded-full bg-neutral-100 p-1"
+            >
               <Ionicons name="close" size={24} color="#111827" />
             </Pressable>
           </View>
 
           <ScrollView className="flex-1 p-6">
-            <Text className="text-sm font-bold text-neutral-900 mb-2 mt-2">Template Name</Text>
+            <Text className="my-2 text-sm font-bold text-neutral-900">
+              Template Name
+            </Text>
             <TextInput
-              className="bg-neutral-50 p-4 rounded-xl border border-neutral-200 text-lg mb-6"
+              className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-lg"
               placeholder="e.g. Infusion Day"
               value={name}
               onChangeText={setName}
             />
 
-            <Text className="text-sm font-bold text-neutral-900 mb-2">Color Coding</Text>
-            <View className="flex-row gap-3 mb-6 flex-wrap">
+            <Text className="mb-2 text-sm font-bold text-neutral-900">
+              Color Coding
+            </Text>
+            <View className="mb-6 flex-row flex-wrap gap-3">
               {COLORS.map((c) => (
                 <Pressable
                   key={c}
-                  className={`w-10 h-10 rounded-full ${color === c ? 'border-4 border-neutral-800' : ''}`}
+                  className={`size-10 rounded-full ${color === c ? 'border-4 border-neutral-800' : ''}`}
                   style={{ backgroundColor: c }}
                   onPress={() => setColor(c)}
                 />
               ))}
             </View>
 
-            <Text className="text-sm font-bold text-neutral-900 mb-2">Default Tasks</Text>
+            <Text className="mb-2 text-sm font-bold text-neutral-900">
+              Default Tasks
+            </Text>
             <View className="mb-4">
               {tasks.map((task, index) => (
-                <View key={index} className="flex-row items-center justify-between py-3 border-b border-neutral-100">
-                  <Text className="text-base text-neutral-900 flex-1 mr-2">{task.title}</Text>
+                <View
+                  key={index}
+                  className="flex-row items-center justify-between border-b border-neutral-100 py-3"
+                >
+                  <Text className="mr-2 flex-1 text-base text-neutral-900">
+                    {task.title}
+                  </Text>
                   <Pressable onPress={() => removeTask(index)} className="p-1">
                     <Ionicons name="close-circle" size={20} color="#9CA3AF" />
                   </Pressable>
@@ -205,31 +247,36 @@ export default function ManageTemplatesPage() {
               ))}
             </View>
 
-            <View className="flex-row items-center gap-3 mb-10">
+            <View className="mb-10 flex-row items-center gap-3">
               <TextInput
-                className="flex-1 bg-neutral-50 p-3 rounded-xl border border-neutral-200"
+                className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 p-3"
                 placeholder="Add checklist item..."
                 value={newTaskTitle}
                 onChangeText={setNewTaskTitle}
                 onSubmitEditing={addTask}
               />
-              <Pressable className="bg-primary-50 p-3 rounded-xl" onPress={addTask}>
-                 <Ionicons name="add" size={24} color="#2563EB" />
+              <Pressable
+                className="rounded-xl bg-primary-50 p-3"
+                onPress={addTask}
+              >
+                <Ionicons name="add" size={24} color="#2563EB" />
               </Pressable>
             </View>
           </ScrollView>
 
-          <View className="p-6 border-t border-neutral-100">
-             <Pressable
-               className="bg-primary-600 py-4 rounded-xl items-center active:opacity-90"
-               onPress={handleSave}
-             >
-               {createMutation.isPending || updateMutation.isPending ? (
-                 <ActivityIndicator color="#FFF" />
-               ) : (
-                 <Text className="text-white font-bold text-lg">Save Template</Text>
-               )}
-             </Pressable>
+          <View className="border-t border-neutral-100 p-6">
+            <Pressable
+              className="items-center rounded-xl bg-primary-600 py-4 active:opacity-90"
+              onPress={handleSave}
+            >
+              {createMutation.isPending || updateMutation.isPending ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text className="text-lg font-bold text-white">
+                  Save Template
+                </Text>
+              )}
+            </Pressable>
           </View>
         </View>
       </Modal>

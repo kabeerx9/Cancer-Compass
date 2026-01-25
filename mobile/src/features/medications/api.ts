@@ -9,7 +9,8 @@ import type {
 
 export const medicationApi = {
   getAll: async (): Promise<Medication[]> => {
-    const response = await client.get<ApiResponse<Medication[]>>('/medications');
+    const response =
+      await client.get<ApiResponse<Medication[]>>('/medications');
     return response.data.data || [];
   },
 

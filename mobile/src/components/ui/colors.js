@@ -5,7 +5,7 @@ module.exports = {
 
   // Warm neutrals - Slight warm undertone
   neutral: {
-    50: '#FFFBF9',  // Very warm off-white
+    50: '#FFFBF9', // Very warm off-white
     100: '#F5F0EB',
     200: '#E8E0D8',
     300: '#D4C8BC',

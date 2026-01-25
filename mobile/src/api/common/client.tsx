@@ -1,5 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
-
+import axios, { type AxiosInstance } from 'axios';
 
 const BASE_URL = 'https://458eb490ef3a.ngrok-free.app/v1';
 

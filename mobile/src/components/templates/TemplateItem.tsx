@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { DayTemplate } from '@/features/templates';
+import { type DayTemplate } from '@/features/templates';
 
 interface TemplateItemProps {
   template: DayTemplate;
@@ -10,21 +10,28 @@ interface TemplateItemProps {
   onDelete: (template: DayTemplate) => void;
 }
 
-export function TemplateItem({ template, onPress, onDelete }: TemplateItemProps) {
+export function TemplateItem({
+  template,
+  onPress,
+  onDelete,
+}: TemplateItemProps) {
   return (
     <Pressable
-      className="flex-row items-center bg-white rounded-2xl mb-3 border border-neutral-100 overflow-hidden h-20 active:bg-neutral-50 shadow-sm"
+      className="mb-3 h-20 flex-row items-center overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm active:bg-neutral-50"
       onPress={() => onPress(template)}
     >
       <View
-        className="w-2 h-full"
+        className="h-full w-2"
         style={{ backgroundColor: template.color || '#3B82F6' }}
       />
 
       <View className="flex-1 px-4">
-        <Text className="text-base font-bold text-neutral-900 mb-1">{template.name}</Text>
-        <Text className="text-xs text-neutral-500 font-medium">
-          {template.tasks.length} {template.tasks.length === 1 ? 'task' : 'tasks'}
+        <Text className="mb-1 text-base font-bold text-neutral-900">
+          {template.name}
+        </Text>
+        <Text className="text-xs font-medium text-neutral-500">
+          {template.tasks.length}{' '}
+          {template.tasks.length === 1 ? 'task' : 'tasks'}
         </Text>
       </View>
 

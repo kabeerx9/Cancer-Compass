@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 
 import {
-  medicationMutations,
-  medicationQueries,
   type Medication,
   type MedicationLog,
+  medicationMutations,
+  medicationQueries,
 } from '@/features/medications';
 
 // Theme Constants
@@ -246,9 +246,7 @@ export function MedicationDetailModal({
                       >
                         <Ionicons
                           name={
-                            todayLog.status === 'taken'
-                              ? 'checkmark'
-                              : 'close'
+                            todayLog.status === 'taken' ? 'checkmark' : 'close'
                           }
                           size={20}
                           color={
@@ -329,9 +327,7 @@ export function MedicationDetailModal({
                       size={32}
                       color={THEME.textMuted}
                     />
-                    <Text style={styles.emptyHistoryText}>
-                      No history yet
-                    </Text>
+                    <Text style={styles.emptyHistoryText}>No history yet</Text>
                   </View>
                 ) : (
                   <View style={styles.historyList}>
@@ -354,9 +350,7 @@ export function MedicationDetailModal({
                         >
                           <Ionicons
                             name={
-                              log.status === 'taken'
-                                ? 'checkmark'
-                                : 'close'
+                              log.status === 'taken' ? 'checkmark' : 'close'
                             }
                             size={14}
                             color={
@@ -393,10 +387,7 @@ export function MedicationDetailModal({
 
             {/* Footer Actions */}
             <View style={styles.footer}>
-              <Pressable
-                style={styles.deleteBtn}
-                onPress={handleDelete}
-              >
+              <Pressable style={styles.deleteBtn} onPress={handleDelete}>
                 <Ionicons name="trash-outline" size={20} color={THEME.danger} />
               </Pressable>
               <Pressable style={styles.editBtn} onPress={handleEdit}>

@@ -22,20 +22,24 @@ export const medicationMutations = {
     mutationKey: ['medications'],
     mutationFn: ({ id, data }: { id: string; data: UpdateMedicationData }) =>
       medicationApi.update(id, data),
-    onMutate: async ({ id, data }: { id: string; data: UpdateMedicationData }) => {
+    onMutate: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateMedicationData;
+    }) => {
       // Cancel any in-flight queries to prevent race conditions
       await queryClient.cancelQueries({ queryKey: medicationKeys.all() });
 
       // Snapshot previous value for rollback
-      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.all());
+      const previousMeds = queryClient.getQueryData<Medication[]>(
+        medicationKeys.all()
+      );
 
       // Optimistically update medications list
-      queryClient.setQueryData<Medication[]>(
-        medicationKeys.all(),
-        (old = []) =>
-          old.map((med) =>
-            med.id === id ? { ...med, ...data } : med
-          )
+      queryClient.setQueryData<Medication[]>(medicationKeys.all(), (old = []) =>
+        old.map((med) => (med.id === id ? { ...med, ...data } : med))
       );
 
       return { previousMeds };
@@ -77,12 +81,13 @@ export const medicationMutations = {
       await queryClient.cancelQueries({ queryKey: medicationKeys.all() });
 
       // Snapshot previous value for rollback
-      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.all());
+      const previousMeds = queryClient.getQueryData<Medication[]>(
+        medicationKeys.all()
+      );
 
       // Optimistically remove from medications list
-      queryClient.setQueryData<Medication[]>(
-        medicationKeys.all(),
-        (old = []) => old.filter((med) => med.id !== id)
+      queryClient.setQueryData<Medication[]>(medicationKeys.all(), (old = []) =>
+        old.filter((med) => med.id !== id)
       );
 
       return { previousMeds };
@@ -113,12 +118,20 @@ export const medicationMutations = {
     mutationKey: ['medications'],
     mutationFn: ({ id, status }: { id: string; status: 'taken' | 'skipped' }) =>
       medicationApi.log(id, status),
-    onMutate: async ({ id, status }: { id: string; status: 'taken' | 'skipped' }) => {
+    onMutate: async ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: 'taken' | 'skipped';
+    }) => {
       // Cancel any in-flight queries to prevent race conditions
       await queryClient.cancelQueries({ queryKey: medicationKeys.today() });
 
       // Snapshot previous value for rollback
-      const previousMeds = queryClient.getQueryData<Medication[]>(medicationKeys.today());
+      const previousMeds = queryClient.getQueryData<Medication[]>(
+        medicationKeys.today()
+      );
 
       // Optimistically update today's medications
       queryClient.setQueryData<Medication[]>(

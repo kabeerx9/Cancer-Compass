@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,7 +10,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Calendar, DateData } from 'react-native-calendars';
+import { Calendar, type DateData } from 'react-native-calendars';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { Modal, useModal } from '@/components/ui/modal';
 import { templateMutations, templateQueries } from '@/features/templates';
@@ -61,7 +61,7 @@ export default function CalendarScreen() {
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
   const { data: assignedDays = [], isLoading: assignedLoading } = useQuery(
-    templateQueries.assignedDays(formatDate(startDate), formatDate(endDate)),
+    templateQueries.assignedDays(formatDate(startDate), formatDate(endDate))
   );
   const { data: allTemplates = [] } = useQuery(templateQueries.all());
 
@@ -151,9 +151,9 @@ export default function CalendarScreen() {
         }
         return unique;
       },
-      {} as Record<string, any>,
-  ),
-);
+      {} as Record<string, any>
+    )
+  );
 
   const selectedDateTemplates = selectedDate
     ? getAssignedTemplatesForDate(selectedDate)
@@ -244,7 +244,9 @@ export default function CalendarScreen() {
                   size={32}
                   color={THEME.textMuted}
                 />
-                <Text style={styles.emptyLegendText}>No templates created yet</Text>
+                <Text style={styles.emptyLegendText}>
+                  No templates created yet
+                </Text>
               </View>
             ) : (
               <View style={styles.legendList}>
@@ -285,7 +287,9 @@ export default function CalendarScreen() {
                   size={40}
                   color={THEME.textMuted}
                 />
-                <Text style={styles.emptySectionText}>No templates assigned</Text>
+                <Text style={styles.emptySectionText}>
+                  No templates assigned
+                </Text>
               </View>
             ) : (
               <View style={styles.assignedList}>
@@ -342,7 +346,9 @@ export default function CalendarScreen() {
                   size={40}
                   color={THEME.textMuted}
                 />
-                <Text style={styles.emptySectionText}>All templates assigned</Text>
+                <Text style={styles.emptySectionText}>
+                  All templates assigned
+                </Text>
               </View>
             ) : (
               <View style={styles.availableList}>

@@ -1,4 +1,5 @@
-import { QueryClient } from '@tanstack/react-query';
+import { type QueryClient } from '@tanstack/react-query';
+
 import { templateApi } from './api';
 import { templateKeys } from './keys';
 
@@ -33,7 +34,9 @@ export const templateMutations = {
       // We need to import taskKeys.
       // Circular dependency? taskKeys is in tasks/keys.ts. template is in templates/.
       // It's fine to import keys from another feature.
-      queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+      queryClient.invalidateQueries({
+        queryKey: ['tasks', 'date', variables.date],
+      });
       // Invalidate all assigned-days queries for calendar
       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
@@ -43,7 +46,9 @@ export const templateMutations = {
     mutationFn: ({ id, date }: { id: string; date: string }) =>
       templateApi.unassign(id, date),
     onSuccess: (_data: unknown, variables: { id: string; date: string }) => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
+      queryClient.invalidateQueries({
+        queryKey: ['tasks', 'date', variables.date],
+      });
       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
   }),

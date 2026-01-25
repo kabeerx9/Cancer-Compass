@@ -9,9 +9,13 @@ export const taskMutations = {
     mutationKey: ['tasks'],
     mutationFn: taskApi.create,
     onMutate: async (variables: CreateTaskData) => {
-      await queryClient.cancelQueries({ queryKey: taskKeys.byDate(variables.date) });
+      await queryClient.cancelQueries({
+        queryKey: taskKeys.byDate(variables.date),
+      });
 
-      const previousTasks = queryClient.getQueryData<DailyTask[]>(taskKeys.byDate(variables.date));
+      const previousTasks = queryClient.getQueryData<DailyTask[]>(
+        taskKeys.byDate(variables.date)
+      );
 
       queryClient.setQueryData<DailyTask[]>(
         taskKeys.byDate(variables.date),
@@ -42,11 +46,16 @@ export const taskMutations = {
       context: { previousTasks: DailyTask[] | undefined } | undefined
     ) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData(taskKeys.byDate(variables.date), context.previousTasks);
+        queryClient.setQueryData(
+          taskKeys.byDate(variables.date),
+          context.previousTasks
+        );
       }
     },
     onSuccess: (_: unknown, variables: CreateTaskData) => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.byDate(variables.date) });
+      queryClient.invalidateQueries({
+        queryKey: taskKeys.byDate(variables.date),
+      });
     },
     onSettled: () => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
@@ -57,19 +66,31 @@ export const taskMutations = {
 
   update: (queryClient: QueryClient) => ({
     mutationKey: ['tasks'],
-    mutationFn: ({ id, data }: { id: string; data: UpdateTaskData & { date?: string } }) =>
-      taskApi.update(id, data),
-    onMutate: async ({ id, data }: { id: string; data: UpdateTaskData & { date?: string } }) => {
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateTaskData & { date?: string };
+    }) => taskApi.update(id, data),
+    onMutate: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateTaskData & { date?: string };
+    }) => {
       const date = data.date;
       if (!date) return { previousTasks: undefined, date: undefined };
 
       await queryClient.cancelQueries({ queryKey: taskKeys.byDate(date) });
 
-      const previousTasks = queryClient.getQueryData<DailyTask[]>(taskKeys.byDate(date));
+      const previousTasks = queryClient.getQueryData<DailyTask[]>(
+        taskKeys.byDate(date)
+      );
 
-      queryClient.setQueryData<DailyTask[]>(
-        taskKeys.byDate(date),
-        (old = []) => old.map((task) => (task.id === id ? { ...task, ...data } : task))
+      queryClient.setQueryData<DailyTask[]>(taskKeys.byDate(date), (old = []) =>
+        old.map((task) => (task.id === id ? { ...task, ...data } : task))
       );
 
       return { previousTasks, date };
@@ -77,15 +98,25 @@ export const taskMutations = {
     onError: (
       error: Error,
       variables: { id: string; data: UpdateTaskData & { date?: string } },
-      context: { previousTasks: DailyTask[] | undefined; date?: string } | undefined
+      context:
+        | { previousTasks: DailyTask[] | undefined; date?: string }
+        | undefined
     ) => {
       if (context?.date && context?.previousTasks) {
-        queryClient.setQueryData(taskKeys.byDate(context.date), context.previousTasks);
+        queryClient.setQueryData(
+          taskKeys.byDate(context.date),
+          context.previousTasks
+        );
       }
     },
-    onSuccess: (_: unknown, variables: { id: string; data: UpdateTaskData & { date?: string } }) => {
+    onSuccess: (
+      _: unknown,
+      variables: { id: string; data: UpdateTaskData & { date?: string } }
+    ) => {
       if (variables.data.date) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.byDate(variables.data.date) });
+        queryClient.invalidateQueries({
+          queryKey: taskKeys.byDate(variables.data.date),
+        });
       } else {
         queryClient.invalidateQueries({ queryKey: taskKeys.root });
       }
@@ -105,7 +136,9 @@ export const taskMutations = {
 
       const previousTasksMap = new Map<string, DailyTask[]>();
 
-      const queries = queryClient.getQueriesData<DailyTask[]>({ queryKey: taskKeys.root });
+      const queries = queryClient.getQueriesData<DailyTask[]>({
+        queryKey: taskKeys.root,
+      });
 
       for (const [queryKey, oldData] of queries) {
         if (oldData) {
@@ -113,7 +146,9 @@ export const taskMutations = {
           queryClient.setQueryData(
             queryKey,
             oldData.map((task) =>
-              task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
+              task.id === id
+                ? { ...task, isCompleted: !task.isCompleted }
+                : task
             )
           );
         }
@@ -124,7 +159,9 @@ export const taskMutations = {
     onError: (
       error: Error,
       _variables: { id: string },
-      context: { previousTasksMap: Map<string, DailyTask[]> | undefined } | undefined
+      context:
+        | { previousTasksMap: Map<string, DailyTask[]> | undefined }
+        | undefined
     ) => {
       if (context?.previousTasksMap) {
         context.previousTasksMap.forEach((previousTasks, queryKeyStr) => {
@@ -151,12 +188,17 @@ export const taskMutations = {
 
       const previousTasksMap = new Map<string, DailyTask[]>();
 
-      const queries = queryClient.getQueriesData<DailyTask[]>({ queryKey: taskKeys.root });
+      const queries = queryClient.getQueriesData<DailyTask[]>({
+        queryKey: taskKeys.root,
+      });
 
       for (const [queryKey, oldData] of queries) {
         if (oldData) {
           previousTasksMap.set(JSON.stringify(queryKey), [...oldData]);
-          queryClient.setQueryData(queryKey, oldData.filter((task) => task.id !== id));
+          queryClient.setQueryData(
+            queryKey,
+            oldData.filter((task) => task.id !== id)
+          );
         }
       }
 
@@ -165,7 +207,9 @@ export const taskMutations = {
     onError: (
       error: Error,
       _variables: string,
-      context: { previousTasksMap: Map<string, DailyTask[]> | undefined } | undefined
+      context:
+        | { previousTasksMap: Map<string, DailyTask[]> | undefined }
+        | undefined
     ) => {
       if (context?.previousTasksMap) {
         context.previousTasksMap.forEach((previousTasks, queryKeyStr) => {

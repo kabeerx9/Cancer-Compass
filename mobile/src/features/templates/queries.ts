@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+
 import { templateApi } from './api';
 import { templateKeys } from './keys';
 

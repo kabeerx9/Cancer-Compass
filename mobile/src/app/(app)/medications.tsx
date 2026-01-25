@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -13,16 +14,15 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { MedicationDetailModal } from '@/components/medications/MedicationDetailModal';
 import {
-  medicationMutations,
-  medicationQueries,
   type CreateMedicationData,
   type Medication,
+  medicationMutations,
+  medicationQueries,
   type UpdateMedicationData,
 } from '@/features/medications';
 
@@ -55,11 +55,14 @@ export default function MedicationsPage() {
 
   // Detail Modal State
   const [detailModalVisible, setDetailModalVisible] = React.useState(false);
-  const [selectedMedicationId, setSelectedMedicationId] = React.useState<string | null>(null);
+  const [selectedMedicationId, setSelectedMedicationId] = React.useState<
+    string | null
+  >(null);
 
   // Edit Modal State
   const [editModalVisible, setEditModalVisible] = React.useState(false);
-  const [editingMedication, setEditingMedication] = React.useState<Medication | null>(null);
+  const [editingMedication, setEditingMedication] =
+    React.useState<Medication | null>(null);
 
   const [formData, setFormData] = React.useState<CreateMedicationData>({
     name: '',
@@ -129,8 +132,11 @@ export default function MedicationsPage() {
         {
           onSuccess: closeEditModal,
           onError: (error: Error) =>
-            Alert.alert('Error', error.message || 'Failed to update medication'),
-        },
+            Alert.alert(
+              'Error',
+              error.message || 'Failed to update medication'
+            ),
+        }
       );
     } else {
       const createData: CreateMedicationData = {
@@ -242,9 +248,16 @@ export default function MedicationsPage() {
           }
         >
           {medications.length === 0 ? (
-            <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>
+            <Animated.View
+              style={styles.emptyState}
+              entering={FadeInDown.springify()}
+            >
               <View style={styles.emptyIconCircle}>
-                <Ionicons name="medical-outline" size={48} color={THEME.primary} />
+                <Ionicons
+                  name="medical-outline"
+                  size={48}
+                  color={THEME.primary}
+                />
               </View>
               <Text style={styles.emptyTitle}>Your Cabinet is Empty</Text>
               <Text style={styles.emptySubtitle}>
@@ -271,31 +284,49 @@ export default function MedicationsPage() {
                   >
                     <View style={styles.cardLeft}>
                       <View
-                        style={[styles.iconBox, !medication.isActive && styles.iconBoxInactive]}
+                        style={[
+                          styles.iconBox,
+                          !medication.isActive && styles.iconBoxInactive,
+                        ]}
                       >
                         <Ionicons
                           name="medical"
                           size={22}
-                          color={medication.isActive ? THEME.primary : THEME.textMuted}
+                          color={
+                            medication.isActive
+                              ? THEME.primary
+                              : THEME.textMuted
+                          }
                         />
                       </View>
                     </View>
 
                     <View style={styles.cardCenter}>
-                      <Text style={[styles.medName, !medication.isActive && styles.textInactive]}>
+                      <Text
+                        style={[
+                          styles.medName,
+                          !medication.isActive && styles.textInactive,
+                        ]}
+                      >
                         {medication.name}
                       </Text>
                       <View style={styles.metaRow}>
-                        <Text style={styles.medMeta}>{medication.dosage || 'No dosage'}</Text>
+                        <Text style={styles.medMeta}>
+                          {medication.dosage || 'No dosage'}
+                        </Text>
                         {medication.time && (
                           <>
                             <Text style={styles.dot}>•</Text>
-                            <Text style={styles.medMeta}>{medication.time}</Text>
+                            <Text style={styles.medMeta}>
+                              {medication.time}
+                            </Text>
                           </>
                         )}
                       </View>
                       {medication.purpose && (
-                        <Text style={styles.medPurpose}>{medication.purpose}</Text>
+                        <Text style={styles.medPurpose}>
+                          {medication.purpose}
+                        </Text>
                       )}
                     </View>
 
@@ -399,7 +430,9 @@ export default function MedicationsPage() {
                       styles.chip,
                       formData.timeLabel === label && styles.chipActive,
                     ]}
-                    onPress={() => setFormData({ ...formData, timeLabel: label })}
+                    onPress={() =>
+                      setFormData({ ...formData, timeLabel: label })
+                    }
                   >
                     <Text
                       style={[
@@ -429,7 +462,11 @@ export default function MedicationsPage() {
           </ScrollView>
 
           <View style={styles.modalFooter}>
-            <Pressable style={styles.saveBtn} onPress={handleSave} disabled={saving}>
+            <Pressable
+              style={styles.saveBtn}
+              onPress={handleSave}
+              disabled={saving}
+            >
               {saving ? (
                 <ActivityIndicator color="white" />
               ) : (
@@ -449,7 +486,12 @@ export default function MedicationsPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: THEME.background },
   safeArea: { flex: 1 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: THEME.background },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: THEME.background,
+  },
 
   header: {
     flexDirection: 'row',
@@ -458,8 +500,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 20,
   },
-  headerSubtitle: { fontSize: 14, color: THEME.textMuted, fontWeight: '600', marginBottom: 4 },
-  headerTitle: { fontSize: 28, fontWeight: '800', color: THEME.textHeading, letterSpacing: -0.5 },
+  headerSubtitle: {
+    fontSize: 14,
+    color: THEME.textMuted,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: THEME.textHeading,
+    letterSpacing: -0.5,
+  },
   addBtn: {
     width: 56,
     height: 56,
@@ -490,8 +542,18 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   statItem: { flex: 1, alignItems: 'center' },
-  statNumber: { fontSize: 28, fontWeight: '800', color: '#FFFFFF', lineHeight: 32 },
-  statLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.9)', marginTop: 2 },
+  statNumber: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    lineHeight: 32,
+  },
+  statLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.9)',
+    marginTop: 2,
+  },
   statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.2)' },
 
   scrollView: { flex: 1 },
@@ -508,8 +570,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  emptyTitle: { fontSize: 22, fontWeight: '800', color: THEME.textHeading, marginBottom: 8 },
-  emptySubtitle: { fontSize: 15, color: THEME.textBody, textAlign: 'center', maxWidth: '80%', lineHeight: 22, marginBottom: 24 },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: THEME.textHeading,
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    color: THEME.textBody,
+    textAlign: 'center',
+    maxWidth: '80%',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
   emptyAction: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -553,7 +627,12 @@ const styles = StyleSheet.create({
   iconBoxInactive: { backgroundColor: THEME.border },
 
   cardCenter: { flex: 1 },
-  medName: { fontSize: 17, fontWeight: '700', color: THEME.textHeading, marginBottom: 6 },
+  medName: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: THEME.textHeading,
+    marginBottom: 6,
+  },
   textInactive: { color: THEME.textMuted, textDecorationLine: 'line-through' },
 
   metaRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
@@ -606,7 +685,14 @@ const styles = StyleSheet.create({
 
   formGroup: { marginBottom: 24 },
   row: { flexDirection: 'row' },
-  label: { fontSize: 13, fontWeight: '700', color: THEME.textHeading, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
+  label: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: THEME.textHeading,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   input: {
     backgroundColor: THEME.background,
     borderWidth: 1,

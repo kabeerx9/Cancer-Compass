@@ -1,12 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as React from 'react';
-import {
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { DailyTask } from '@/features/tasks';
+import { type DailyTask } from '@/features/tasks';
 
 interface TaskItemProps {
   task: DailyTask;
@@ -17,14 +13,11 @@ interface TaskItemProps {
 export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
     <View
-      className={`flex-row items-center bg-white p-4 rounded-xl mb-2 border border-neutral-100 ${
+      className={`mb-2 flex-row items-center rounded-xl border border-neutral-100 bg-white p-4 ${
         task.isCompleted ? 'bg-neutral-50 opacity-80' : ''
       }`}
     >
-      <Pressable
-        className="p-1 mr-3"
-        onPress={() => onToggle(task)}
-      >
+      <Pressable className="mr-3 p-1" onPress={() => onToggle(task)}>
         <Ionicons
           name={task.isCompleted ? 'checkbox' : 'square-outline'}
           size={24}
@@ -35,23 +28,25 @@ export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
       <View className="flex-1">
         <Text
           className={`text-base font-semibold text-neutral-900 ${
-            task.isCompleted ? 'line-through text-neutral-400' : ''
+            task.isCompleted ? 'text-neutral-400 line-through' : ''
           }`}
           numberOfLines={2}
         >
           {task.title}
         </Text>
         {task.description ? (
-           <Text className="text-sm text-neutral-500 mt-0.5" numberOfLines={1}>
-             {task.description}
-           </Text>
+          <Text className="mt-0.5 text-sm text-neutral-500" numberOfLines={1}>
+            {task.description}
+          </Text>
         ) : null}
 
         {/* We don't really need a template badge if grouped by section, but keeping it small just in case it's mixed */}
         {task.sourceType === 'template' && !task.isCompleted && (
-           <View className="mt-1 self-start bg-primary-50 px-2 py-0.5 rounded-lg">
-             <Text className="text-xs font-medium text-primary-600">Template</Text>
-           </View>
+          <View className="mt-1 self-start rounded-lg bg-primary-50 px-2 py-0.5">
+            <Text className="text-xs font-medium text-primary-600">
+              Template
+            </Text>
+          </View>
         )}
       </View>
 
