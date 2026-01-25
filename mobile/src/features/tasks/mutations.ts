@@ -38,7 +38,7 @@ export const taskMutations = {
         ]
       );
 
-      return { previousTasks };
+      return { previousTasks, date: variables.date };
     },
     onError: (
       error: Error,
@@ -52,14 +52,15 @@ export const taskMutations = {
         );
       }
     },
-    onSuccess: (_: unknown, variables: CreateTaskData) => {
-      queryClient.invalidateQueries({
-        queryKey: taskKeys.byDate(variables.date),
-      });
+    onSuccess: () => {
+      // Nothing here - wait for all concurrent mutations to complete
     },
-    onSettled: () => {
+    onSettled: (_data: unknown, _error: Error | null, context?: { date?: string }) => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.root });
+        // Only invalidate when this is the last task mutation running
+        if (context?.date) {
+          queryClient.invalidateQueries({ queryKey: taskKeys.byDate(context.date) });
+        }
       }
     },
   }),
@@ -109,21 +110,17 @@ export const taskMutations = {
         );
       }
     },
-    onSuccess: (
-      _: unknown,
-      variables: { id: string; data: UpdateTaskData & { date?: string } }
-    ) => {
-      if (variables.data.date) {
-        queryClient.invalidateQueries({
-          queryKey: taskKeys.byDate(variables.data.date),
-        });
-      } else {
-        queryClient.invalidateQueries({ queryKey: taskKeys.root });
-      }
+    onSuccess: () => {
+      // Nothing here - wait for all concurrent mutations to complete
     },
-    onSettled: () => {
+    onSettled: (_data: unknown, _error: Error | null, context?: { date?: string }) => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.root });
+        // Only invalidate when this is the last task mutation running
+        if (context?.date) {
+          queryClient.invalidateQueries({ queryKey: taskKeys.byDate(context.date) });
+        } else {
+          queryClient.invalidateQueries({ queryKey: taskKeys.root });
+        }
       }
     },
   }),
@@ -171,10 +168,11 @@ export const taskMutations = {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.root });
+      // Nothing here - wait for all concurrent mutations to complete
     },
-    onSettled: () => {
+    onSettled: (_data: unknown, _error: Error | null) => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
+        // Only invalidate when this is the last task mutation running
         queryClient.invalidateQueries({ queryKey: taskKeys.root });
       }
     },
@@ -219,13 +217,14 @@ export const taskMutations = {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.root });
-      // Invalidate assigned-days query to refresh calendar dots when template tasks are deleted
-      queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
+      // Nothing here - wait for all concurrent mutations to complete
     },
-    onSettled: () => {
+    onSettled: (_data: unknown, _error: Error | null) => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
+        // Only invalidate when this is the last task mutation running
         queryClient.invalidateQueries({ queryKey: taskKeys.root });
+        // Invalidate assigned-days to refresh calendar dots when template tasks are deleted
+        queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
       }
     },
   }),

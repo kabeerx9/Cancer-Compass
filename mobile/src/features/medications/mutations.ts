@@ -11,10 +11,12 @@ import type {
 export const medicationMutations = {
   create: (queryClient: QueryClient) => ({
     mutationFn: (data: CreateMedicationData) => medicationApi.create(data),
-    onSuccess: () => {
-      // Invalidate both today and all to keep data in sync
-      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
-      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+    onSettled: () => {
+      // Only invalidate when this is the last medication mutation running
+      if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
+        queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+      }
     },
   }),
 
@@ -58,16 +60,12 @@ export const medicationMutations = {
       _data: Medication,
       variables: { id: string; data: UpdateMedicationData }
     ) => {
-      // Invalidate both today and all to keep data in sync
-      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
-      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
-      queryClient.invalidateQueries({
-        queryKey: medicationKeys.detail(variables.id),
-      });
+      // Nothing here - wait for all concurrent mutations to complete
     },
     onSettled: () => {
       // Only invalidate if this is the last medication mutation running
       if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
         queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
       }
     },
@@ -103,12 +101,12 @@ export const medicationMutations = {
       }
     },
     onSuccess: () => {
-      // Invalidate both today and all to keep data in sync
-      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
+      // Nothing here - wait for all concurrent mutations to complete
     },
     onSettled: () => {
       // Only invalidate if this is the last medication mutation running
       if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
         queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
       }
     },

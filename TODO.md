@@ -43,6 +43,54 @@ Updated `TaskRepository.delete()` to use transactional cleanup:
 
 ---
 
+## 🟢 Completed: Remove Redundant Query Invalidations
+
+### Problem
+Both `taskKeys.root` and `['assigned-days']` queries were being invalidated in `onSuccess` AND `onSettled`, causing:
+- Redundant network requests (same query invalidated twice)
+- Inefficient concurrent mutation handling
+- Calendar flickering from rapid invalidations
+
+### Solution
+Removed all `onSuccess` query invalidations. Now ONLY `onSettled` is used with the concurrent-safe pattern (`isMutating === 1`):
+
+**Before:**
+```typescript
+onSuccess: () => {
+  queryClient.invalidateQueries({ queryKey: taskKeys.root });      // ❌ Redundant
+},
+onSettled: () => {
+  if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
+    queryClient.invalidateQueries({ queryKey: taskKeys.root }); // ✅ Should be ONLY here
+  }
+}
+```
+
+**After:**
+```typescript
+onSuccess: () => {
+  // Nothing here - wait for all concurrent mutations to complete
+},
+onSettled: () => {
+  if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {
+    // Only invalidate when this is the last task mutation running
+    queryClient.invalidateQueries({ queryKey: taskKeys.root });
+  }
+}
+```
+
+### Files Changed
+- `mobile/src/features/tasks/mutations.ts` - Removed all `onSuccess` invalidations
+- `mobile/src/features/medications/mutations.ts` - Removed all `onSuccess` invalidations
+
+### Result
+- ✅ Single query refresh per concurrent mutation batch
+- ✅ No redundant network requests
+- ✅ Consistent pattern across all mutations
+- ✅ Better UX - no flickering from rapid invalidations
+
+---
+
 ## 🟡 Priority 2: Optimistic Updates for Tasks
 
 ### Mobile - Task Mutations (Concurrent-Safe)
@@ -165,7 +213,7 @@ Updated `TaskRepository.delete()` to use transactional cleanup:
 - ✅ **Fixed all TypeScript errors in task mutations**
 - ✅ **Fixed template assignment success logic bug** (returned false when should return true)
 - ✅ **Fixed calendar dot persistence bug** (assignedDays cleanup when deleting template tasks)
-- ✅ **Added calendar query invalidation on task delete** (calendar dots update instantly)
+- ✅ **Removed redundant query invalidations** - now using concurrent-safe pattern only in onSettled
 
 ### Tomorrow
 - Fix all ESLint errors in mobile app
