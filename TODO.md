@@ -22,10 +22,10 @@
 ## 🟡 Priority 2: Optimistic Updates for Tasks
 
 ### Mobile - Task Mutations (Concurrent-Safe)
-- [ ] Add optimistic updates to `taskMutations.create()`
-  - [ ] Add optimistic updates to `taskMutations.update()`
-  - [ ] Add optimistic updates to `taskMutations.delete()`
-  - [ ] Add optimistic updates to `taskMutations.toggleComplete()`
+- [x] Add optimistic updates to `taskMutations.create()`
+  - [x] Add optimistic updates to `taskMutations.update()`
+  - [x] Add optimistic updates to `taskMutations.delete()`
+  - [x] Add optimistic updates to `taskMutations.toggleComplete()`
   - Pattern:
   - onMutate: Cancel queries, snapshot for rollback, update cache immediately
   - onError: Rollback to previous state if mutation fails
@@ -33,19 +33,20 @@
   - Status: **DONE** - Mutations file updated with concurrent-safe pattern
 
 ### Mobile - Task Queries
-- [ ] Add `byDate` query key function
-- [ ] Use dynamic query keys: `taskKeys.byDate(date)` instead of hardcoded strings
-- [ ] Create `byDate` query in `taskQueries` object
-- [ ] Reference: mobile/src/features/tasks/keys.ts
-- Status: **DONE** - Queries file structure updated
+- [x] Add `byDate` query key function
+  - [x] Use dynamic query keys: `taskKeys.byDate(date)` instead of hardcoded strings
+  - [x] Create `byDate` query in `taskQueries` object
+  - [x] Reference: mobile/src/features/tasks/keys.ts
+  - Status: **DONE** - Queries file structure updated
 
 ### Mobile - Task Screen (tasks.tsx)
-- [ ] Update `createMutation.mutate()` to use optimistic updates
-- [ ] Update `deleteMutation.mutate()` to use optimistic updates
-- [ ] Add optimistic `toggleComplete` mutation
-- [ ] Remove loading spinners from all action buttons
-- [ ] Show instant feedback, no "isPending" delays
-- [ ] Pattern: Click → instant change, silent background refetch
+- [x] Update `createMutation.mutate()` to use optimistic updates
+  - [x] Update `deleteMutation.mutate()` to use optimistic updates
+  - [x] Add optimistic `toggleComplete` mutation
+  - [x] Remove loading spinners from all action buttons
+  - [x] Show instant feedback, no "isPending" delays
+  - [x] Pattern: Click → instant change, silent background refetch
+  - Status: **DONE** - Updated TaskItem to remove loading states
 
 ---
 
@@ -135,8 +136,10 @@
 - ✅ Fixed TypeScript types in template mutations
 - ✅ Updated README.md with optimistic pattern documentation
 - ✅ Updated plan.md with progress
+- ✅ **Added optimistic updates to all task mutations** (create, update, delete, toggleComplete)
+- ✅ **Removed loading states from TaskItem component**
+- ✅ **Fixed all TypeScript errors in task mutations**
 
 ### Tomorrow
-- Implement optimistic updates for tasks
 - Fix all ESLint errors in mobile app
-- Add proper error handling to all mutation failures
+- Test task optimistic updates with rapid toggling to verify concurrent-safe pattern works

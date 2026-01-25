@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as React from 'react';
 import {
-  ActivityIndicator,
   Pressable,
   Text,
   View,
@@ -13,10 +12,9 @@ interface TaskItemProps {
   task: DailyTask;
   onToggle: (task: DailyTask) => void;
   onDelete: (task: DailyTask) => void;
-  isToggling?: boolean;
 }
 
-export function TaskItem({ task, onToggle, onDelete, isToggling }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
     <View
       className={`flex-row items-center bg-white p-4 rounded-xl mb-2 border border-neutral-100 ${
@@ -26,17 +24,12 @@ export function TaskItem({ task, onToggle, onDelete, isToggling }: TaskItemProps
       <Pressable
         className="p-1 mr-3"
         onPress={() => onToggle(task)}
-        disabled={isToggling}
       >
-        {isToggling ? (
-          <ActivityIndicator size="small" color="#2563EB" />
-        ) : (
-          <Ionicons
-            name={task.isCompleted ? 'checkbox' : 'square-outline'}
-            size={24}
-            color={task.isCompleted ? '#10B981' : '#9CA3AF'}
-          />
-        )}
+        <Ionicons
+          name={task.isCompleted ? 'checkbox' : 'square-outline'}
+          size={24}
+          color={task.isCompleted ? '#10B981' : '#9CA3AF'}
+        />
       </Pressable>
 
       <View className="flex-1">

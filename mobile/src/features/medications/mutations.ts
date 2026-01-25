@@ -43,7 +43,7 @@ export const medicationMutations = {
     onError: (
       error: Error,
       variables: { id: string; data: UpdateMedicationData },
-      context: { previousMeds: Medication[] | undefined }
+      context: { previousMeds: Medication[] | undefined } | undefined
     ) => {
       // Rollback to previous value on error
       if (context?.previousMeds) {
@@ -89,8 +89,8 @@ export const medicationMutations = {
     },
     onError: (
       error: Error,
-      variables: unknown,
-      context: { previousMeds: Medication[] | undefined }
+      variables: string,
+      context: { previousMeds: Medication[] | undefined } | undefined
     ) => {
       // Rollback to previous value on error
       if (context?.previousMeds) {
@@ -134,8 +134,8 @@ export const medicationMutations = {
     },
     onError: (
       error: Error,
-      variables: unknown,
-      context: { previousMeds: Medication[] | undefined }
+      variables: { id: string; status: 'taken' | 'skipped' },
+      context: { previousMeds: Medication[] | undefined } | undefined
     ) => {
       // Rollback to previous value on error
       if (context?.previousMeds) {

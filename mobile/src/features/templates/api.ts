@@ -32,6 +32,7 @@ export const templateApi = {
       throw new Error(response.data.message || 'Failed to assign template');
     }
 
+    if (!response.data.data) throw new Error(response.data.message);
     return response.data.data;
   },
 

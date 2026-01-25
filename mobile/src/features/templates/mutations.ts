@@ -28,7 +28,7 @@ export const templateMutations = {
   assign: (queryClient: QueryClient) => ({
     mutationFn: ({ id, date }: { id: string; date: string }) =>
       templateApi.assign(id, date),
-    onSuccess: (_data, variables: { id: string; date: string }) => {
+    onSuccess: (_data: unknown, variables: { id: string; date: string }) => {
       // Invalidate tasks for that date!
       // We need to import taskKeys.
       // Circular dependency? taskKeys is in tasks/keys.ts. template is in templates/.
@@ -42,7 +42,7 @@ export const templateMutations = {
   unassign: (queryClient: QueryClient) => ({
     mutationFn: ({ id, date }: { id: string; date: string }) =>
       templateApi.unassign(id, date),
-    onSuccess: (_data, variables: { id: string; date: string }) => {
+    onSuccess: (_data: unknown, variables: { id: string; date: string }) => {
       queryClient.invalidateQueries({ queryKey: ['tasks', 'date', variables.date] });
       queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },

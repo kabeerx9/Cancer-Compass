@@ -251,12 +251,11 @@ export default function TasksPage() {
             sections={groupedTasks}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TaskItem
-                task={item}
-                onToggle={(t) => toggleMutation.mutate({ id: t.id })}
-                onDelete={handleDelete}
-                isToggling={toggleMutation.isPending && toggleMutation.variables?.id === item.id}
-              />
+               <TaskItem
+                 task={item}
+                 onToggle={(t) => toggleMutation.mutate({ id: t.id })}
+                 onDelete={handleDelete}
+               />
             )}
             renderSectionHeader={renderSectionHeader}
             contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
