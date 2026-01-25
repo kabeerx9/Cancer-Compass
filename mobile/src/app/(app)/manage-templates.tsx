@@ -45,12 +45,10 @@ export default function ManageTemplatesPage() {
   } = useQuery(templateQueries.all());
 
   const createMutation = useMutation(templateMutations.create(queryClient));
-  const updateMutation = useMutation(templateMutations.update(queryClient));
   const deleteMutation = useMutation(templateMutations.delete(queryClient));
 
-  // Edit/Create Modal State
+  // Create Modal State
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [editingId, setEditingId] = React.useState<string | null>(null);
   const [name, setName] = React.useState('');
   const [color, setColor] = React.useState(COLORS[0]);
   const [tasks, setTasks] = React.useState<{ title: string; order: number }[]>(
@@ -58,20 +56,20 @@ export default function ManageTemplatesPage() {
   );
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
 
+  // View Modal State
+  const [viewModalVisible, setViewModalVisible] = React.useState(false);
+  const [viewingTemplate, setViewingTemplate] = React.useState<DayTemplate | null>(null);
+
   const openCreate = () => {
-    setEditingId(null);
     setName('');
     setColor(COLORS[0]);
-    setTasks([{ title: 'Arrive at hospital', order: 0 }]); // Default example
+    setTasks([{ title: 'Arrive at hospital', order: 0 }]);
     setModalVisible(true);
   };
 
-  const openEdit = (template: DayTemplate) => {
-    setEditingId(template.id);
-    setName(template.name);
-    setColor(template.color);
-    setTasks(template.tasks.map((t) => ({ title: t.title, order: t.order })));
-    setModalVisible(true);
+  const openView = (template: DayTemplate) => {
+    setViewingTemplate(template);
+    setViewModalVisible(true);
   };
 
   const handleSave = () => {
@@ -86,16 +84,9 @@ export default function ManageTemplatesPage() {
       tasks: tasks.map((t, idx) => ({ ...t, order: idx })),
     };
 
-    if (editingId) {
-      updateMutation.mutate(
-        { id: editingId, data: templateData },
-        { onSuccess: () => setModalVisible(false) }
-      );
-    } else {
-      createMutation.mutate(templateData, {
-        onSuccess: () => setModalVisible(false),
-      });
-    }
+    createMutation.mutate(templateData, {
+      onSuccess: () => setModalVisible(false),
+    });
   };
 
   const handleDelete = (template: DayTemplate) => {
@@ -107,7 +98,11 @@ export default function ManageTemplatesPage() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => deleteMutation.mutate(template.id),
+          onPress: () => {
+            deleteMutation.mutate(template.id, {
+              onSuccess: () => setViewModalVisible(false),
+            });
+          },
         },
       ]
     );
@@ -153,7 +148,7 @@ export default function ManageTemplatesPage() {
             renderItem={({ item }) => (
               <TemplateItem
                 template={item}
-                onPress={openEdit}
+                onPress={openView}
                 onDelete={handleDelete}
               />
             )}
@@ -184,7 +179,7 @@ export default function ManageTemplatesPage() {
         </Pressable>
       </SafeAreaView>
 
-      {/* Edit/Create Modal */}
+      {/* Create Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -193,7 +188,7 @@ export default function ManageTemplatesPage() {
         <View className="flex-1 bg-white">
           <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
             <Text className="text-xl font-bold text-neutral-900">
-              {editingId ? 'Edit Template' : 'New Template'}
+              New Template
             </Text>
             <Pressable
               onPress={() => setModalVisible(false)}
@@ -269,11 +264,93 @@ export default function ManageTemplatesPage() {
               className="items-center rounded-xl bg-primary-600 py-4 active:opacity-90"
               onPress={handleSave}
             >
-              {createMutation.isPending || updateMutation.isPending ? (
+              {createMutation.isPending ? (
                 <ActivityIndicator color="#FFF" />
               ) : (
                 <Text className="text-lg font-bold text-white">
                   Save Template
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* View Modal */}
+      <Modal
+        visible={viewModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <View className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
+            <Text className="text-xl font-bold text-neutral-900">
+              Template Details
+            </Text>
+            <Pressable
+              onPress={() => setViewModalVisible(false)}
+              className="rounded-full bg-neutral-100 p-1"
+            >
+              <Ionicons name="close" size={24} color="#111827" />
+            </Pressable>
+          </View>
+
+          <ScrollView className="flex-1 p-6">
+            <Text className="my-2 text-sm font-bold text-neutral-900">
+              Template Name
+            </Text>
+            <View className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+              <Text className="text-lg text-neutral-900">
+                {viewingTemplate?.name}
+              </Text>
+            </View>
+
+            <Text className="mb-2 text-sm font-bold text-neutral-900">
+              Color Coding
+            </Text>
+            <View className="mb-6 flex-row items-center gap-3">
+              <View
+                className="size-10 rounded-full"
+                style={{ backgroundColor: viewingTemplate?.color || '#3B82F6' }}
+              />
+            </View>
+
+            <Text className="mb-2 text-sm font-bold text-neutral-900">
+              Default Tasks
+            </Text>
+            <View className="mb-6">
+              {viewingTemplate?.tasks.map((task, index) => (
+                <View
+                  key={index}
+                  className="flex-row items-center border-b border-neutral-100 py-3"
+                >
+                  <Text className="flex-1 text-base text-neutral-900">
+                    {task.title}
+                  </Text>
+                </View>
+              ))}
+              {viewingTemplate?.tasks.length === 0 && (
+                <Text className="py-3 text-neutral-500">No tasks</Text>
+              )}
+            </View>
+
+            <View className="mb-6 rounded-xl bg-neutral-100 p-4">
+              <Text className="text-sm text-neutral-600">
+                You cannot edit templates at this time. If you need to modify this template, delete it and create a new one.
+              </Text>
+            </View>
+          </ScrollView>
+
+          <View className="border-t border-neutral-100 p-6">
+            <Pressable
+              className="items-center rounded-xl bg-red-600 py-4 active:opacity-90"
+              onPress={() => viewingTemplate && handleDelete(viewingTemplate)}
+            >
+              {deleteMutation.isPending ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text className="text-lg font-bold text-white">
+                  Delete Template
                 </Text>
               )}
             </Pressable>
