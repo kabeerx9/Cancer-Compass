@@ -61,12 +61,12 @@ export class TemplateService {
     // Use a transaction to ensure both assignment and task copying happen or neither
     const result = await this.templateRepository.assignToDate(templateId, date, userId, template.tasks);
 
-    // If result already exists (template already assigned to this date), return gracefully
-    if (result) {
-      return unifiedResponse(false, 'Template already assigned to this date', result);
+    // If already assigned, return the existing assignment (idempotent)
+    if (!result.isNew) {
+      return unifiedResponse(true, 'Template already assigned to this date', result.assignedDay);
     }
 
-    return unifiedResponse(true, 'Template assigned successfully', result);
+    return unifiedResponse(true, 'Template assigned successfully', result.assignedDay);
   }
 
   async unassignTemplateFromDate(templateId: string, dateString: string, userId: string) {

@@ -152,7 +152,7 @@ export class TemplateRepository {
 
       // If already assigned, return it (idempotent - safe to call multiple times)
       if (existing) {
-        return existing;
+        return { isNew: false, assignedDay: existing };
       }
 
       // Create assignment record
@@ -181,7 +181,7 @@ export class TemplateRepository {
         });
       }
 
-      return assigned;
+      return { isNew: true, assignedDay: assigned };
     });
   }
 
