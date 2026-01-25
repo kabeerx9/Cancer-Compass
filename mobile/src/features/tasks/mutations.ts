@@ -220,6 +220,8 @@ export const taskMutations = {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.root });
+      // Invalidate assigned-days query to refresh calendar dots when template tasks are deleted
+      queryClient.invalidateQueries({ queryKey: ['assigned-days'] });
     },
     onSettled: () => {
       if (queryClient.isMutating({ mutationKey: ['tasks'] }) === 1) {

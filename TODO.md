@@ -19,6 +19,30 @@
 
 ---
 
+## 🟢 Completed: Calendar Dot Persistence Bug Fix
+
+### Problem
+When deleting all tasks from a template-assigned day, the calendar still showed dots (AssignedDay records persisted even when no tasks remained).
+
+### Solution
+Updated `TaskRepository.delete()` to use transactional cleanup:
+1. Get task details before deleting
+2. Delete the task
+3. If task was a template task (`sourceType === 'template'`):
+   - Check if any remaining template tasks exist for that (userId, date, templateId)
+   - If count is 0, delete the `AssignedDay` record (removes calendar dot)
+
+### Files Changed
+- `server/src/features/task/repositories/task.repository.ts` - Added cleanup logic in delete method
+- `server/src/features/task/services/task.service.ts` - Added error handling for delete operation
+
+### Result
+✅ Calendar dots now disappear when all template tasks are deleted
+✅ Transactional integrity - both delete operations succeed/fail together
+✅ Calendar dots refresh instantly when deleting template tasks (query invalidation)
+
+---
+
 ## 🟡 Priority 2: Optimistic Updates for Tasks
 
 ### Mobile - Task Mutations (Concurrent-Safe)
@@ -139,6 +163,9 @@
 - ✅ **Added optimistic updates to all task mutations** (create, update, delete, toggleComplete)
 - ✅ **Removed loading states from TaskItem component**
 - ✅ **Fixed all TypeScript errors in task mutations**
+- ✅ **Fixed template assignment success logic bug** (returned false when should return true)
+- ✅ **Fixed calendar dot persistence bug** (assignedDays cleanup when deleting template tasks)
+- ✅ **Added calendar query invalidation on task delete** (calendar dots update instantly)
 
 ### Tomorrow
 - Fix all ESLint errors in mobile app

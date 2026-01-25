@@ -84,8 +84,45 @@ export class TaskRepository {
   }
 
   async delete(id: string) {
-    return this.prisma.dailyTask.delete({
-      where: { id },
+    return this.prisma.$transaction(async tx => {
+      // Get the task before deleting to check if it's a template task
+      const task = await tx.dailyTask.findUnique({
+        where: { id },
+      });
+
+      if (!task) {
+        throw new Error('Task not found');
+      }
+
+      // Delete the task
+      await tx.dailyTask.delete({
+        where: { id },
+      });
+
+      // If this was a template task, check if there are any remaining template tasks for this date/template
+      if (task.sourceType === 'template' && task.templateId && task.date) {
+        const remainingTasks = await tx.dailyTask.count({
+          where: {
+            userId: task.userId,
+            date: task.date,
+            templateId: task.templateId,
+            sourceType: 'template',
+          },
+        });
+
+        // If no remaining template tasks, delete the AssignedDay record (removes calendar dot)
+        if (remainingTasks === 0) {
+          await tx.assignedDay.delete({
+            where: {
+              userId_date_templateId: {
+                userId: task.userId,
+                date: task.date,
+                templateId: task.templateId,
+              },
+            },
+          });
+        }
+      }
     });
   }
 }

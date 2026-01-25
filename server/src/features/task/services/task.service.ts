@@ -61,7 +61,11 @@ export class TaskService {
       return unifiedResponse(false, 'Task not found');
     }
 
-    await this.taskRepository.delete(id);
-    return unifiedResponse(true, 'Task deleted');
+    try {
+      await this.taskRepository.delete(id);
+      return unifiedResponse(true, 'Task deleted');
+    } catch (error) {
+      return unifiedResponse(false, error instanceof Error ? error.message : 'Failed to delete task');
+    }
   }
 }
