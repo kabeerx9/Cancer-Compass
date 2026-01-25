@@ -84,10 +84,64 @@ onSettled: () => {
 - `mobile/src/features/medications/mutations.ts` - Removed all `onSuccess` invalidations
 
 ### Result
-- ✅ Single query refresh per concurrent mutation batch
+- ✅ Single refresh per mutation batch
 - ✅ No redundant network requests
 - ✅ Consistent pattern across all mutations
 - ✅ Better UX - no flickering from rapid invalidations
+
+---
+
+## 🟢 Completed: Remove RefreshControl Layout Shift Bug
+
+### Problem
+When mutations invalidated queries, `isRefetching` became true, triggering `RefreshControl` to show a spinner on **automatic** refetches, causing layout shifts:
+1. User taps "Take" medication → mutation succeeds
+2. Query invalidates → automatic refetch starts
+3. `isRefetching` = true → RefreshControl shows spinner
+4. Content shifts down for spinner space
+5. Refetch completes → spinner disappears → content shifts back up
+6. **Jumpy UI!** 😫
+
+### Solution
+Separate **manual refresh** from **automatic refetching** using local state:
+
+**Before:**
+```typescript
+const { isRefetching, refetch } = useQuery(...);
+
+<RefreshControl
+  refreshing={isRefetching}  // ❌ Shows on EVERY refetch (manual + automatic)
+  onRefresh={() => refetch()}
+/>
+```
+
+**After:**
+```typescript
+const [isManuallyRefreshing, setIsManuallyRefreshing] = useState(false);
+const { refetch } = useQuery(...);
+
+const handleRefresh = () => {
+  setIsManuallyRefreshing(true);
+  refetch();
+  setTimeout(() => setIsManuallyRefreshing(false), 1000);
+};
+
+<RefreshControl
+  refreshing={isManuallyRefreshing}  // ✅ Only shows when user pulls down
+  onRefresh={handleRefresh}           // ✅ Only triggers on manual refresh
+/>
+```
+
+### Files Changed
+- `mobile/src/app/(app)/index.tsx` - Home screen (medications today)
+- `mobile/src/app/(app)/medications.tsx` - Medications list screen
+- `mobile/src/app/(app)/tasks.tsx` - Tasks list screen
+
+### Result
+- ✅ RefreshControl only shows on manual pull-to-refresh
+- ✅ No layout shifts during automatic query invalidations
+- ✅ Smooth UX when rapidly performing mutations
+- ✅ No more jumping UI when toggling medications or tasks
 
 ---
 

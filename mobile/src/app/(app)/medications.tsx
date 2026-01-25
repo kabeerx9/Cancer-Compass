@@ -42,12 +42,12 @@ const THEME = {
 
 export default function MedicationsPage() {
   const queryClient = useQueryClient();
+  const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
   const {
     data: medications = [],
     isLoading: isLoadingMedications,
     refetch,
-    isRefetching,
   } = useQuery(medicationQueries.all());
   const createMutation = useMutation(medicationMutations.create(queryClient));
   const updateMutation = useMutation(medicationMutations.update(queryClient));
@@ -169,6 +169,12 @@ export default function MedicationsPage() {
     });
   };
 
+  const handleRefresh = () => {
+    setIsManuallyRefreshing(true);
+    refetch();
+    setTimeout(() => setIsManuallyRefreshing(false), 1000);
+  };
+
   const saving = createMutation.isPending || updateMutation.isPending;
 
   if (isLoadingMedications && medications.length === 0) {
@@ -241,8 +247,8 @@ export default function MedicationsPage() {
           contentContainerStyle={styles.scrollContent}
           refreshControl={
             <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={() => refetch()}
+              refreshing={isManuallyRefreshing}
+              onRefresh={handleRefresh}
               tintColor={THEME.primary}
             />
           }

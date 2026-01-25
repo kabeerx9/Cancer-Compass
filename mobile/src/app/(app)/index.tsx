@@ -42,12 +42,12 @@ export default function HomePage() {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
   const {
     data: medications = [],
     isLoading,
     refetch,
-    isRefetching,
   } = useQuery(medicationQueries.today());
   const logMutation = useMutation(medicationMutations.log(queryClient));
 
@@ -64,6 +64,13 @@ export default function HomePage() {
     status: 'taken' | 'skipped'
   ) => {
     logMutation.mutate({ id: medicationId, status });
+  };
+
+  const handleRefresh = () => {
+    setIsManuallyRefreshing(true);
+    refetch();
+    // Reset manual refresh state after refetch completes (approximate timing)
+    setTimeout(() => setIsManuallyRefreshing(false), 1000);
   };
 
   const getGreeting = () => {
@@ -302,8 +309,8 @@ export default function HomePage() {
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={refetch}
+              refreshing={isManuallyRefreshing}
+              onRefresh={handleRefresh}
               tintColor={THEME.primary}
             />
           }

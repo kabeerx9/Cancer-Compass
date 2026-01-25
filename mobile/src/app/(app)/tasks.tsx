@@ -30,6 +30,7 @@ export default function TasksPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [date, setDate] = React.useState(new Date());
+  const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
   // Format date as YYYY-MM-DD for API (handles timezone correctly)
   const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -38,7 +39,6 @@ export default function TasksPage() {
     data: tasks = [],
     isLoading,
     refetch,
-    isRefetching,
   } = useQuery(taskQueries.byDate(dateString));
 
   const createMutation = useMutation(taskMutations.create(queryClient));
@@ -173,6 +173,12 @@ export default function TasksPage() {
     ]);
   };
 
+  const handleRefresh = () => {
+    setIsManuallyRefreshing(true);
+    refetch();
+    setTimeout(() => setIsManuallyRefreshing(false), 1000);
+  };
+
   const formatDateDisplay = (d: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -291,8 +297,8 @@ export default function TasksPage() {
             contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
             refreshControl={
               <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={refetch}
+                refreshing={isManuallyRefreshing}
+                onRefresh={handleRefresh}
                 tintColor="#2563EB"
               />
             }
