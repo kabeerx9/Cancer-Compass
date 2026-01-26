@@ -118,55 +118,39 @@ export default function HomePage() {
         ]}
       >
         <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <View
-              style={[
-                styles.iconBox,
-                {
-                  backgroundColor:
-                    medication.todayStatus === 'taken'
-                      ? '#DCFCE7'
-                      : THEME.primaryLight,
-                },
-              ]}
-            >
-              <Ionicons
-                name={
-                  medication.todayStatus === 'taken'
-                    ? 'checkmark-circle'
-                    : 'medical'
-                }
-                size={24}
-                color={
-                  medication.todayStatus === 'taken' ? '#10B981' : THEME.primary
-                }
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.medName}>{medication.name}</Text>
-              {medication.dosage && (
-                <Text style={styles.medDose}>{medication.dosage}</Text>
-              )}
-            </View>
+          <View
+            style={[
+              styles.iconBox,
+              medication.todayStatus === 'taken' && styles.iconBoxTaken,
+            ]}
+          >
+            <Ionicons
+              name={
+                medication.todayStatus === 'taken'
+                  ? 'checkmark-circle'
+                  : 'medical'
+              }
+              size={20}
+              color={
+                medication.todayStatus === 'taken' ? '#10B981' : THEME.primary
+              }
+            />
+          </View>
 
-            {medication.time && (
-              <View style={styles.timePill}>
-                <Ionicons
-                  name="time-outline"
-                  size={14}
-                  color={THEME.textMuted}
-                />
-                <Text style={styles.timeText}>{medication.time}</Text>
-              </View>
+          <View style={styles.medInfo}>
+            <Text style={styles.medName}>{medication.name}</Text>
+            {medication.dosage && (
+              <Text style={styles.medDose}>{medication.dosage}</Text>
+            )}
+            {medication.timeLabel && (
+              <Text style={styles.labelText}>{medication.timeLabel}</Text>
             )}
           </View>
 
-          <View style={styles.cardActions}>
-            <View style={styles.leftTags}>
-              {medication.timeLabel && (
-                <Text style={styles.labelText}>{medication.timeLabel}</Text>
-              )}
-            </View>
+          <View style={styles.rightSection}>
+            {medication.time && (
+              <Text style={styles.timeText}>{medication.time}</Text>
+            )}
 
             {medication.todayStatus ? (
               <View
@@ -180,19 +164,6 @@ export default function HomePage() {
                   },
                 ]}
               >
-                <Ionicons
-                  name={
-                    medication.todayStatus === 'taken'
-                      ? 'checkmark-circle'
-                      : 'close-circle'
-                  }
-                  size={18}
-                  color={
-                    medication.todayStatus === 'taken'
-                      ? '#10B981'
-                      : THEME.textMuted
-                  }
-                />
                 <Text
                   style={[
                     styles.statusText,
@@ -213,18 +184,13 @@ export default function HomePage() {
                   style={styles.skipBtn}
                   onPress={() => handleLogMedication(medication.id, 'skipped')}
                 >
-                  <Ionicons
-                    name="close-outline"
-                    size={18}
-                    color={THEME.textMuted}
-                  />
+                  <Ionicons name="close-outline" size={16} color={THEME.textMuted} />
                 </Pressable>
                 <Pressable
                   style={styles.takeBtn}
                   onPress={() => handleLogMedication(medication.id, 'taken')}
                 >
-                  <Ionicons name="checkmark" size={18} color="#FFFFFF" />
-                  <Text style={styles.takeText}>Take</Text>
+                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
                 </Pressable>
               </View>
             )}
@@ -485,16 +451,16 @@ const styles = StyleSheet.create({
   // Medication Card
   card: {
     backgroundColor: THEME.surface,
-    borderRadius: 20,
-    marginBottom: 14,
-    padding: 18,
+    borderRadius: 16,
+    marginBottom: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: THEME.border,
     shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 2,
+    shadowRadius: 6,
+    elevation: 1,
   },
   cardTaken: {
     backgroundColor: '#F0FDF4',
@@ -504,71 +470,58 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   cardContent: {
-    gap: 14,
-  },
-  cardHeader: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   iconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: 12,
+    backgroundColor: THEME.primaryLight,
+  },
+  iconBoxTaken: {
+    backgroundColor: '#DCFCE7',
+  },
+  medInfo: {
+    flex: 1,
   },
   medName: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
     color: THEME.textHeading,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   medDose: {
-    fontSize: 14,
+    fontSize: 13,
     color: THEME.textBody,
     fontWeight: '500',
   },
-  timePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: THEME.background,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 12,
+  labelText: {
+    fontSize: 12,
+    color: THEME.textMuted,
+    fontWeight: '500',
+  },
+  rightSection: {
+    alignItems: 'flex-end',
+    gap: 6,
   },
   timeText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: THEME.textBody,
-  },
-
-  cardActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: THEME.border,
-  },
-  leftTags: {
-    flex: 1,
-  },
-  labelText: {
-    fontSize: 13,
-    color: THEME.textMuted,
+    fontSize: 12,
     fontWeight: '600',
+    color: THEME.textBody,
   },
 
   buttons: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 6,
   },
   skipBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     backgroundColor: THEME.background,
     justifyContent: 'center',
     alignItems: 'center',
@@ -576,18 +529,12 @@ const styles = StyleSheet.create({
     borderColor: THEME.border,
   },
   takeBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     backgroundColor: THEME.primary,
-    paddingHorizontal: 20,
-    height: 44,
-    borderRadius: 12,
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   takeText: {
     fontSize: 15,
@@ -596,16 +543,13 @@ const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   statusText: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
   },
 
   // Empty State
