@@ -105,6 +105,12 @@ export default function TabLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="quick-info"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

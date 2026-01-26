@@ -12,18 +12,20 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  clerkId     String        @unique @map("clerk_id")
-  firstName   String?       @map("first_name")
-  lastName    String?       @map("last_name")
-  email       String?
-  active      Boolean       @default(true)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
-  medications Medication[]
-  dailyTasks  DailyTask[]
-  templates   DayTemplate[]
+  id           String        @id @default(uuid())
+  clerkId      String        @unique @map("clerk_id")
+  firstName    String?       @map("first_name")
+  lastName     String?       @map("last_name")
+  email        String?
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  medications  Medication[]
+  dailyTasks   DailyTask[]
+  templates    DayTemplate[]
   assignedDays AssignedDay[]
+  patientInfo  PatientInfo?
+  contacts     Contact[]
 
   @@map("users")
 }
@@ -128,4 +130,46 @@ model AssignedDay {
 
   @@unique([userId, date, templateId]) // Can't assign same template twice to same day
   @@map("assigned_days")
+}
+
+// ============================================
+// PATIENT INFO & CONTACTS (Quick Reference)
+// ============================================
+
+model PatientInfo {
+  id                    String    @id @default(uuid())
+  userId                String    @unique @map("user_id")
+  name                  String?
+  dateOfBirth           DateTime? @map("date_of_birth") @db.Date
+  bloodType             String?   @map("blood_type")
+  allergies             String?   // Comma-separated or free text
+  diagnosis             String?   // Cancer type/diagnosis
+  insuranceProvider     String?   @map("insurance_provider")
+  insurancePolicyNumber String?   @map("insurance_policy_number")
+  emergencyContactName  String?   @map("emergency_contact_name")
+  emergencyContactPhone String?   @map("emergency_contact_phone")
+  notes                 String?   // Any additional notes
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patient_info")
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  role      String?  // e.g., "Doctor", "Nurse Coordinator", "Hotel Manager"
+  phone     String?
+  email     String?
+  category  String   // "medical_team" | "hospital" | "logistics" | "personal"
+  notes     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
 }

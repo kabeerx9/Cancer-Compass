@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { TemplateService } from '../services/template.service';
 
 export class TemplateController {
@@ -52,8 +53,8 @@ export class TemplateController {
     }
 
     if (!date) {
-        res.status(400).json({ success: false, message: 'Date is required' });
-        return;
+      res.status(400).json({ success: false, message: 'Date is required' });
+      return;
     }
 
     const result = await this.templateService.assignTemplateToDate(id as string, date, req.user.id);
@@ -70,11 +71,15 @@ export class TemplateController {
     }
 
     if (!date) {
-        res.status(400).json({ success: false, message: 'Date is required' });
-        return;
+      res.status(400).json({ success: false, message: 'Date is required' });
+      return;
     }
 
-    const result = await this.templateService.unassignTemplateFromDate(id as string, date, req.user.id);
+    const result = await this.templateService.unassignTemplateFromDate(
+      id as string,
+      date,
+      req.user.id,
+    );
     res.status(result.success ? 200 : 400).json(result);
   };
 
@@ -94,7 +99,7 @@ export class TemplateController {
     const result = await this.templateService.getAssignedDaysForRange(
       req.user.id,
       new Date(startDate as string),
-      new Date(endDate as string)
+      new Date(endDate as string),
     );
     res.status(result.success ? 200 : 400).json(result);
   };

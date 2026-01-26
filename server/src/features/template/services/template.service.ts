@@ -1,5 +1,10 @@
 import { unifiedResponse } from 'uni-response';
-import { CreateTemplateInput, TemplateRepository, UpdateTemplateInput } from '../repositories/template.repository';
+
+import {
+  CreateTemplateInput,
+  TemplateRepository,
+  UpdateTemplateInput,
+} from '../repositories/template.repository';
 
 export class TemplateService {
   constructor(private readonly templateRepository: TemplateRepository) {}
@@ -28,22 +33,25 @@ export class TemplateService {
   async updateTemplate(id: string, data: UpdateTemplateInput & { tasks?: any[] }, userId: string) {
     const existing = await this.templateRepository.findById(id);
     if (!existing || existing.userId !== userId) {
-       return unifiedResponse(false, 'Template not found');
+      return unifiedResponse(false, 'Template not found');
     }
 
     let updatedTemplate;
 
     // If tasks array is provided, we do a full replace of tasks (simplest for edit screen)
     if (data.tasks) {
-       updatedTemplate = await this.templateRepository.replaceTasks(id, data.tasks);
+      updatedTemplate = await this.templateRepository.replaceTasks(id, data.tasks);
 
-       // Also update name/color if provided
-       if (data.name || data.color) {
-         updatedTemplate = await this.templateRepository.update(id, { name: data.name, color: data.color });
-       }
+      // Also update name/color if provided
+      if (data.name || data.color) {
+        updatedTemplate = await this.templateRepository.update(id, {
+          name: data.name,
+          color: data.color,
+        });
+      }
     } else {
-       // Just update fields
-       updatedTemplate = await this.templateRepository.update(id, data);
+      // Just update fields
+      updatedTemplate = await this.templateRepository.update(id, data);
     }
 
     return unifiedResponse(true, 'Template updated', updatedTemplate);
@@ -59,7 +67,12 @@ export class TemplateService {
     const date = new Date(dateString);
 
     // Use a transaction to ensure both assignment and task copying happen or neither
-    const result = await this.templateRepository.assignToDate(templateId, date, userId, template.tasks);
+    const result = await this.templateRepository.assignToDate(
+      templateId,
+      date,
+      userId,
+      template.tasks,
+    );
 
     // If already assigned, return the existing assignment (idempotent)
     if (!result.isNew) {
@@ -78,7 +91,7 @@ export class TemplateService {
   async deleteTemplate(id: string, userId: string) {
     const existing = await this.templateRepository.findById(id);
     if (!existing || existing.userId !== userId) {
-       return unifiedResponse(false, 'Template not found');
+      return unifiedResponse(false, 'Template not found');
     }
 
     await this.templateRepository.delete(id);
@@ -86,7 +99,11 @@ export class TemplateService {
   }
 
   async getAssignedDaysForRange(userId: string, startDate: Date, endDate: Date) {
-    const assignedDays = await this.templateRepository.getAssignedDaysForRange(userId, startDate, endDate);
+    const assignedDays = await this.templateRepository.getAssignedDaysForRange(
+      userId,
+      startDate,
+      endDate,
+    );
     return unifiedResponse(true, 'Assigned days retrieved', assignedDays);
   }
 }

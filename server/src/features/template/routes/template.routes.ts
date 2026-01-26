@@ -1,9 +1,10 @@
 import { Router } from 'express';
+
 import { PrismaService } from '../../../config/prisma.config';
 import { requireAuthWithSync } from '../../../middleware/auth.middleware';
+import { TemplateController } from '../controllers/template.controller';
 import { TemplateRepository } from '../repositories/template.repository';
 import { TemplateService } from '../services/template.service';
-import { TemplateController } from '../controllers/template.controller';
 
 // Dependency Injection
 const prismaService = PrismaService.getInstance();

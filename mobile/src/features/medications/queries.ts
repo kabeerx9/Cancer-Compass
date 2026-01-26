@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { medicationApi } from './api';
 import { medicationKeys } from './keys';
@@ -33,4 +33,14 @@ export const medicationQueries = {
       staleTime: 30_000,
       enabled: !!id,
     }),
+
+  // Hook for getting active medications
+  useActiveMedications: () => {
+    return useQuery({
+      queryKey: medicationKeys.all(),
+      queryFn: medicationApi.getAll,
+      select: (data) => data.filter((med) => med.isActive),
+      staleTime: 30_000,
+    });
+  },
 };

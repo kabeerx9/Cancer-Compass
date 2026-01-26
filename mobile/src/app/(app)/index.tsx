@@ -211,7 +211,7 @@ export default function HomePage() {
           </View>
           <Pressable
             style={styles.avatar}
-            onPress={() => router.push('/(tabs)/(app)/profile')}
+            onPress={() => router.push('/profile')}
           >
             <LinearGradient
               colors={[THEME.primary, '#0D9488']}

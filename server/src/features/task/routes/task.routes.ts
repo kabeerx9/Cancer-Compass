@@ -1,9 +1,10 @@
 import { Router } from 'express';
+
 import { PrismaService } from '../../../config/prisma.config';
 import { requireAuthWithSync } from '../../../middleware/auth.middleware';
+import { TaskController } from '../controllers/task.controller';
 import { TaskRepository } from '../repositories/task.repository';
 import { TaskService } from '../services/task.service';
-import { TaskController } from '../controllers/task.controller';
 
 // Dependency Injection
 const prismaService = PrismaService.getInstance();

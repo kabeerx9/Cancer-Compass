@@ -58,6 +58,26 @@ export default function ProfilePage() {
         </View>
 
         <View className="mt-12 px-6">
+          {/* Quick Info Button */}
+          <Pressable
+            className="mb-4 flex-row items-center rounded-2xl border border-neutral-100 bg-white p-4 active:bg-neutral-50"
+            onPress={() => router.push('/quick-info')}
+          >
+            <View className="mr-4 size-10 items-center justify-center rounded-full bg-primary-50">
+              <Ionicons name="document-text-outline" size={24} color="#2563EB" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-neutral-900">
+                Quick Reference Info
+              </Text>
+              <Text className="text-sm text-neutral-500">
+                Patient details, contacts & medications
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+          </Pressable>
+
+          {/* Sign Out Button */}
           <Pressable
             className="mb-4 flex-row items-center rounded-2xl border border-neutral-100 bg-white p-4 active:bg-neutral-50"
             onPress={handleSignOut}

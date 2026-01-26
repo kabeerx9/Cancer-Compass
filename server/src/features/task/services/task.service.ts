@@ -1,10 +1,14 @@
 import { unifiedResponse } from 'uni-response';
-import { TaskRepository, CreateTaskInput, UpdateTaskInput } from '../repositories/task.repository';
+
+import { CreateTaskInput, TaskRepository, UpdateTaskInput } from '../repositories/task.repository';
 
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
-  async createTask(data: Omit<CreateTaskInput, 'userId' | 'date'> & { date: string }, userId: string) {
+  async createTask(
+    data: Omit<CreateTaskInput, 'userId' | 'date'> & { date: string },
+    userId: string,
+  ) {
     // Normalize date to midnight UTC or local?
     // Usually best to store simpler YYYY-MM-DD.
     // The Input comes as string, we convert to Date.
@@ -49,7 +53,7 @@ export class TaskService {
     }
 
     const task = await this.taskRepository.update(id, {
-      isCompleted: !existing.isCompleted
+      isCompleted: !existing.isCompleted,
     });
 
     return unifiedResponse(true, task.isCompleted ? 'Task completed' : 'Task uncompleted', task);
@@ -65,7 +69,10 @@ export class TaskService {
       await this.taskRepository.delete(id);
       return unifiedResponse(true, 'Task deleted');
     } catch (error) {
-      return unifiedResponse(false, error instanceof Error ? error.message : 'Failed to delete task');
+      return unifiedResponse(
+        false,
+        error instanceof Error ? error.message : 'Failed to delete task',
+      );
     }
   }
 }
