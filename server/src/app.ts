@@ -15,6 +15,9 @@ import { hostWhitelist, rateLimiter } from './middleware/security.middleware';
 
 const app: Application = express();
 
+// Trust proxy for rate limiting (fixes X-Forwarded-For header issue)
+app.set('trust proxy', true);
+
 // Clerk middleware - must be first to attach auth to every request
 app.use(clerkMiddleware());
 

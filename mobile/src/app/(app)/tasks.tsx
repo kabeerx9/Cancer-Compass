@@ -179,7 +179,6 @@ export default function TasksPage() {
         id: editingTask.id,
         data: {
           title: newTaskTitle.trim(),
-          date: dateString,
         },
       },
       {
