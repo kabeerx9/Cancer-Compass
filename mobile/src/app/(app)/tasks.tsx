@@ -42,6 +42,7 @@ export default function TasksPage() {
   } = useQuery(taskQueries.byDate(dateString));
 
   const createMutation = useMutation(taskMutations.create(queryClient));
+  const updateMutation = useMutation(taskMutations.update(queryClient));
   const toggleMutation = useMutation(taskMutations.toggleComplete(queryClient));
   const deleteMutation = useMutation(taskMutations.delete(queryClient));
   const assignTemplateMutation = useMutation(
@@ -53,8 +54,10 @@ export default function TasksPage() {
 
   // Modals
   const [modalVisible, setModalVisible] = React.useState(false); // Add Task
+  const [editModalVisible, setEditModalVisible] = React.useState(false); // Edit Task
   const [applyVisible, setApplyVisible] = React.useState(false); // Apply Template
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
+  const [editingTask, setEditingTask] = React.useState<DailyTask | null>(null);
 
   // Group tasks
   const groupedTasks = React.useMemo(() => {
@@ -156,6 +159,37 @@ export default function TasksPage() {
         },
         onError: (error: Error) => {
           const msg = error.message || 'Failed to add task';
+          Alert.alert('Error', msg);
+        },
+      }
+    );
+  };
+
+  const handleEditTask = (task: DailyTask) => {
+    setEditingTask(task);
+    setNewTaskTitle(task.title);
+    setEditModalVisible(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingTask || !newTaskTitle.trim()) return;
+
+    updateMutation.mutate(
+      {
+        id: editingTask.id,
+        data: {
+          title: newTaskTitle.trim(),
+          date: dateString,
+        },
+      },
+      {
+        onSuccess: () => {
+          setEditingTask(null);
+          setNewTaskTitle('');
+          setEditModalVisible(false);
+        },
+        onError: (error: Error) => {
+          const msg = error.message || 'Failed to update task';
           Alert.alert('Error', msg);
         },
       }
@@ -291,6 +325,7 @@ export default function TasksPage() {
                 task={item}
                 onToggle={(t) => toggleMutation.mutate({ id: t.id })}
                 onDelete={handleDelete}
+                onEdit={handleEditTask}
               />
             )}
             renderSectionHeader={renderSectionHeader}
@@ -387,6 +422,56 @@ export default function TasksPage() {
                   className={`text-base font-bold ${!newTaskTitle.trim() ? 'text-neutral-400' : 'text-white'}`}
                 >
                   Create Task
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Task Modal */}
+      <Modal
+        visible={editModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
+            <Text className="text-xl font-bold text-neutral-900">Edit Task</Text>
+            <Pressable
+              onPress={() => {
+                setEditModalVisible(false);
+                setEditingTask(null);
+                setNewTaskTitle('');
+              }}
+              className="rounded-full bg-neutral-100 p-1"
+            >
+              <Ionicons name="close" size={20} color="#111827" />
+            </Pressable>
+          </View>
+
+          <View className="p-6">
+            <TextInput
+              className="mb-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-lg text-neutral-900"
+              placeholder="What needs to be done?"
+              value={newTaskTitle}
+              onChangeText={setNewTaskTitle}
+              autoFocus
+              placeholderTextColor="#9CA3AF"
+            />
+            <Pressable
+              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
+              onPress={handleSaveEdit}
+              disabled={!newTaskTitle.trim() || updateMutation.isPending}
+            >
+              {updateMutation.isPending ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text
+                  className={`text-base font-bold ${!newTaskTitle.trim() ? 'text-neutral-400' : 'text-white'}`}
+                >
+                  Save Changes
                 </Text>
               )}
             </Pressable>

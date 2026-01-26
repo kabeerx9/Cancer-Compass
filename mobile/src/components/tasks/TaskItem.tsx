@@ -8,9 +8,10 @@ interface TaskItemProps {
   task: DailyTask;
   onToggle: (task: DailyTask) => void;
   onDelete: (task: DailyTask) => void;
+  onEdit: (task: DailyTask) => void;
 }
 
-export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
   return (
     <View
       className={`mb-2 flex-row items-center rounded-xl border border-neutral-100 bg-white p-4 ${
@@ -50,6 +51,9 @@ export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
         )}
       </View>
 
+      <Pressable className="p-2" onPress={() => onEdit(task)}>
+        <Ionicons name="create-outline" size={20} color="#9CA3AF" />
+      </Pressable>
       <Pressable className="p-2" onPress={() => onDelete(task)}>
         <Ionicons name="trash-outline" size={20} color="#9CA3AF" />
       </Pressable>
