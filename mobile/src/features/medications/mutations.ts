@@ -10,13 +10,17 @@ import type {
 
 export const medicationMutations = {
   create: (queryClient: QueryClient) => ({
+    mutationKey: ['medications'],
     mutationFn: (data: CreateMedicationData) => medicationApi.create(data),
+    onSuccess: () => {
+      // Immediately invalidate on success
+      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
+    },
     onSettled: () => {
-      // Only invalidate when this is the last medication mutation running
-      if (queryClient.isMutating({ mutationKey: ['medications'] }) === 1) {
-        queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
-        queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
-      }
+      // Also invalidate on settled as a backup
+      queryClient.invalidateQueries({ queryKey: medicationKeys.today() });
+      queryClient.invalidateQueries({ queryKey: medicationKeys.all() });
     },
   }),
 

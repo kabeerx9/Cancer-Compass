@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,6 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, type DateData } from 'react-native-calendars';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
@@ -40,6 +42,7 @@ interface MarkedDate {
 }
 
 export default function CalendarScreen() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -180,11 +183,16 @@ export default function CalendarScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerSubtitle}>Your</Text>
-          <Text style={styles.headerTitle}>Calendar</Text>
+        <View style={styles.headerLeft}>
+          <Pressable style={styles.backButton} onPress={() => router.push('/tasks')}>
+            <Ionicons name="chevron-back" size={28} color={THEME.textHeading} />
+          </Pressable>
+          <View style={styles.headerText}>
+            <Text style={styles.headerSubtitle}>Your</Text>
+            <Text style={styles.headerTitle}>Calendar</Text>
+          </View>
         </View>
         <View style={styles.monthBadge}>
           <Text style={styles.monthText}>{getMonthName()}</Text>
@@ -410,7 +418,7 @@ export default function CalendarScreen() {
           ) : null}
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -425,7 +433,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between' as const,
     alignItems: 'center' as const,
     paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingVertical: 16,
+  },
+  headerLeft: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flex: 1,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 4,
+  },
+  headerText: {
+    flex: 1,
   },
   headerSubtitle: {
     fontSize: 14,
