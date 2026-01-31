@@ -83,9 +83,11 @@ export default function SosMedicinePage() {
     notes: '',
   });
 
-  // Calendar state
-  const [selectedDate, setSelectedDate] = React.useState('');
-  const [currentMonth, setCurrentMonth] = React.useState(new Date());
+  // Calendar state - initialize with today's date
+  const today = new Date();
+  const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const [selectedDate, setSelectedDate] = React.useState(todayString);
+  const [currentMonth, setCurrentMonth] = React.useState(today);
 
   const handleRefresh = () => {
     setIsManuallyRefreshing(true);
@@ -216,16 +218,26 @@ export default function SosMedicinePage() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Get marked dates for calendar
+  // Convert UTC ISO string to local date string (YYYY-MM-DD)
+  const getLocalDateString = (isoString: string) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Get marked dates for calendar (using local dates)
   const getMarkedDates = () => {
     const marked: any = {};
 
     allLogs.forEach((log) => {
-      const dateStr = log.takenAt.split('T')[0];
-      if (!marked[dateStr]) {
-        marked[dateStr] = { dots: [] };
+      // Convert UTC timestamp to local date
+      const localDateStr = getLocalDateString(log.takenAt);
+      if (!marked[localDateStr]) {
+        marked[localDateStr] = { marked: true, dots: [] };
       }
-      marked[dateStr].dots.push({ color: THEME.primary });
+      marked[localDateStr].dots.push({ color: THEME.primary });
     });
 
     if (selectedDate) {
@@ -239,9 +251,15 @@ export default function SosMedicinePage() {
     return marked;
   };
 
-  // Filter logs for selected date
+  // Memoize marked dates to prevent unnecessary re-renders
+  const markedDates = React.useMemo(() => getMarkedDates(), [allLogs, selectedDate]);
+
+  // Filter logs for selected date (comparing local dates)
   const getLogsForDate = (dateString: string) => {
-    return allLogs.filter((log) => log.takenAt.startsWith(dateString));
+    return allLogs.filter((log) => {
+      const localDateStr = getLocalDateString(log.takenAt);
+      return localDateStr === dateString;
+    });
   };
 
   const activeCount = medicines.filter((m) => m.isActive).length;
@@ -453,7 +471,7 @@ export default function SosMedicinePage() {
                     textDayHeaderFontSize: 13,
                     textDayHeaderFontWeight: '700' as const,
                   }}
-                  markedDates={getMarkedDates()}
+                  markedDates={markedDates}
                   onDayPress={(day: DateData) => setSelectedDate(day.dateString)}
                   onMonthChange={(month: DateData) =>
                     setCurrentMonth(new Date(month.year, month.month - 1, 1))
