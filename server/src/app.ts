@@ -7,6 +7,7 @@ import { env } from './config/env-config';
 import medicationRoutes from './features/medication/routes/medication.routes';
 import patientInfoRoutes from './features/patient-info/routes/patient-info.routes';
 import sosMedicineRoutes from './features/sos-medicine/routes/sos-medicine.routes';
+import symptomRoutes from './features/symptom/routes/symptom.routes';
 import taskRoutes from './features/task/routes/task.routes';
 import templateRoutes from './features/template/routes/template.routes';
 import userRoutes from './features/user/routes/user.routes';
@@ -54,6 +55,7 @@ app.get('/heartbeat', (req: Request, res: Response): void => {
 app.use('/v1/users', userRoutes);
 app.use('/v1/medications', medicationRoutes);
 app.use('/v1/sos-medicines', sosMedicineRoutes);
+app.use('/v1/symptoms', symptomRoutes);
 app.use('/v1/tasks', taskRoutes);
 app.use('/v1/templates', templateRoutes);
 app.use('/v1/patient-info', patientInfoRoutes);

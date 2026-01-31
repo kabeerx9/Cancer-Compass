@@ -27,6 +27,7 @@ model User {
   patientInfo  PatientInfo?
   contacts     Contact[]
   sosMedicines SosMedicine[]
+  symptomLogs  SymptomLog[]
 
   @@map("users")
 }
@@ -206,4 +207,22 @@ model SosMedicineLog {
   sosMedicine SosMedicine @relation(fields: [sosMedicineId], references: [id], onDelete: Cascade)
 
   @@map("sos_medicine_logs")
+}
+
+// ============================================
+// SYMPTOM TRACKING
+// ============================================
+
+model SymptomLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  date      DateTime @db.Date // The day this log is for (local date)
+  content   String   // Free text: "Nausea in morning, fatigue at 3pm"
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date]) // One log per day per user
+  @@map("symptom_logs")
 }

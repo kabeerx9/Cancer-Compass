@@ -88,12 +88,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="calendar"
+        name="more"
         options={{
-          title: 'Calendar',
+          title: 'More',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
+              name={focused ? 'grid' : 'grid-outline'}
               size={size}
               color={color}
             />
@@ -101,6 +101,18 @@ export default function TabLayout() {
         }}
       />
 
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="insights"
+        options={{
+          href: null,
+        }}
+      />
       <Tabs.Screen
         name="manage-templates"
         options={{
