@@ -74,6 +74,20 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="sos"
+        options={{
+          title: 'SOS',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'alert-circle' : 'alert-circle-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendar',
