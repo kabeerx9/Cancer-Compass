@@ -18,6 +18,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MedicationDetailModal } from '@/components/medications/MedicationDetailModal';
+import { MedicationCardSkeleton, Skeleton, StatCardSkeleton } from '@/components/skeleton';
 import {
   type CreateMedicationData,
   type Medication,
@@ -177,10 +178,35 @@ export default function MedicationsPage() {
 
   const saving = createMutation.isPending || updateMutation.isPending;
 
+  // Loading skeleton view
   if (isLoadingMedications && medications.length === 0) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={THEME.primary} />
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <View>
+              <Skeleton width={60} height={16} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+              <View style={{ height: 8 }} />
+              <Skeleton width={220} height={36} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            </View>
+            <Skeleton width={56} height={56} borderRadius={28} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+          </View>
+
+          {/* Stats Card Skeleton */}
+          <View style={styles.statsSection}>
+            <StatCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+          </View>
+
+          {/* Medication Card Skeletons */}
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+          </ScrollView>
+        </SafeAreaView>
       </View>
     );
   }

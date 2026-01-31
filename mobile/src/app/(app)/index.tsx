@@ -24,6 +24,7 @@ import {
   medicationQueries,
 } from '@/features/medications';
 import { symptomQueries, symptomMutations } from '@/features/symptom';
+import { MedicationCardSkeleton, StatCardSkeleton } from '@/components/skeleton';
 
 // Warm Healing Theme
 const THEME = {
@@ -162,14 +163,6 @@ export default function HomePage() {
     }, 30 * 60 * 1000); // Remind again after 30 minutes
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={THEME.primary} />
-      </View>
-    );
-  }
-
   const renderMedicationItem = ({
     item: medication,
     index,
@@ -273,6 +266,39 @@ export default function HomePage() {
       </Animated.View>
     );
   };
+
+  // Loading skeleton view
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <View>
+              <View style={styles.skeletonLine} />
+              <View style={[styles.skeletonLine, { width: 150, marginTop: 8 }]} />
+            </View>
+            <View style={[styles.skeletonLine, { width: 48, height: 48, borderRadius: 24 }]} />
+          </View>
+
+          {/* Progress Card Skeleton */}
+          <StatCardSkeleton />
+
+          {/* Section Title Skeleton */}
+          <View style={styles.sectionHeader}>
+            <View style={[styles.skeletonLine, { width: 180, height: 28 }]} />
+          </View>
+
+          {/* Medication Cards Skeleton */}
+          <View style={styles.listContent}>
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -463,6 +489,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: THEME.background,
+  },
+
+  // Skeleton
+  skeletonLine: {
+    backgroundColor: '#E8E0D8',
+    borderRadius: 8,
+    height: 20,
+    width: 100,
   },
 
   // Header

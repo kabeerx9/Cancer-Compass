@@ -312,8 +312,19 @@ export default function TasksPage() {
         </View>
 
         {isLoading && !tasks.length ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#2563EB" />
+          <View className="flex-1 px-6">
+            {/* Header Skeleton */}
+            <View className="flex-row justify-between items-center mb-6">
+              <View className="h-8 w-32 bg-gray-200 rounded-lg" />
+              <View className="h-10 w-10 bg-gray-200 rounded-full" />
+            </View>
+            
+            {/* Task Cards Skeleton */}
+            <View className="h-16 bg-gray-200 rounded-xl mb-3" />
+            <View className="h-16 bg-gray-200 rounded-xl mb-3" />
+            <View className="h-16 bg-gray-200 rounded-xl mb-3" />
+            <View className="h-16 bg-gray-200 rounded-xl mb-3" />
+            <View className="h-16 bg-gray-200 rounded-xl mb-3" />
           </View>
         ) : (
           <SectionList

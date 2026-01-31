@@ -18,6 +18,7 @@ import { Calendar, type DateData } from 'react-native-calendars';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogCardSkeleton, MedicationCardSkeleton, Skeleton, StatCardSkeleton } from '@/components/skeleton';
 import {
   type CreateSosMedicineData,
   type LogSosMedicineData,
@@ -40,6 +41,12 @@ const THEME = {
   textMuted: '#B8A89A',
   border: '#E8E0D8',
   shadow: 'rgba(45, 40, 36, 0.08)',
+};
+
+// Skeleton colors matching warm healing theme
+const SKELETON_COLORS = {
+  background: '#E8E0D8',
+  shimmer: '#F5F0EB',
 };
 
 type ViewMode = 'cabinet' | 'history';
@@ -265,6 +272,44 @@ export default function SosMedicinePage() {
   const activeCount = medicines.filter((m) => m.isActive).length;
   const saving = createMutation.isPending || updateMutation.isPending;
 
+  // Loading skeleton view
+  if (isLoadingMedicines && medicines.length === 0) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <View>
+              <Skeleton width={60} height={16} colors={SKELETON_COLORS} />
+              <View style={{ height: 8 }} />
+              <Skeleton width={180} height={36} colors={SKELETON_COLORS} />
+            </View>
+            <Skeleton width={56} height={56} borderRadius={28} colors={SKELETON_COLORS} />
+          </View>
+
+          {/* Stats Card Skeleton */}
+          <View style={styles.statsSection}>
+            <StatCardSkeleton colors={SKELETON_COLORS} />
+          </View>
+
+          {/* Toggle Skeleton */}
+          <View style={styles.toggleContainer}>
+            <Skeleton width="48%" height={44} borderRadius={12} colors={SKELETON_COLORS} />
+            <Skeleton width="48%" height={44} borderRadius={12} colors={SKELETON_COLORS} />
+          </View>
+
+          {/* Medicine Card Skeletons */}
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <MedicationCardSkeleton colors={SKELETON_COLORS} />
+            <MedicationCardSkeleton colors={SKELETON_COLORS} />
+            <MedicationCardSkeleton colors={SKELETON_COLORS} />
+            <MedicationCardSkeleton colors={SKELETON_COLORS} />
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -487,7 +532,11 @@ export default function SosMedicinePage() {
                   {selectedDate ? `Logs for ${selectedDate}` : 'All Logs'}
                 </Text>
                 {isLoadingLogs ? (
-                  <ActivityIndicator color={THEME.primary} />
+                  <>
+                    <LogCardSkeleton colors={SKELETON_COLORS} />
+                    <LogCardSkeleton colors={SKELETON_COLORS} />
+                    <LogCardSkeleton colors={SKELETON_COLORS} />
+                  </>
                 ) : (
                   (selectedDate ? getLogsForDate(selectedDate) : allLogs).map((log, index) => (
                     <Animated.View
