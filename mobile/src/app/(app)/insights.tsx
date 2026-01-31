@@ -11,6 +11,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -44,6 +45,11 @@ export default function InsightsPage() {
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
   const [selectedRange, setSelectedRange] = React.useState<DateRange>('7');
   const [showSummary, setShowSummary] = React.useState(false);
+  const [addModalVisible, setAddModalVisible] = React.useState(false);
+  const [symptomContent, setSymptomContent] = React.useState('');
+
+  // Check if today's log exists
+  const { data: hasTodayLog, refetch: refetchToday } = useQuery(symptomQueries.today());
 
   // Calculate dates based on selected range
   const getDateRange = () => {
@@ -83,7 +89,35 @@ export default function InsightsPage() {
   const handleRefresh = () => {
     setIsManuallyRefreshing(true);
     queryClient.invalidateQueries({ queryKey: ['symptoms'] });
+    refetchToday();
     setTimeout(() => setIsManuallyRefreshing(false), 1000);
+  };
+
+  const handleSaveSymptom = () => {
+    if (!symptomContent.trim()) {
+      Alert.alert('Error', 'Please enter some symptoms or notes');
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    createMutation.mutate(
+      {
+        date: today,
+        content: symptomContent.trim(),
+      },
+      {
+        onSuccess: () => {
+          setAddModalVisible(false);
+          setSymptomContent('');
+          refetchToday();
+          // Also refresh the logs list
+          queryClient.invalidateQueries({ queryKey: ['symptoms'] });
+        },
+        onError: (error: Error) => {
+          Alert.alert('Error', error.message || 'Failed to save symptom log');
+        },
+      }
+    );
   };
 
   const formatDate = (dateStr: string) => {
@@ -211,6 +245,26 @@ export default function InsightsPage() {
             </Animated.View>
           )}
 
+          {/* Add Today's Log Button (if not logged yet) */}
+          {!hasTodayLog && !isLoadingLogs && (
+            <Animated.View entering={FadeInDown.springify()} style={styles.addTodayContainer}>
+              <Pressable
+                style={styles.addTodayButton}
+                onPress={() => setAddModalVisible(true)}
+              >
+                <LinearGradient
+                  colors={['#14B8A6', '#0D9488']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.addTodayGradient}
+                >
+                  <Ionicons name="add-circle" size={20} color="#FFFFFF" />
+                  <Text style={styles.addTodayText}>Log Today's Symptoms</Text>
+                </LinearGradient>
+              </Pressable>
+            </Animated.View>
+          )}
+
           {/* Logs List */}
           <View style={styles.logsSection}>
             <Text style={styles.sectionTitle}>
@@ -251,6 +305,75 @@ export default function InsightsPage() {
             )}
           </View>
         </ScrollView>
+
+        {/* Add Symptom Modal */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={addModalVisible}
+          onRequestClose={() => setAddModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalIconContainer}>
+                <LinearGradient
+                  colors={[THEME.primary, '#0D9488']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.modalIconGradient}
+                >
+                  <Ionicons name="create-outline" size={28} color="#FFFFFF" />
+                </LinearGradient>
+              </View>
+
+              <Text style={styles.modalTitle}>Log Symptoms</Text>
+              <Text style={styles.modalSubtitle}>How are you feeling today?</Text>
+
+              <TextInput
+                style={styles.modalInput}
+                multiline
+                numberOfLines={4}
+                placeholder="Share any symptoms, feelings, or notes about your day..."
+                placeholderTextColor={THEME.textMuted}
+                value={symptomContent}
+                onChangeText={setSymptomContent}
+                textAlignVertical="top"
+              />
+
+              <Pressable
+                style={styles.modalSaveButton}
+                onPress={handleSaveSymptom}
+                disabled={createMutation.isPending || !symptomContent.trim()}
+              >
+                <LinearGradient
+                  colors={[THEME.primary, '#0D9488']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[
+                    styles.modalSaveGradient,
+                    (!symptomContent.trim() || createMutation.isPending) && styles.modalSaveDisabled,
+                  ]}
+                >
+                  {createMutation.isPending ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.modalSaveText}>Save</Text>
+                  )}
+                </LinearGradient>
+              </Pressable>
+
+              <Pressable
+                style={styles.modalCancelButton}
+                onPress={() => {
+                  setAddModalVisible(false);
+                  setSymptomContent('');
+                }}
+              >
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </View>
   );
@@ -466,5 +589,122 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: THEME.textBody,
     lineHeight: 22,
+  },
+
+  // Add Today's Log Button
+  addTodayContainer: {
+    marginHorizontal: 24,
+    marginBottom: 20,
+  },
+  addTodayButton: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  addTodayGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+  },
+  addTodayText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(45, 40, 36, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContainer: {
+    backgroundColor: THEME.surface,
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    maxWidth: 360,
+    shadowColor: THEME.shadow,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 12,
+    alignItems: 'center',
+  },
+  modalIconContainer: {
+    marginBottom: 16,
+  },
+  modalIconGradient: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: THEME.textHeading,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 15,
+    color: THEME.textBody,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalInput: {
+    width: '100%',
+    minHeight: 100,
+    backgroundColor: THEME.background,
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 15,
+    color: THEME.textHeading,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    textAlignVertical: 'top',
+    marginBottom: 20,
+  },
+  modalSaveButton: {
+    width: '100%',
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalSaveGradient: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSaveDisabled: {
+    opacity: 0.5,
+  },
+  modalSaveText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  modalCancelButton: {
+    paddingVertical: 10,
+  },
+  modalCancelText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: THEME.textMuted,
   },
 });
