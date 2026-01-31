@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -18,7 +19,7 @@ import { Calendar, type DateData } from 'react-native-calendars';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { LogCardSkeleton, MedicationCardSkeleton, Skeleton, StatCardSkeleton } from '@/components/skeleton';
+import { LogCardSkeleton, MedicationCardSkeleton, Skeleton } from '@/components/skeleton';
 import {
   type CreateSosMedicineData,
   type LogSosMedicineData,
@@ -31,10 +32,9 @@ import {
 
 // Warm Healing Theme
 const THEME = {
-  primary: '#F43F5E', // Warm Coral/Red for SOS
+  primary: '#F43F5E',
   primaryLight: '#FFE4E6',
-  secondary: '#14B8A6', // Teal
-  background: '#FFFBF9', // Warm cream
+  background: '#FFFBF9',
   surface: '#FFFFFF',
   textHeading: '#2D2824',
   textBody: '#6B5D50',
@@ -43,20 +43,14 @@ const THEME = {
   shadow: 'rgba(45, 40, 36, 0.08)',
 };
 
-// Skeleton colors matching warm healing theme
-const SKELETON_COLORS = {
-  background: '#E8E0D8',
-  shimmer: '#F5F0EB',
-};
-
 type ViewMode = 'cabinet' | 'history';
 
 export default function SosMedicinePage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [viewMode, setViewMode] = React.useState<ViewMode>('cabinet');
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
-  // Data fetching
   const { data: medicines = [], isLoading: isLoadingMedicines } = useQuery(
     sosMedicineQueries.all()
   );
@@ -65,19 +59,16 @@ export default function SosMedicinePage() {
   );
   const { data: stats } = useQuery(sosMedicineQueries.stats());
 
-  // Mutations
   const createMutation = useMutation(sosMedicineMutations.create(queryClient));
   const updateMutation = useMutation(sosMedicineMutations.update(queryClient));
   const deleteMutation = useMutation(sosMedicineMutations.delete(queryClient));
   const logMutation = useMutation(sosMedicineMutations.log(queryClient));
 
-  // Modal states
   const [addModalVisible, setAddModalVisible] = React.useState(false);
   const [takeModalVisible, setTakeModalVisible] = React.useState(false);
   const [editModalVisible, setEditModalVisible] = React.useState(false);
   const [selectedMedicine, setSelectedMedicine] = React.useState<SosMedicine | null>(null);
 
-  // Form states
   const [formData, setFormData] = React.useState<CreateSosMedicineData>({
     name: '',
     purpose: '',
@@ -90,7 +81,6 @@ export default function SosMedicinePage() {
     notes: '',
   });
 
-  // Calendar state - initialize with today's date
   const today = new Date();
   const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const [selectedDate, setSelectedDate] = React.useState(todayString);
@@ -225,7 +215,6 @@ export default function SosMedicinePage() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Convert UTC ISO string to local date string (YYYY-MM-DD)
   const getLocalDateString = (isoString: string) => {
     const date = new Date(isoString);
     const year = date.getFullYear();
@@ -234,12 +223,10 @@ export default function SosMedicinePage() {
     return `${year}-${month}-${day}`;
   };
 
-  // Get marked dates for calendar (using local dates)
   const getMarkedDates = () => {
     const marked: any = {};
 
     allLogs.forEach((log) => {
-      // Convert UTC timestamp to local date
       const localDateStr = getLocalDateString(log.takenAt);
       if (!marked[localDateStr]) {
         marked[localDateStr] = { marked: true, dots: [] };
@@ -258,10 +245,8 @@ export default function SosMedicinePage() {
     return marked;
   };
 
-  // Memoize marked dates to prevent unnecessary re-renders
   const markedDates = React.useMemo(() => getMarkedDates(), [allLogs, selectedDate]);
 
-  // Filter logs for selected date (comparing local dates)
   const getLogsForDate = (dateString: string) => {
     return allLogs.filter((log) => {
       const localDateStr = getLocalDateString(log.takenAt);
@@ -272,38 +257,34 @@ export default function SosMedicinePage() {
   const activeCount = medicines.filter((m) => m.isActive).length;
   const saving = createMutation.isPending || updateMutation.isPending;
 
-  // Loading skeleton view
   if (isLoadingMedicines && medicines.length === 0) {
     return (
       <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
-          {/* Header Skeleton */}
           <View style={styles.header}>
-            <View>
-              <Skeleton width={60} height={16} colors={SKELETON_COLORS} />
-              <View style={{ height: 8 }} />
-              <Skeleton width={180} height={36} colors={SKELETON_COLORS} />
+            <View style={styles.headerLeft}>
+              <Pressable style={styles.backBtn} onPress={() => router.navigate('/cabinet')}>
+                <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+              </Pressable>
+              <View>
+                <Skeleton width={60} height={16} />
+                <View style={{ height: 4 }} />
+                <Skeleton width={180} height={36} />
+              </View>
             </View>
-            <Skeleton width={56} height={56} borderRadius={28} colors={SKELETON_COLORS} />
+            <Skeleton width={56} height={56} borderRadius={28} />
           </View>
 
-          {/* Stats Card Skeleton */}
-          <View style={styles.statsSection}>
-            <StatCardSkeleton colors={SKELETON_COLORS} />
-          </View>
-
-          {/* Toggle Skeleton */}
           <View style={styles.toggleContainer}>
-            <Skeleton width="48%" height={44} borderRadius={12} colors={SKELETON_COLORS} />
-            <Skeleton width="48%" height={44} borderRadius={12} colors={SKELETON_COLORS} />
+            <Skeleton width="48%" height={44} borderRadius={12} />
+            <Skeleton width="48%" height={44} borderRadius={12} />
           </View>
 
-          {/* Medicine Card Skeletons */}
           <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-            <MedicationCardSkeleton colors={SKELETON_COLORS} />
-            <MedicationCardSkeleton colors={SKELETON_COLORS} />
-            <MedicationCardSkeleton colors={SKELETON_COLORS} />
-            <MedicationCardSkeleton colors={SKELETON_COLORS} />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
           </ScrollView>
         </SafeAreaView>
       </View>
@@ -313,25 +294,18 @@ export default function SosMedicinePage() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerSubtitle}>Your</Text>
-            <Text style={styles.headerTitle}>SOS Medicines</Text>
+          <View style={styles.headerLeft}>
+            <Pressable style={styles.backBtn} onPress={() => router.navigate('/cabinet')}>
+              <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+            </Pressable>
+            <View style={styles.headerText}>
+              <Text style={styles.headerSubtitle}>Your</Text>
+              <Text style={styles.headerTitle}>SOS Medicines</Text>
+            </View>
           </View>
-          <Pressable style={[styles.addBtn, { shadowColor: THEME.primary }]} onPress={openAddModal}>
-            <LinearGradient
-              colors={[THEME.primary, '#E11D48']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.addBtnGradient}
-            >
-              <Ionicons name="add" size={26} color="#FFFFFF" />
-            </LinearGradient>
-          </Pressable>
         </View>
 
-        {/* Stats Card */}
         {stats && (
           <View style={styles.statsSection}>
             <LinearGradient
@@ -353,7 +327,6 @@ export default function SosMedicinePage() {
           </View>
         )}
 
-        {/* View Toggle */}
         <View style={styles.toggleContainer}>
           <Pressable
             style={[styles.toggleBtn, viewMode === 'cabinet' && styles.toggleBtnActive]}
@@ -383,7 +356,6 @@ export default function SosMedicinePage() {
           </Pressable>
         </View>
 
-        {/* Content */}
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
@@ -396,7 +368,6 @@ export default function SosMedicinePage() {
           }
         >
           {viewMode === 'cabinet' ? (
-            // Medicine Cabinet View
             <>
               {medicines.length === 0 ? (
                 <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>
@@ -494,7 +465,6 @@ export default function SosMedicinePage() {
               )}
             </>
           ) : (
-            // History/Calendar View
             <Animated.View entering={FadeInDown.springify()}>
               <View style={styles.calendarCard}>
                 <Calendar
@@ -510,11 +480,11 @@ export default function SosMedicinePage() {
                     textDisabledColor: THEME.border,
                     arrowColor: THEME.primary,
                     monthTextColor: THEME.textHeading,
-                    textMonthFontWeight: '700' as const,
+                    textMonthFontWeight: '700',
                     textDayFontSize: 16,
                     textMonthFontSize: 18,
                     textDayHeaderFontSize: 13,
-                    textDayHeaderFontWeight: '700' as const,
+                    textDayHeaderFontWeight: '700',
                   }}
                   markedDates={markedDates}
                   onDayPress={(day: DateData) => setSelectedDate(day.dateString)}
@@ -526,16 +496,15 @@ export default function SosMedicinePage() {
                 />
               </View>
 
-              {/* Logs List */}
               <View style={styles.logsSection}>
                 <Text style={styles.logsTitle}>
                   {selectedDate ? `Logs for ${selectedDate}` : 'All Logs'}
                 </Text>
                 {isLoadingLogs ? (
                   <>
-                    <LogCardSkeleton colors={SKELETON_COLORS} />
-                    <LogCardSkeleton colors={SKELETON_COLORS} />
-                    <LogCardSkeleton colors={SKELETON_COLORS} />
+                    <LogCardSkeleton />
+                    <LogCardSkeleton />
+                    <LogCardSkeleton />
                   </>
                 ) : (
                   (selectedDate ? getLogsForDate(selectedDate) : allLogs).map((log, index) => (
@@ -571,9 +540,23 @@ export default function SosMedicinePage() {
             </Animated.View>
           )}
         </ScrollView>
+
+        {/* Floating Add Button */}
+        <Pressable
+          style={styles.fab}
+          onPress={openAddModal}
+        >
+          <LinearGradient
+            colors={[THEME.primary, '#E11D48']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.fabGradient}
+          >
+            <Ionicons name="add" size={28} color="#FFFFFF" />
+          </LinearGradient>
+        </Pressable>
       </SafeAreaView>
 
-      {/* Add Medicine Modal */}
       <Modal
         visible={addModalVisible}
         animationType="slide"
@@ -651,7 +634,6 @@ export default function SosMedicinePage() {
         </View>
       </Modal>
 
-      {/* Edit Medicine Modal */}
       <Modal
         visible={editModalVisible}
         animationType="slide"
@@ -725,7 +707,6 @@ export default function SosMedicinePage() {
         </View>
       </Modal>
 
-      {/* Take Medicine Modal */}
       <Modal
         visible={takeModalVisible}
         animationType="slide"
@@ -786,13 +767,24 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: THEME.background },
   safeArea: { flex: 1 },
 
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 20,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  backBtn: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerText: {
+    flex: 1,
   },
   headerSubtitle: {
     fontSize: 14,
@@ -806,24 +798,30 @@ const styles = StyleSheet.create({
     color: THEME.textHeading,
     letterSpacing: -0.5,
   },
-  addBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
+
+  // Floating Action Button
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+    zIndex: 100,
   },
-  addBtnGradient: {
+  fabGradient: {
     width: '100%',
     height: '100%',
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 28,
   },
 
-  // Stats
   statsSection: { marginHorizontal: 24, marginBottom: 16 },
   statsCard: {
     flexDirection: 'row',
@@ -850,7 +848,6 @@ const styles = StyleSheet.create({
   },
   statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.2)' },
 
-  // Toggle
   toggleContainer: {
     flexDirection: 'row',
     marginHorizontal: 24,
@@ -883,9 +880,8 @@ const styles = StyleSheet.create({
   },
 
   scrollView: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 32 },
+  scrollContent: { paddingHorizontal: 24, paddingBottom: 100 }, // Extra padding for FAB
 
-  // Empty State
   emptyState: { alignItems: 'center', paddingTop: 60 },
   emptyIconCircle: {
     width: 96,
@@ -920,7 +916,6 @@ const styles = StyleSheet.create({
   },
   emptyActionText: { fontSize: 15, fontWeight: '700', color: THEME.primary },
 
-  // Cards
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -994,7 +989,6 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 
-  // Calendar
   calendarCard: {
     backgroundColor: THEME.surface,
     borderRadius: 20,
@@ -1010,7 +1004,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 
-  // Logs
   logsSection: {
     backgroundColor: THEME.surface,
     borderRadius: 20,
@@ -1066,7 +1059,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
 
-  // Modals
   modalContainer: { flex: 1, backgroundColor: THEME.surface },
   modalHeader: {
     flexDirection: 'row',
@@ -1124,7 +1116,6 @@ const styles = StyleSheet.create({
   },
   saveText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
 
-  // Take Medicine Modal (overlay style)
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

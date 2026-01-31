@@ -17,6 +17,7 @@ import {
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LogCardSkeleton, Skeleton } from '@/components/skeleton';
 import {
   type CreateSymptomLogData,
   symptomMutations,
@@ -38,6 +39,11 @@ const THEME = {
   shadow: 'rgba(45, 40, 36, 0.08)',
 };
 
+const SKELETON_COLORS = {
+  background: '#E8E0D8',
+  shimmer: '#F5F0EB',
+};
+
 type DateRange = '7' | '14' | '30' | 'custom';
 
 export default function InsightsPage() {
@@ -57,7 +63,6 @@ export default function InsightsPage() {
     const startDate = new Date();
 
     if (selectedRange === 'custom') {
-      // For custom, we'll use last 30 days as default
       startDate.setDate(endDate.getDate() - 30);
     } else {
       startDate.setDate(endDate.getDate() - parseInt(selectedRange));
@@ -110,7 +115,6 @@ export default function InsightsPage() {
           setAddModalVisible(false);
           setSymptomContent('');
           refetchToday();
-          // Also refresh the logs list
           queryClient.invalidateQueries({ queryKey: ['symptoms'] });
         },
         onError: (error: Error) => {
@@ -131,6 +135,47 @@ export default function InsightsPage() {
     { value: '30', label: 'Last 30 Days' },
     { value: 'custom', label: 'Custom' },
   ];
+
+  // Loading skeleton
+  if (isLoadingLogs && logs.length === 0) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header Skeleton */}
+          <View style={styles.header}>
+            <View>
+              <Skeleton width={50} height={16} />
+              <View style={{ height: 8 }} />
+              <Skeleton width={140} height={36} />
+            </View>
+          </View>
+
+          {/* Range Selector Skeleton */}
+          <View style={styles.rangeSelector}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <Skeleton width={100} height={40} borderRadius={20} />
+              <Skeleton width={100} height={40} borderRadius={20} />
+              <Skeleton width={100} height={40} borderRadius={20} />
+              <Skeleton width={100} height={40} borderRadius={20} />
+            </ScrollView>
+          </View>
+
+          {/* Summary Button Skeleton */}
+          <View style={styles.summarySection}>
+            <Skeleton width="100%" height={48} borderRadius={14} />
+          </View>
+
+          {/* Logs Skeleton */}
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <LogCardSkeleton />
+            <LogCardSkeleton />
+            <LogCardSkeleton />
+            <LogCardSkeleton />
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -245,7 +290,7 @@ export default function InsightsPage() {
             </Animated.View>
           )}
 
-          {/* Add Today's Log Button (if not logged yet) */}
+          {/* Add Today's Log Button */}
           {!hasTodayLog && !isLoadingLogs && (
             <Animated.View entering={FadeInDown.springify()} style={styles.addTodayContainer}>
               <Pressable
@@ -271,16 +316,14 @@ export default function InsightsPage() {
               Symptom Logs ({logs.length} entries)
             </Text>
 
-            {isLoadingLogs ? (
-              <ActivityIndicator color={THEME.primary} style={styles.loader} />
-            ) : logs.length === 0 ? (
+            {logs.length === 0 ? (
               <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>
                 <View style={styles.emptyIconCircle}>
                   <Ionicons name="document-text-outline" size={48} color={THEME.primary} />
                 </View>
                 <Text style={styles.emptyTitle}>No Logs Yet</Text>
                 <Text style={styles.emptySubtitle}>
-                  Start logging your symptoms in the evening check-in
+                  Start logging your symptoms to track your health journey
                 </Text>
               </Animated.View>
             ) : (
@@ -389,7 +432,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
   headerSubtitle: {
     fontSize: 14,
@@ -465,7 +509,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingBottom: 16, // Reduced bottom padding
   },
   summaryCard: {
     backgroundColor: THEME.surface,
@@ -526,6 +570,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: THEME.textMuted,
   },
+  addTodayContainer: {
+    marginBottom: 20,
+  },
+  addTodayButton: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  addTodayGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+  },
+  addTodayText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
   logsSection: {
     flex: 1,
   },
@@ -534,9 +602,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: THEME.textHeading,
     marginBottom: 16,
-  },
-  loader: {
-    marginTop: 20,
   },
   emptyState: {
     alignItems: 'center',
@@ -590,34 +655,6 @@ const styles = StyleSheet.create({
     color: THEME.textBody,
     lineHeight: 22,
   },
-
-  // Add Today's Log Button
-  addTodayContainer: {
-    marginHorizontal: 24,
-    marginBottom: 20,
-  },
-  addTodayButton: {
-    borderRadius: 14,
-    overflow: 'hidden',
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  addTodayGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-  },
-  addTodayText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-
   // Modal Styles
   modalOverlay: {
     flex: 1,

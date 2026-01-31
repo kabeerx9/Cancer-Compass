@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -29,9 +30,9 @@ import {
 
 // Warm Healing Theme
 const THEME = {
-  primary: '#14B8A6', // Warm Teal
+  primary: '#14B8A6',
   primaryLight: '#CCFBF1',
-  background: '#FFFBF9', // Warm cream
+  background: '#FFFBF9',
   surface: '#FFFFFF',
   textHeading: '#2D2824',
   textBody: '#6B5D50',
@@ -41,7 +42,13 @@ const THEME = {
   shadow: 'rgba(45, 40, 36, 0.08)',
 };
 
+const SKELETON_COLORS = {
+  background: '#E8E0D8',
+  shimmer: '#F5F0EB',
+};
+
 export default function MedicationsPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
@@ -54,13 +61,11 @@ export default function MedicationsPage() {
   const updateMutation = useMutation(medicationMutations.update(queryClient));
   const deleteMutation = useMutation(medicationMutations.delete(queryClient));
 
-  // Detail Modal State
   const [detailModalVisible, setDetailModalVisible] = React.useState(false);
   const [selectedMedicationId, setSelectedMedicationId] = React.useState<
     string | null
   >(null);
 
-  // Edit Modal State
   const [editModalVisible, setEditModalVisible] = React.useState(false);
   const [editingMedication, setEditingMedication] =
     React.useState<Medication | null>(null);
@@ -73,7 +78,6 @@ export default function MedicationsPage() {
     timeLabel: '',
   });
 
-  // Open detail modal when card is tapped
   const openDetailModal = (medication: Medication) => {
     setSelectedMedicationId(medication.id);
     setDetailModalVisible(true);
@@ -84,14 +88,12 @@ export default function MedicationsPage() {
     setSelectedMedicationId(null);
   };
 
-  // Open add modal (for new medications)
   const openAddModal = () => {
     setEditingMedication(null);
     setFormData({ name: '', purpose: '', dosage: '', time: '', timeLabel: '' });
     setEditModalVisible(true);
   };
 
-  // Open edit modal (from detail modal)
   const openEditModal = (medication: Medication) => {
     setDetailModalVisible(false);
     setEditingMedication(medication);
@@ -102,7 +104,6 @@ export default function MedicationsPage() {
       time: medication.time || '',
       timeLabel: medication.timeLabel || '',
     });
-    // Small delay to let detail modal close
     setTimeout(() => {
       setEditModalVisible(true);
     }, 100);
@@ -176,6 +177,10 @@ export default function MedicationsPage() {
     setTimeout(() => setIsManuallyRefreshing(false), 1000);
   };
 
+  const handleBack = () => {
+    router.navigate('/cabinet');
+  };
+
   const saving = createMutation.isPending || updateMutation.isPending;
 
   // Loading skeleton view
@@ -183,28 +188,34 @@ export default function MedicationsPage() {
     return (
       <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
-          {/* Header Skeleton */}
+          {/* Header */}
           <View style={styles.header}>
-            <View>
-              <Skeleton width={60} height={16} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
-              <View style={{ height: 8 }} />
-              <Skeleton width={220} height={36} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <View style={styles.headerLeft}>
+              <Pressable
+                style={styles.backBtn}
+                onPress={handleBack}
+              >
+                <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+              </Pressable>
+              <View>
+                <Text style={styles.headerSubtitle}>Your</Text>
+                <Text style={styles.headerTitle}>Medication Cabinet</Text>
+              </View>
             </View>
-            <Skeleton width={56} height={56} borderRadius={28} colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
           </View>
 
           {/* Stats Card Skeleton */}
           <View style={styles.statsSection}>
-            <StatCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <StatCardSkeleton />
           </View>
 
-          {/* Medication Card Skeletons */}
+          {/* Medication Cards Skeleton */}
           <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
-            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
-            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
-            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
-            <MedicationCardSkeleton colors={{ background: '#E8E0D8', shimmer: '#F5F0EB' }} />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
+            <MedicationCardSkeleton />
           </ScrollView>
         </SafeAreaView>
       </View>
@@ -227,23 +238,18 @@ export default function MedicationsPage() {
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerSubtitle}>Your</Text>
-            <Text style={styles.headerTitle}>Medication Cabinet</Text>
-          </View>
-          <Pressable
-            style={[styles.addBtn, { shadowColor: THEME.primary }]}
-            onPress={openAddModal}
-          >
-            <LinearGradient
-              colors={[THEME.primary, '#0D9488']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.addBtnGradient}
+          <View style={styles.headerLeft}>
+            <Pressable
+              style={styles.backBtn}
+              onPress={handleBack}
             >
-              <Ionicons name="add" size={26} color="#FFFFFF" />
-            </LinearGradient>
-          </Pressable>
+              <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+            </Pressable>
+            <View>
+              <Text style={styles.headerSubtitle}>Your</Text>
+              <Text style={styles.headerTitle}>Medication Cabinet</Text>
+            </View>
+          </View>
         </View>
 
         {/* Stats Card */}
@@ -389,6 +395,21 @@ export default function MedicationsPage() {
             </Animated.View>
           )}
         </ScrollView>
+
+        {/* Floating Add Button */}
+        <Pressable
+          style={styles.fab}
+          onPress={openAddModal}
+        >
+          <LinearGradient
+            colors={[THEME.primary, '#0D9488']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.fabGradient}
+          >
+            <Ionicons name="add" size={28} color="#FFFFFF" />
+          </LinearGradient>
+        </Pressable>
       </SafeAreaView>
 
       {/* Detail Modal */}
@@ -518,12 +539,6 @@ export default function MedicationsPage() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: THEME.background },
   safeArea: { flex: 1 },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: THEME.background,
-  },
 
   header: {
     flexDirection: 'row',
@@ -531,6 +546,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 20,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  backBtn: {
+    padding: 8,
+    marginRight: 12,
   },
   headerSubtitle: {
     fontSize: 14,
@@ -544,21 +568,28 @@ const styles = StyleSheet.create({
     color: THEME.textHeading,
     letterSpacing: -0.5,
   },
-  addBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
+
+  // Floating Action Button
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+    zIndex: 100,
   },
-  addBtnGradient: {
+  fabGradient: {
     width: '100%',
     height: '100%',
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 28,
   },
 
   // Stats
@@ -589,7 +620,7 @@ const styles = StyleSheet.create({
   statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.2)' },
 
   scrollView: { flex: 1 },
-  scrollContent: { paddingHorizontal: 24, paddingBottom: 32 },
+  scrollContent: { paddingHorizontal: 24, paddingBottom: 100 }, // Extra padding for FAB
 
   // Empty
   emptyState: { alignItems: 'center', paddingTop: 80 },

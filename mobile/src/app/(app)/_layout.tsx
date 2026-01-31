@@ -7,7 +7,7 @@ import { Platform, StyleSheet } from 'react-native';
 import { useIsFirstTime } from '@/lib';
 
 // Theme colors from our palette
-const ACTIVE_COLOR = '#2563EB'; // primary-600
+const ACTIVE_COLOR = '#14B8A6'; // Warm Teal
 const INACTIVE_COLOR = '#9CA3AF'; // neutral-400
 
 export default function TabLayout() {
@@ -33,6 +33,7 @@ export default function TabLayout() {
         tabBarLabelStyle: styles.tabBarLabel,
       }}
     >
+      {/* Main Tab: Home */}
       <Tabs.Screen
         name="index"
         options={{
@@ -46,10 +47,12 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* Main Tab: Plan (Tasks) */}
       <Tabs.Screen
         name="tasks"
         options={{
-          title: 'Tasks',
+          title: 'Plan',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'checkbox' : 'checkbox-outline'}
@@ -59,10 +62,12 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* Main Tab: Cabinet (Medications + SOS) */}
       <Tabs.Screen
-        name="medications"
+        name="cabinet"
         options={{
-          title: 'Medications',
+          title: 'Cabinet',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'medical' : 'medical-outline'}
@@ -73,13 +78,14 @@ export default function TabLayout() {
         }}
       />
 
+      {/* Main Tab: Health (Insights) */}
       <Tabs.Screen
-        name="sos"
+        name="insights"
         options={{
-          title: 'SOS',
+          title: 'Health',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'alert-circle' : 'alert-circle-outline'}
+              name={focused ? 'heart' : 'heart-outline'}
               size={size}
               color={color}
             />
@@ -87,13 +93,14 @@ export default function TabLayout() {
         }}
       />
 
+      {/* Main Tab: Profile */}
       <Tabs.Screen
-        name="more"
+        name="profile"
         options={{
-          title: 'More',
+          title: 'Profile',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'grid' : 'grid-outline'}
+              name={focused ? 'person' : 'person-outline'}
               size={size}
               color={color}
             />
@@ -101,14 +108,27 @@ export default function TabLayout() {
         }}
       />
 
+      {/* Hidden Screens - Internal Navigation Only */}
       <Tabs.Screen
-        name="calendar"
+        name="medications"
         options={{
           href: null,
         }}
       />
       <Tabs.Screen
-        name="insights"
+        name="sos"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
         options={{
           href: null,
         }}
@@ -126,12 +146,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
         name="quick-info"
         options={{
           href: null,
@@ -144,7 +158,7 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: '#FFFFFF',
-    borderTopColor: '#F3F4F6',
+    borderTopColor: '#E8E0D8',
     borderTopWidth: 1,
     height: Platform.OS === 'ios' ? 88 : 68,
     paddingTop: 8,
@@ -152,8 +166,8 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   tabBarLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
   },
 });

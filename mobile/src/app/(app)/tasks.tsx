@@ -286,28 +286,36 @@ export default function TasksPage() {
 
         {/* Date Navigator */}
         <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-2 shadow-sm">
-          <Pressable
-            onPress={handlePrevDay}
-            className="rounded-full p-2 active:bg-neutral-100"
-          >
-            <Ionicons name="chevron-back" size={24} color="#4B5563" />
-          </Pressable>
-          <View className="flex-row items-center rounded-xl bg-primary-50 px-4 py-2">
-            <Ionicons
-              name="calendar-outline"
-              size={16}
-              color="#2563EB"
-              style={{ marginRight: 6 }}
-            />
-            <Text className="text-base font-semibold text-primary-600">
-              {formatDateDisplay(date)}
-            </Text>
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={handlePrevDay}
+              className="rounded-full p-2 active:bg-neutral-100"
+            >
+              <Ionicons name="chevron-back" size={24} color="#4B5563" />
+            </Pressable>
+            <View className="mx-2 flex-row items-center rounded-xl bg-primary-50 px-4 py-2">
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color="#2563EB"
+                style={{ marginRight: 6 }}
+              />
+              <Text className="text-base font-semibold text-primary-600">
+                {formatDateDisplay(date)}
+              </Text>
+            </View>
+            <Pressable
+              onPress={handleNextDay}
+              className="rounded-full p-2 active:bg-neutral-100"
+            >
+              <Ionicons name="chevron-forward" size={24} color="#4B5563" />
+            </Pressable>
           </View>
           <Pressable
-            onPress={handleNextDay}
+            onPress={() => router.push('/calendar')}
             className="rounded-full p-2 active:bg-neutral-100"
           >
-            <Ionicons name="chevron-forward" size={24} color="#4B5563" />
+            <Ionicons name="calendar" size={22} color="#2563EB" />
           </Pressable>
         </View>
 
@@ -339,7 +347,7 @@ export default function TasksPage() {
               />
             )}
             renderSectionHeader={renderSectionHeader}
-            contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+            contentContainerStyle={{ padding: 24, paddingBottom: 16 }}
             refreshControl={
               <RefreshControl
                 refreshing={isManuallyRefreshing}

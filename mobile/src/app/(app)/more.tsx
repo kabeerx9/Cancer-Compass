@@ -1,16 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Warm Healing Theme
 const THEME = {
   primary: '#14B8A6', // Warm Teal
   primaryLight: '#CCFBF1',
-  secondary: '#F43F5E', // Warm Coral
   background: '#FFFBF9', // Warm cream
   surface: '#FFFFFF',
   textHeading: '#2D2824',
@@ -25,60 +27,34 @@ interface MenuItem {
   title: string;
   subtitle: string;
   icon: keyof typeof Ionicons.glyphMap;
-  gradient: [string, string];
   route: string;
 }
 
 const menuItems: MenuItem[] = [
   {
-    id: 'insights',
-    title: 'Insights',
-    subtitle: 'View symptom history & AI summaries',
-    icon: 'analytics',
-    gradient: ['#14B8A6', '#0D9488'],
-    route: '/insights',
-  },
-  {
-    id: 'calendar',
-    title: 'Calendar',
-    subtitle: 'Manage templates & view schedule',
-    icon: 'calendar',
-    gradient: ['#8B5CF6', '#7C3AED'],
-    route: '/calendar',
-  },
-  {
     id: 'templates',
     title: 'Templates',
     subtitle: 'Create & manage day templates',
     icon: 'duplicate',
-    gradient: ['#F59E0B', '#D97706'],
     route: '/manage-templates',
   },
   {
     id: 'quick-info',
-    title: 'Quick Reference',
-    subtitle: 'Patient info & emergency contacts',
+    title: 'Patient Info',
+    subtitle: 'Personal details & contacts',
     icon: 'information-circle',
-    gradient: ['#3B82F6', '#2563EB'],
     route: '/quick-info',
   },
   {
-    id: 'settings',
-    title: 'Settings',
-    subtitle: 'App preferences & profile',
-    icon: 'settings',
-    gradient: ['#6B7280', '#4B5563'],
-    route: '/settings',
+    id: 'help',
+    title: 'Help & Support',
+    subtitle: 'Get assistance with the app',
+    icon: 'help-circle',
+    route: '/help',
   },
 ];
 
 export default function MorePage() {
-  const router = useRouter();
-
-  const handleNavigate = (route: string) => {
-    router.push(route as any);
-  };
-
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -95,39 +71,28 @@ export default function MorePage() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View entering={FadeInDown.springify()}>
-            {menuItems.map((item, index) => (
-              <Animated.View
-                key={item.id}
-                entering={FadeInDown.delay(index * 80).springify()}
-              >
-                <Pressable
-                  style={styles.menuCard}
-                  onPress={() => handleNavigate(item.route)}
-                >
-                  <LinearGradient
-                    colors={item.gradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.iconContainer}
-                  >
-                    <Ionicons name={item.icon} size={28} color="#FFFFFF" />
-                  </LinearGradient>
+          {menuItems.map((item) => (
+            <Pressable
+              key={item.id}
+              style={styles.menuCard}
+              onPress={() => {}}
+            >
+              <View style={styles.iconContainer}>
+                <Ionicons name={item.icon} size={24} color={THEME.primary} />
+              </View>
 
-                  <View style={styles.contentContainer}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.subtitle}>{item.subtitle}</Text>
-                  </View>
+              <View style={styles.contentContainer}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.subtitle}>{item.subtitle}</Text>
+              </View>
 
-                  <Ionicons
-                    name="chevron-forward"
-                    size={24}
-                    color={THEME.textMuted}
-                  />
-                </Pressable>
-              </Animated.View>
-            ))}
-          </Animated.View>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={THEME.textMuted}
+              />
+            </Pressable>
+          ))}
 
           {/* Version Info */}
           <View style={styles.versionContainer}>
@@ -150,7 +115,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
   headerSubtitle: {
     fontSize: 14,
@@ -169,7 +135,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingBottom: 16, // Reduced from 32
   },
   menuCard: {
     flexDirection: 'row',
@@ -187,9 +153,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   iconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: THEME.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
