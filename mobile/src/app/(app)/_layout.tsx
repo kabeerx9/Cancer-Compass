@@ -139,6 +139,12 @@ export default function TabLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="sos-medicines"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
