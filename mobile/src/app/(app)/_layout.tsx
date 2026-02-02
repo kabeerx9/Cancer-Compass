@@ -110,24 +110,6 @@ export default function TabLayout() {
 
       {/* Hidden Screens - Internal Navigation Only */}
       <Tabs.Screen
-        name="medications"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="sos"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="more"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
         name="calendar"
         options={{
           href: null,
