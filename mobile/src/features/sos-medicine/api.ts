@@ -85,6 +85,7 @@ export const sosMedicineApi = {
       response.data.data || {
         totalUses: 0,
         uniqueMedicinesUsed: 0,
+        totalMedicines: 0,
       }
     );
   },

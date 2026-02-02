@@ -151,7 +151,7 @@ export class SosMedicineRepository {
       };
     }
 
-    const [totalLogs, uniqueMedicines] = await Promise.all([
+    const [totalLogs, uniqueMedicines, totalMedicines] = await Promise.all([
       this.prisma.sosMedicineLog.count({
         where: whereClause,
       }),
@@ -162,11 +162,15 @@ export class SosMedicineRepository {
           sosMedicineId: true,
         },
       }),
+      this.prisma.sosMedicine.count({
+        where: { userId },
+      }),
     ]);
 
     return {
       totalUses: totalLogs,
       uniqueMedicinesUsed: uniqueMedicines.length,
+      totalMedicines,
     };
   }
 }

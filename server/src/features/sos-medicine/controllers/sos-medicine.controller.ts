@@ -106,11 +106,11 @@ export class SosMedicineController {
       }
 
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const { name, purpose, dosage, instructions, isActive } = req.body;
+      const { name, purpose, dosage, instructions } = req.body;
 
       const result = await this.sosMedicineService.updateSosMedicine(
         id,
-        { name, purpose, dosage, instructions, isActive },
+        { name, purpose, dosage, instructions },
         userId,
       );
       res.status(result.success ? 200 : 404).json(result);

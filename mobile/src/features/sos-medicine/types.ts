@@ -42,6 +42,7 @@ export interface SosMedicineLog {
 export interface SosMedicineStats {
   totalUses: number;
   uniqueMedicinesUsed: number;
+  totalMedicines: number;
 }
 
 export interface ApiResponse<T = unknown> {

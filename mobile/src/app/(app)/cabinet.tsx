@@ -343,13 +343,6 @@ export default function CabinetPage() {
     );
   };
 
-  const handleToggleSosActive = (medicine: SosMedicine) => {
-    sosUpdateMutation.mutate({
-      id: medicine.id,
-      data: { isActive: !medicine.isActive },
-    });
-  };
-
   // ===== HELPERS =====
   const formatTime = (isoString: string) => {
     const date = new Date(isoString);
@@ -404,7 +397,6 @@ export default function CabinetPage() {
     sosUpdateMutation.isPending;
 
   const activeMedCount = medications.filter((m) => m.isActive).length;
-  const activeSosCount = sosMedicines.filter((m) => m.isActive).length;
 
   return (
     <View style={styles.container}>
@@ -481,7 +473,7 @@ export default function CabinetPage() {
           </View>
         )}
 
-        {activeTab === 'sos' && sosStats && (
+        {activeTab === 'sos' && (
           <View style={styles.statsSection}>
             <LinearGradient
               colors={[THEME.secondary, '#E11D48']}
@@ -490,13 +482,13 @@ export default function CabinetPage() {
               style={styles.statsCard}
             >
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{sosStats.totalUses}</Text>
-                <Text style={styles.statLabel}>Total Uses</Text>
+                <Text style={styles.statNumber}>{sosMedicines.length}</Text>
+                <Text style={styles.statLabel}>Medicines</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{activeSosCount}</Text>
-                <Text style={styles.statLabel}>Active</Text>
+                <Text style={styles.statNumber}>{sosStats?.totalUses || 0}</Text>
+                <Text style={styles.statLabel}>Total Uses</Text>
               </View>
             </LinearGradient>
           </View>
@@ -705,30 +697,24 @@ export default function CabinetPage() {
                           key={medicine.id}
                           entering={FadeInDown.delay(index * 50).springify()}
                         >
-                          <View style={[styles.card, !medicine.isActive && styles.cardInactive]}>
+                          <View style={styles.card}>
                             <View style={styles.cardLeft}>
                               <View
                                 style={[
                                   styles.iconBox,
                                   { backgroundColor: THEME.secondaryLight },
-                                  !medicine.isActive && styles.iconBoxInactive,
                                 ]}
                               >
                                 <Ionicons
                                   name="medical"
                                   size={22}
-                                  color={medicine.isActive ? THEME.secondary : THEME.textMuted}
+                                  color={THEME.secondary}
                                 />
                               </View>
                             </View>
 
                             <View style={styles.cardCenter}>
-                              <Text
-                                style={[
-                                  styles.medName,
-                                  !medicine.isActive && styles.textInactive,
-                                ]}
-                              >
+                              <Text style={styles.medName}>
                                 {medicine.name}
                               </Text>
                               {medicine.purpose && (
@@ -741,12 +727,8 @@ export default function CabinetPage() {
 
                             <View style={styles.cardRight}>
                               <Pressable
-                                style={[
-                                  styles.takeBtn,
-                                  !medicine.isActive && styles.takeBtnDisabled,
-                                ]}
-                                onPress={() => medicine.isActive && openSosTakeModal(medicine)}
-                                disabled={!medicine.isActive}
+                                style={styles.takeBtn}
+                                onPress={() => openSosTakeModal(medicine)}
                               >
                                 <LinearGradient
                                   colors={[THEME.secondary, '#E11D48']}
@@ -759,16 +741,6 @@ export default function CabinetPage() {
                               </Pressable>
 
                               <View style={styles.actionRow}>
-                                <Pressable
-                                  onPress={() => handleToggleSosActive(medicine)}
-                                  style={styles.smallBtn}
-                                >
-                                  <Ionicons
-                                    name={medicine.isActive ? 'eye' : 'eye-off'}
-                                    size={20}
-                                    color={medicine.isActive ? THEME.secondary : THEME.textMuted}
-                                  />
-                                </Pressable>
                                 <Pressable
                                   onPress={() => openSosEditModal(medicine)}
                                   style={styles.smallBtn}

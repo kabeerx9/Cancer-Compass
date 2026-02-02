@@ -11,13 +11,6 @@ export const sosMedicineQueries = {
       staleTime: 30_000,
     }),
 
-  active: () =>
-    queryOptions({
-      queryKey: [...sosMedicineKeys.all(), 'active'],
-      queryFn: sosMedicineApi.getActive,
-      staleTime: 30_000,
-    }),
-
   detail: (id: string) =>
     queryOptions({
       queryKey: sosMedicineKeys.detail(id),
@@ -47,13 +40,4 @@ export const sosMedicineQueries = {
       queryFn: () => sosMedicineApi.getStats(startDate, endDate),
       staleTime: 60_000,
     }),
-
-  // Hooks
-  useActiveSosMedicines: () => {
-    return useQuery({
-      queryKey: [...sosMedicineKeys.all(), 'active'],
-      queryFn: sosMedicineApi.getActive,
-      staleTime: 30_000,
-    });
-  },
 };
