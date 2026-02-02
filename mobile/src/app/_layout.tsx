@@ -1,5 +1,6 @@
 // Import global CSS file
 import '../../global.css';
+import Toast from 'react-native-toast-message';
 
 import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
@@ -33,16 +34,19 @@ SplashScreen.setOptions({
 
 export default function RootLayout() {
   return (
-    <ClerkProvider
-      tokenCache={tokenCache}
-      publishableKey={CLERK_PUBLISHABLE_KEY}
-    >
-      <ClerkLoaded>
-        <Providers>
-          <RootNavigator />
-        </Providers>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <>
+      <ClerkProvider
+        tokenCache={tokenCache}
+        publishableKey={CLERK_PUBLISHABLE_KEY}
+      >
+        <ClerkLoaded>
+          <Providers>
+            <RootNavigator />
+          </Providers>
+        </ClerkLoaded>
+      </ClerkProvider>
+      <Toast />
+    </>
   );
 }
 
