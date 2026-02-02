@@ -5,15 +5,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
-  ActivityIndicator,
   Animated,
   FlatList,
-  Modal,
   Pressable,
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,7 +20,6 @@ import {
   medicationMutations,
   medicationQueries,
 } from '@/features/medications';
-import { symptomQueries, symptomMutations } from '@/features/symptom';
 import { MedicationCardSkeleton, StatCardSkeleton } from '@/components/skeleton';
 
 // Warm Healing Theme
@@ -48,48 +44,12 @@ export default function HomePage() {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
-  // Evening check-in modal state
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [symptomContent, setSymptomContent] = React.useState('');
-  const [isEveningTime, setIsEveningTime] = React.useState(false);
-  const [modalDismissed, setModalDismissed] = React.useState(false);
-
   const {
     data: medications = [],
     isLoading,
     refetch,
   } = useQuery(medicationQueries.today());
   const logMutation = useMutation(medicationMutations.log(queryClient));
-
-  // Check if today's symptom log exists
-  const { data: hasLoggedToday } = useQuery({
-    ...symptomQueries.today(),
-    enabled: isEveningTime, // Only check during evening hours
-  });
-
-  // Symptom log mutation
-  const symptomLogMutation = useMutation(symptomMutations.createOrUpdate(queryClient));
-
-  // Check if current time is between 8 PM - 12 AM
-  React.useEffect(() => {
-    const checkEveningTime = () => {
-      const hour = new Date().getHours();
-      // Between 8 PM (20:00) and 12 AM (00:00)
-      setIsEveningTime(hour >= 20 && hour < 24);
-    };
-
-    checkEveningTime();
-    // Check every minute in case app stays open past 8 PM
-    const interval = setInterval(checkEveningTime, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Show modal if: isEveningTime && !hasLoggedToday && !modalDismissed
-  React.useEffect(() => {
-    if (isEveningTime && hasLoggedToday === false && !modalDismissed) {
-      setModalVisible(true);
-    }
-  }, [isEveningTime, hasLoggedToday, modalDismissed]);
 
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -127,41 +87,6 @@ export default function HomePage() {
   ).length;
   const totalCount = medications.length;
   const progress = totalCount > 0 ? (takenCount / totalCount) * 100 : 0;
-
-  // Handle saving symptom log
-  const handleSaveSymptom = () => {
-    if (!symptomContent.trim()) return;
-
-    const today = new Date().toISOString().split('T')[0];
-    symptomLogMutation.mutate(
-      {
-        date: today,
-        content: symptomContent.trim(),
-      },
-      {
-        onSuccess: () => {
-          setModalVisible(false);
-          setSymptomContent('');
-          setModalDismissed(true);
-        },
-      }
-    );
-  };
-
-  // Handle skip for today
-  const handleSkipToday = () => {
-    setModalVisible(false);
-    setModalDismissed(true);
-  };
-
-  // Handle remind me later
-  const handleRemindLater = () => {
-    setModalVisible(false);
-    // Will show again on next check (after refetch or time interval)
-    setTimeout(() => {
-      setModalDismissed(false);
-    }, 30 * 60 * 1000); // Remind again after 30 minutes
-  };
 
   const renderMedicationItem = ({
     item: medication,
@@ -397,80 +322,6 @@ export default function HomePage() {
             </View>
           }
         />
-
-        {/* Evening Check-in Modal */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={handleRemindLater}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              {/* Header Icon */}
-              <View style={styles.modalIconContainer}>
-                <LinearGradient
-                  colors={[THEME.primary, '#0D9488']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.modalIconGradient}
-                >
-                  <Ionicons name="moon-outline" size={28} color="#FFFFFF" />
-                </LinearGradient>
-              </View>
-
-              {/* Header Text */}
-              <Text style={styles.modalTitle}>Evening Check-in</Text>
-              <Text style={styles.modalSubtitle}>How are you feeling today?</Text>
-
-              {/* Text Input */}
-              <TextInput
-                style={styles.modalInput}
-                multiline
-                numberOfLines={4}
-                placeholder="Share any symptoms, feelings, or notes about your day..."
-                placeholderTextColor={THEME.textMuted}
-                value={symptomContent}
-                onChangeText={setSymptomContent}
-                textAlignVertical="top"
-              />
-
-              {/* Save Button */}
-              <Pressable
-                style={styles.saveButton}
-                onPress={handleSaveSymptom}
-                disabled={symptomLogMutation.isPending || !symptomContent.trim()}
-              >
-                <LinearGradient
-                  colors={[THEME.primary, '#0D9488']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[
-                    styles.saveButtonGradient,
-                    (!symptomContent.trim() || symptomLogMutation.isPending) &&
-                      styles.saveButtonDisabled,
-                  ]}
-                >
-                  {symptomLogMutation.isPending ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.saveButtonText}>Save</Text>
-                  )}
-                </LinearGradient>
-              </Pressable>
-
-              {/* Skip Button */}
-              <Pressable style={styles.skipButton} onPress={handleSkipToday}>
-                <Text style={styles.skipButtonText}>Skip for today</Text>
-              </Pressable>
-
-              {/* Remind Later Button */}
-              <Pressable style={styles.remindButton} onPress={handleRemindLater}>
-                <Text style={styles.remindButtonText}>Remind me later</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
       </SafeAreaView>
     </View>
   );
@@ -758,104 +609,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: '80%',
     lineHeight: 22,
-  },
-
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(45, 40, 36, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  modalContainer: {
-    backgroundColor: THEME.surface,
-    borderRadius: 24,
-    padding: 24,
-    width: '100%',
-    maxWidth: 360,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 24,
-    elevation: 12,
-    alignItems: 'center',
-  },
-  modalIconContainer: {
-    marginBottom: 16,
-  },
-  modalIconGradient: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  modalSubtitle: {
-    fontSize: 15,
-    color: THEME.textBody,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalInput: {
-    width: '100%',
-    minHeight: 100,
-    backgroundColor: THEME.background,
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 15,
-    color: THEME.textHeading,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    textAlignVertical: 'top',
-    marginBottom: 20,
-  },
-  saveButton: {
-    width: '100%',
-    marginBottom: 12,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  saveButtonGradient: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveButtonDisabled: {
-    opacity: 0.5,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  skipButton: {
-    paddingVertical: 10,
-    marginBottom: 8,
-  },
-  skipButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: THEME.textMuted,
-  },
-  remindButton: {
-    paddingVertical: 10,
-  },
-  remindButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: THEME.primary,
   },
 });
