@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -47,6 +48,7 @@ const THEME = {
 type SosViewMode = 'cabinet' | 'history';
 
 export default function SosMedicinesPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
   const [sosViewMode, setSosViewMode] = React.useState<SosViewMode>('cabinet');
@@ -251,6 +253,9 @@ export default function SosMedicinesPage() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
+          <Pressable style={styles.backBtn} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+          </Pressable>
           <View>
             <Text style={styles.headerSubtitle}>Emergency</Text>
             <Text style={styles.headerTitle}>SOS Medicines</Text>
@@ -753,11 +758,14 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingTop: 20,
     paddingBottom: 16,
+  },
+  backBtn: {
+    padding: 8,
+    marginRight: 8,
   },
   headerSubtitle: {
     fontSize: 14,
