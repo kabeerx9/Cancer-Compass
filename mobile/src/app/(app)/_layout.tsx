@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useIsFirstTime } from '@/lib';
 
@@ -13,6 +14,7 @@ const INACTIVE_COLOR = '#9CA3AF'; // neutral-400
 export default function TabLayout() {
   const { isSignedIn, isLoaded } = useAuth();
   const [isFirstTime] = useIsFirstTime();
+  const { bottom } = useSafeAreaInsets();
 
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;
@@ -22,12 +24,16 @@ export default function TabLayout() {
     return <Redirect href="/sign-in" />;
   }
 
+  // Calculate dynamic tab bar height and padding based on safe area
+  const tabBarPaddingBottom = Platform.OS === 'ios' ? Math.max(28, bottom) : Math.max(12, bottom + 8);
+  const tabBarHeight = Platform.OS === 'ios' ? Math.max(88, 60 + bottom) : Math.max(68, 52 + bottom);
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [styles.tabBar, { paddingBottom: tabBarPaddingBottom, height: tabBarHeight }],
         tabBarActiveTintColor: ACTIVE_COLOR,
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarLabelStyle: styles.tabBarLabel,
@@ -142,9 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopColor: '#E8E0D8',
     borderTopWidth: 1,
-    height: Platform.OS === 'ios' ? 88 : 68,
     paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
     elevation: 0,
   },
   tabBarLabel: {
