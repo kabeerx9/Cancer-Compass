@@ -33,9 +33,18 @@ A comprehensive list of UI/UX issues identified in the app, prioritized by sever
 - Home/Insights use teal (#14B8A6)
 - Tasks uses blue (#2563EB)
 - Settings uses random colors per item
-**Status:** [ ]
+**Status:** [x] COMPLETED
 **Priority:** Critical
 **Labels:** design-system, consistency, colors
+
+**Changes Made:**
+1. **tasks.tsx** - Changed all `primary-50`, `primary-600`, `#2563EB` to `teal-50`, `teal-600`, `#14B8A6`
+2. **TaskItem.tsx** - Changed template badge colors from blue to teal
+3. **manage-templates.tsx** - Changed all blue colors to teal
+4. **ApplyTemplateModal.tsx** - Changed all blue colors to teal
+5. **MedicationDetailModal.tsx** - Changed its own blue theme to teal
+
+**Result:** All screens now use teal (#14B8A6) as the primary color, providing consistent visual identity across the app.
 
 ### 4. Small Touch Targets
 **Files:** `tasks.tsx`, `cabinet.tsx`, `index.tsx`

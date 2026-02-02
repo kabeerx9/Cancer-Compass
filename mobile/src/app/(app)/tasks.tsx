@@ -267,25 +267,25 @@ export default function TasksPage() {
           <Text className="text-2xl font-bold text-neutral-900">Plan</Text>
           <View className="flex-row gap-3">
             <Pressable
-              className="flex-row items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 active:opacity-70"
+              className="flex-row items-center gap-2 rounded-xl bg-teal-50 px-3 py-2 active:opacity-70"
               onPress={() => router.push('/manage-templates')}
             >
-              <Ionicons name="settings-outline" size={18} color="#2563EB" />
-              <Text className="text-sm font-semibold text-primary-600">
+              <Ionicons name="settings-outline" size={18} color="#14B8A6" />
+              <Text className="text-sm font-semibold text-teal-600">
                 Templates
               </Text>
             </Pressable>
             <Pressable
-              className="flex-row items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 active:opacity-70"
+              className="flex-row items-center gap-2 rounded-xl bg-teal-50 px-3 py-2 active:opacity-70"
               onPress={() => setApplyVisible(true)}
             >
-              <Ionicons name="duplicate-outline" size={20} color="#2563EB" />
-              <Text className="text-sm font-semibold text-primary-600">
+              <Ionicons name="duplicate-outline" size={20} color="#14B8A6" />
+              <Text className="text-sm font-semibold text-teal-600">
                 Apply
               </Text>
             </Pressable>
             <Pressable
-              className="rounded-xl bg-primary-600 p-2 active:opacity-70"
+              className="rounded-xl bg-teal-600 p-2 active:opacity-70"
               onPress={() => setModalVisible(true)}
             >
               <Ionicons name="add" size={24} color="#FFF" />
@@ -296,20 +296,21 @@ export default function TasksPage() {
         {/* Date Navigator */}
         <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-2 shadow-sm">
           <View className="flex-row items-center">
-            <Pressable
-              onPress={handlePrevDay}
-              className="rounded-full p-2 active:bg-neutral-100"
-            >
+              <Pressable
+                onPress={handleAddTask}
+                disabled={!newTaskTitle.trim()}
+                className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-teal-600'}`}
+              >
               <Ionicons name="chevron-back" size={24} color="#4B5563" />
             </Pressable>
-            <View className="mx-2 flex-row items-center rounded-xl bg-primary-50 px-4 py-2">
+            <View className="mx-2 flex-row items-center rounded-xl bg-teal-50 px-4 py-2">
               <Ionicons
                 name="calendar-outline"
                 size={16}
-                color="#2563EB"
+                color="#14B8A6"
                 style={{ marginRight: 6 }}
               />
-              <Text className="text-base font-semibold text-primary-600">
+              <Text className="text-base font-semibold text-teal-600">
                 {formatDateDisplay(date)}
               </Text>
             </View>
@@ -364,7 +365,7 @@ export default function TasksPage() {
               <RefreshControl
                 refreshing={isManuallyRefreshing}
                 onRefresh={handleRefresh}
-                tintColor="#2563EB"
+                tintColor="#14B8A6"
               />
             }
             stickySectionHeadersEnabled={false}

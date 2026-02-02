@@ -329,9 +329,12 @@ export default function SosMedicinesPage() {
             <>
               {isLoadingSosMedicines ? (
                 <>
-                  <Skeleton width="100%" height={100} borderRadius={16} style={{ marginBottom: 12 }} />
-                  <Skeleton width="100%" height={100} borderRadius={16} style={{ marginBottom: 12 }} />
-                  <Skeleton width="100%" height={100} borderRadius={16} />
+                  <View style={{ marginBottom: 12 }}>
+                    <Skeleton width="100%" height={100} borderRadius={16} />
+                  </View>
+                  <View style={{ marginBottom: 12 }}>
+                    <Skeleton width="100%" height={100} borderRadius={16} />
+                  </View>
                 </>
               ) : sosMedicines.length === 0 ? (
                 <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>

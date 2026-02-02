@@ -21,8 +21,8 @@ import {
 
 // Theme Constants
 const THEME = {
-  primary: '#2563EB',
-  primaryLight: '#EFF6FF',
+  primary: '#14B8A6',
+  primaryLight: '#CCFBF1',
   background: '#F9FAFB',
   surface: '#ffffff',
   textHeading: '#111827',
@@ -638,7 +638,7 @@ const styles = StyleSheet.create({
   },
   adherenceBar: {
     height: 6,
-    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+    backgroundColor: 'rgba(20, 184, 166, 0.2)',
     borderRadius: 3,
     overflow: 'hidden',
   },

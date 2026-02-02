@@ -43,8 +43,8 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
 
         {/* We don't really need a template badge if grouped by section, but keeping it small just in case it's mixed */}
         {task.sourceType === 'template' && !task.isCompleted && (
-          <View className="mt-1 self-start rounded-lg bg-primary-50 px-2 py-0.5">
-            <Text className="text-xs font-medium text-primary-600">
+          <View className="mt-1 self-start rounded-lg bg-teal-50 px-2 py-0.5">
+            <Text className="text-xs font-medium text-teal-600">
               Template
             </Text>
           </View>

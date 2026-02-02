@@ -58,14 +58,14 @@ export function ApplyTemplateModal({
           </Text>
 
           {isLoading ? (
-            <ActivityIndicator className="mt-5" color="#2563EB" />
+            <ActivityIndicator className="mt-5" color="#14B8A6" />
           ) : (
             <ScrollView className="flex-1">
               {templates.length === 0 ? (
                 <View className="mt-10 items-center">
                   <Text className="text-neutral-400">No templates found.</Text>
                   <Pressable onPress={handleManage} className="mt-2">
-                    <Text className="font-semibold text-primary-600">
+                    <Text className="font-semibold text-teal-600">
                       Create one now
                     </Text>
                   </Pressable>
@@ -89,7 +89,7 @@ export function ApplyTemplateModal({
                         {t.tasks.length} tasks
                       </Text>
                     </View>
-                    <Ionicons name="add-circle" size={28} color="#2563EB" />
+                    <Ionicons name="add-circle" size={28} color="#14B8A6" />
                   </Pressable>
                 ))
               )}

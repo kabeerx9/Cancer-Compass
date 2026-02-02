@@ -139,7 +139,7 @@ export default function ManageTemplatesPage() {
 
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#2563EB" />
+            <ActivityIndicator size="large" color="#14B8A6" />
           </View>
         ) : (
           <FlatList
@@ -157,7 +157,7 @@ export default function ManageTemplatesPage() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={refetch}
-                tintColor="#2563EB"
+                tintColor="#14B8A6"
               />
             }
             ListEmptyComponent={
@@ -172,7 +172,7 @@ export default function ManageTemplatesPage() {
         )}
 
         <Pressable
-          className="absolute bottom-6 right-6 size-14 items-center justify-center rounded-full bg-primary-600 shadow-lg active:opacity-90"
+          className="absolute bottom-6 right-6 size-14 items-center justify-center rounded-full bg-teal-600 shadow-lg active:opacity-90"
           onPress={openCreate}
         >
           <Ionicons name="add" size={32} color="#FFF" />
@@ -251,17 +251,17 @@ export default function ManageTemplatesPage() {
                 onSubmitEditing={addTask}
               />
               <Pressable
-                className="rounded-xl bg-primary-50 p-3"
+                className="rounded-xl bg-teal-50 p-3"
                 onPress={addTask}
               >
-                <Ionicons name="add" size={24} color="#2563EB" />
+                <Ionicons name="add" size={24} color="#14B8A6" />
               </Pressable>
             </View>
           </ScrollView>
 
           <View className="border-t border-neutral-100 p-6">
             <Pressable
-              className="items-center rounded-xl bg-primary-600 py-4 active:opacity-90"
+              className="items-center rounded-xl bg-teal-600 py-4 active:opacity-90"
               onPress={handleSave}
             >
               {createMutation.isPending ? (
