@@ -47,11 +47,20 @@ A comprehensive list of UI/UX issues identified in the app, prioritized by sever
 **Result:** All screens now use teal (#14B8A6) as the primary color, providing consistent visual identity across the app.
 
 ### 4. Small Touch Targets
-**Files:** `tasks.tsx`, `cabinet.tsx`, `index.tsx`
-**Issue:** Many buttons below 44x44px recommended minimum (date arrows 22-24px, calendar icons 22px, toggle buttons 8px padding)
-**Status:** [ ]
+**Files:** `tasks.tsx`, `cabinet.tsx`, `index.tsx`, `sos-medicines.tsx`
+**Issue:** Many buttons below 44x44px recommended minimum (date arrows 22-24px, calendar icons 22px, toggle buttons 8px padding, edit/delete icons 8px padding)
+**Status:** [x] COMPLETED
 **Priority:** Critical
 **Labels:** accessibility, touch-target, mobile
+
+**Changes Made:**
+1. **tasks.tsx** - Increased date navigator padding from `p-2` (8px) to `p-3` (12px) for prev/next arrows
+2. **tasks.tsx** - Increased "Log Today's Symptoms" and "Calendar" button padding from `py-2` to `py-3` for better touch targets
+3. **cabinet.tsx** - Increased toggle button padding from 8px to 12px for medication active/inactive switch
+4. **index.tsx** - Increased skip/take buttons from 36x36px to 44x44px (minimum accessible size)
+5. **sos-medicines.tsx** - Increased edit/delete icon buttons padding from 8px to 12px for better touch targets
+
+**Result:** All critical touch targets now meet or exceed the 44x44px minimum for better accessibility and usability on mobile.
 
 ---
 

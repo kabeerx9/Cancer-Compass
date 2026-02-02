@@ -967,7 +967,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   smallBtn: {
-    padding: 8,
+    padding: 12,
   },
   fab: {
     position: 'absolute',

@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   toggleBtn: {
-    padding: 8,
+    padding: 12,
   },
   toggleTrack: {
     width: 48,

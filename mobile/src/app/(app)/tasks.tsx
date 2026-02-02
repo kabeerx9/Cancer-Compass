@@ -294,16 +294,15 @@ export default function TasksPage() {
         </View>
 
         {/* Date Navigator */}
-        <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-2 shadow-sm">
+        <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm">
           <View className="flex-row items-center">
-              <Pressable
-                onPress={handleAddTask}
-                disabled={!newTaskTitle.trim()}
-                className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-teal-600'}`}
-              >
+            <Pressable
+              onPress={handlePrevDay}
+              className="rounded-full p-3 active:bg-neutral-100"
+            >
               <Ionicons name="chevron-back" size={24} color="#4B5563" />
             </Pressable>
-            <View className="mx-2 flex-row items-center rounded-xl bg-teal-50 px-4 py-2">
+            <View className="mx-2 flex-row items-center rounded-xl bg-teal-50 px-4 py-3">
               <Ionicons
                 name="calendar-outline"
                 size={16}
@@ -316,13 +315,13 @@ export default function TasksPage() {
             </View>
             <Pressable
               onPress={handleNextDay}
-              className="rounded-full p-2 active:bg-neutral-100"
+              className="rounded-full p-3 active:bg-neutral-100"
             >
               <Ionicons name="chevron-forward" size={24} color="#4B5563" />
             </Pressable>
             <Pressable
               onPress={() => router.push('/calendar')}
-              className="ml-2 flex-row items-center rounded-xl bg-neutral-100 px-3 py-2 active:bg-neutral-200"
+              className="ml-2 flex-row items-center rounded-xl bg-neutral-100 px-4 py-3 active:bg-neutral-200"
             >
               <Ionicons name="calendar" size={18} color="#4B5563" />
               <Text className="ml-2 text-sm font-medium text-neutral-700">
