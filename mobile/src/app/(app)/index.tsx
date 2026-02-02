@@ -251,6 +251,32 @@ export default function HomePage() {
           </Pressable>
         </View>
 
+        {/* Patient Info Quick Access */}
+        <View style={styles.patientInfoSection}>
+          <Pressable
+            style={styles.patientInfoCard}
+            onPress={() => router.push('/quick-info')}
+          >
+            <LinearGradient
+              colors={['#6366F1', '#4F46E5']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.patientInfoGradient}
+            >
+              <View style={styles.patientInfoLeft}>
+                <View style={styles.patientIconContainer}>
+                  <Ionicons name="person-circle" size={28} color="#FFFFFF" />
+                </View>
+                <View style={styles.patientInfoText}>
+                  <Text style={styles.patientInfoTitle}>Patient Info</Text>
+                  <Text style={styles.patientInfoSubtitle}>Medical details & contacts</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+            </LinearGradient>
+          </Pressable>
+        </View>
+
         {/* Warm progress card */}
         {totalCount > 0 && (
           <View style={styles.progressSection}>
@@ -462,6 +488,55 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+
+  // Patient Info Card
+  patientInfoSection: {
+    paddingHorizontal: 24,
+    marginBottom: 16,
+  },
+  patientInfoCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  patientInfoGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  patientInfoLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  patientIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  patientInfoText: {
+    flex: 1,
+  },
+  patientInfoTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  patientInfoSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
   },
 
   // Section Header

@@ -17,9 +17,16 @@ A comprehensive list of UI/UX issues identified in the app, prioritized by sever
 ### 2. Important Features Hidden Deep
 **File:** `mobile/src/app/(app)/profile.tsx`
 **Issue:** Templates, Calendar, Patient Info are buried in Profile menu - users might never discover them
-**Status:** [ ]
+**Status:** [x] COMPLETED
 **Priority:** Critical
 **Labels:** navigation, discoverability, ux
+
+**Changes Made:**
+1. **Templates** → Added "Templates" button (gear icon) in Plan screen header (tasks.tsx)
+2. **Patient Info** → Added prominent indigo gradient card in Home screen (index.tsx)
+3. **Calendar** → Added labeled "Calendar" button next to date navigator in Plan screen (tasks.tsx)
+
+**Result:** All three features now have quick access from their relevant screens, no longer buried in Profile menu.
 
 ### 3. Inconsistent Color Schemes
 **Issue:**

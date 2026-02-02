@@ -268,11 +268,20 @@ export default function TasksPage() {
           <View className="flex-row gap-3">
             <Pressable
               className="flex-row items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 active:opacity-70"
+              onPress={() => router.push('/manage-templates')}
+            >
+              <Ionicons name="settings-outline" size={18} color="#2563EB" />
+              <Text className="text-sm font-semibold text-primary-600">
+                Templates
+              </Text>
+            </Pressable>
+            <Pressable
+              className="flex-row items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 active:opacity-70"
               onPress={() => setApplyVisible(true)}
             >
               <Ionicons name="duplicate-outline" size={20} color="#2563EB" />
               <Text className="text-sm font-semibold text-primary-600">
-                Template
+                Apply
               </Text>
             </Pressable>
             <Pressable
@@ -310,13 +319,16 @@ export default function TasksPage() {
             >
               <Ionicons name="chevron-forward" size={24} color="#4B5563" />
             </Pressable>
+            <Pressable
+              onPress={() => router.push('/calendar')}
+              className="ml-2 flex-row items-center rounded-xl bg-neutral-100 px-3 py-2 active:bg-neutral-200"
+            >
+              <Ionicons name="calendar" size={18} color="#4B5563" />
+              <Text className="ml-2 text-sm font-medium text-neutral-700">
+                Calendar
+              </Text>
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() => router.push('/calendar')}
-            className="rounded-full p-2 active:bg-neutral-100"
-          >
-            <Ionicons name="calendar" size={22} color="#2563EB" />
-          </Pressable>
         </View>
 
         {isLoading && !tasks.length ? (
