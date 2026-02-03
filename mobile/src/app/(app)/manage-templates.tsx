@@ -88,12 +88,6 @@ export default function ManageTemplatesPage() {
     createMutation.mutate(templateData, {
       onSuccess: () => {
         setModalVisible(false);
-        Toast.show({
-          type: 'success',
-          text1: 'Template created',
-          text2: name.trim(),
-          position: 'bottom',
-        });
       },
       onError: (error: Error) => {
         Toast.show({

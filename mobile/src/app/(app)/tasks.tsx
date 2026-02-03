@@ -186,12 +186,6 @@ export default function TasksPage() {
         onSuccess: () => {
           setNewTaskTitle('');
           setModalVisible(false);
-          Toast.show({
-            type: 'success',
-            text1: 'Task added',
-            text2: newTaskTitle.trim(),
-            position: 'bottom',
-          });
         },
         onError: (error: Error) => {
           const msg = error.message || 'Failed to add task';
@@ -227,11 +221,6 @@ export default function TasksPage() {
           setEditingTask(null);
           setNewTaskTitle('');
           setEditModalVisible(false);
-          Toast.show({
-            type: 'success',
-            text1: 'Task updated',
-            position: 'bottom',
-          });
         },
         onError: (error: Error) => {
           const msg = error.message || 'Failed to update task';
@@ -422,28 +411,9 @@ export default function TasksPage() {
               <TaskItem
                 task={item}
                 onToggle={(t) => {
-                  const wasCompleted = t.isCompleted;
                   toggleMutation.mutate(
                     { id: t.id },
                     {
-                      onSuccess: () => {
-                        if (wasCompleted) {
-                          Toast.show({
-                            type: 'info',
-                            text1: 'Task marked incomplete',
-                            position: 'bottom',
-                            visibilityTime: 1500,
-                          });
-                        } else {
-                          Toast.show({
-                            type: 'success',
-                            text1: 'Task completed!',
-                            text2: 'Great job! 🎉',
-                            position: 'bottom',
-                            visibilityTime: 2000,
-                          });
-                        }
-                      },
                       onError: () => {
                         Toast.show({
                           type: 'error',

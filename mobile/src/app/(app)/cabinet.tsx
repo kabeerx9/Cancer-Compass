@@ -145,12 +145,6 @@ export default function CabinetPage() {
         {
           onSuccess: () => {
             closeMedEditModal();
-            Toast.show({
-              type: 'success',
-              text1: 'Medication updated',
-              text2: medFormData.name.trim(),
-              position: 'bottom',
-            });
           },
           onError: (error: Error) => {
             Toast.show({
@@ -166,12 +160,6 @@ export default function CabinetPage() {
       medicationCreateMutation.mutate(medFormData, {
         onSuccess: () => {
           closeMedEditModal();
-          Toast.show({
-            type: 'success',
-            text1: 'Medication added',
-            text2: medFormData.name.trim(),
-            position: 'bottom',
-          });
         },
         onError: (error: Error) => {
           Toast.show({
