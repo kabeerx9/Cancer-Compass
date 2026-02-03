@@ -218,6 +218,7 @@ export default function ManageTemplatesPage() {
         visible={modalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 bg-white">
           <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">
@@ -315,6 +316,7 @@ export default function ManageTemplatesPage() {
         visible={viewModalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
+        onRequestClose={() => setViewModalVisible(false)}
       >
         <View className="flex-1 bg-white">
           <View className="flex-row items-center justify-between border-b border-neutral-100 p-6">

@@ -309,7 +309,7 @@ export default function SosMedicinesPage() {
           </Pressable>
           <View>
             <Text style={styles.headerSubtitle}>Emergency</Text>
-            <Text style={styles.headerTitle}>SOS Medicines</Text>
+            <Text style={styles.headerTitle}>Emergency Medicines</Text>
           </View>
         </View>
 
@@ -397,7 +397,7 @@ export default function SosMedicinesPage() {
                   >
                     <Ionicons name="alert-circle-outline" size={48} color={THEME.secondary} />
                   </View>
-                  <Text style={styles.emptyTitle}>No SOS Medicines</Text>
+                  <Text style={styles.emptyTitle}>No Emergency Medicines</Text>
                   <Text style={styles.emptySubtitle}>
                     Add emergency medicines you take only when needed
                   </Text>

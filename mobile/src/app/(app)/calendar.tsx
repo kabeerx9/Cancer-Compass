@@ -187,7 +187,7 @@ export default function CalendarScreen() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Pressable style={styles.backButton} onPress={() => router.push('/tasks')}>
-            <Ionicons name="chevron-back" size={28} color={THEME.textHeading} />
+            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
           </Pressable>
           <View style={styles.headerText}>
             <Text style={styles.headerSubtitle}>Your</Text>

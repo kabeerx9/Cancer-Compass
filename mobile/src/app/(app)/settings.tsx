@@ -1,5 +1,6 @@
 import { useClerk } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   Alert,
@@ -35,6 +36,7 @@ interface SettingItem {
 
 export default function SettingsPage() {
   const { signOut } = useClerk();
+  const router = useRouter();
 
   const handleSignOut = () => {
     Alert.alert(
@@ -100,8 +102,14 @@ export default function SettingsPage() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
+        {/* Header with back button */}
         <View style={styles.header}>
+          <Pressable
+            onPress={() => router.back()}
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+          </Pressable>
           <Text style={styles.headerTitle}>Settings</Text>
         </View>
 
@@ -159,9 +167,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 16,
+    gap: 12,
+  },
+  backBtn: {
+    padding: 8,
+    marginLeft: -8,
   },
   headerTitle: {
     fontSize: 28,

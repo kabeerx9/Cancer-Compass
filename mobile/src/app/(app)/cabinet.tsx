@@ -474,7 +474,10 @@ export default function CabinetPage() {
               </View>
 
               <View style={styles.formGroup}>
-                <Text style={styles.label}>Frequency Label</Text>
+                <Text style={styles.label}>When to Take</Text>
+                <Text style={styles.helpText}>
+                  Select when you typically take this medication
+                </Text>
                 <View style={styles.chips}>
                   {quickLabels.map((label) => (
                     <Pressable
@@ -841,7 +844,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: THEME.textHeading,
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  helpText: {
+    fontSize: 12,
+    color: THEME.textMuted,
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   input: {
     backgroundColor: THEME.surface,

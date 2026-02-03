@@ -10,6 +10,7 @@ import { useIsFirstTime } from '@/lib';
 // Theme colors from our palette
 const ACTIVE_COLOR = '#14B8A6'; // Warm Teal
 const INACTIVE_COLOR = '#9CA3AF'; // neutral-400
+const ACTIVE_BG_COLOR = '#CCFBF1'; // Light Teal for active tab background
 
 export default function TabLayout() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -37,6 +38,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: ACTIVE_COLOR,
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarLabelStyle: styles.tabBarLabel,
+        tabBarActiveBackgroundColor: ACTIVE_BG_COLOR,
+        tabBarItemStyle: styles.tabBarItem,
       }}
     >
       {/* Main Tab: Home */}
@@ -54,11 +57,11 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Main Tab: Plan (Tasks) */}
+      {/* Main Tab: Tasks */}
       <Tabs.Screen
         name="tasks"
         options={{
-          title: 'Plan',
+          title: 'Tasks',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'checkbox' : 'checkbox-outline'}
@@ -161,5 +164,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginTop: 4,
+  },
+  tabBarItem: {
+    borderRadius: 12,
+    marginHorizontal: 4,
+    paddingVertical: 4,
   },
 });
