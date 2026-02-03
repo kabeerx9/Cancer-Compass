@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import { MedicationDetailModal } from '@/components/medications/MedicationDetailModal';
 import { MedicationCardSkeleton } from '@/components/skeleton';
@@ -142,16 +143,44 @@ export default function CabinetPage() {
       medicationUpdateMutation.mutate(
         { id: editingMedication.id, data: updateData },
         {
-          onSuccess: closeMedEditModal,
-          onError: (error: Error) =>
-            Alert.alert('Error', error.message || 'Failed to update medication'),
+          onSuccess: () => {
+            closeMedEditModal();
+            Toast.show({
+              type: 'success',
+              text1: 'Medication updated',
+              text2: medFormData.name.trim(),
+              position: 'bottom',
+            });
+          },
+          onError: (error: Error) => {
+            Toast.show({
+              type: 'error',
+              text1: 'Failed to update medication',
+              text2: error.message,
+              position: 'bottom',
+            });
+          },
         }
       );
     } else {
       medicationCreateMutation.mutate(medFormData, {
-        onSuccess: closeMedEditModal,
-        onError: (error: Error) =>
-          Alert.alert('Error', error.message || 'Failed to create medication'),
+        onSuccess: () => {
+          closeMedEditModal();
+          Toast.show({
+            type: 'success',
+            text1: 'Medication added',
+            text2: medFormData.name.trim(),
+            position: 'bottom',
+          });
+        },
+        onError: (error: Error) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to add medication',
+            text2: error.message,
+            position: 'bottom',
+          });
+        },
       });
     }
   };
@@ -159,16 +188,50 @@ export default function CabinetPage() {
   const handleDeleteMedication = (medication: Medication) => {
     closeMedDetailModal();
     medicationDeleteMutation.mutate(medication.id, {
-      onError: (error: Error) =>
-        Alert.alert('Error', error.message || 'Failed to delete medication'),
+      onSuccess: () => {
+        Toast.show({
+          type: 'info',
+          text1: 'Medication deleted',
+          position: 'bottom',
+        });
+      },
+      onError: (error: Error) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to delete medication',
+          text2: error.message,
+          position: 'bottom',
+        });
+      },
     });
   };
 
   const handleToggleMedicationActive = (medication: Medication) => {
-    medicationUpdateMutation.mutate({
-      id: medication.id,
-      data: { isActive: !medication.isActive },
-    });
+    const newStatus = !medication.isActive;
+    medicationUpdateMutation.mutate(
+      {
+        id: medication.id,
+        data: { isActive: newStatus },
+      },
+      {
+        onSuccess: () => {
+          Toast.show({
+            type: 'info',
+            text1: newStatus ? 'Medication activated' : 'Medication paused',
+            text2: medication.name,
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+        },
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to update medication status',
+            position: 'bottom',
+          });
+        },
+      }
+    );
   };
 
   const activeMedCount = medications.filter((m) => m.isActive).length;

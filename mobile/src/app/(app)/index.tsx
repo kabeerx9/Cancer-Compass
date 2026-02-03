@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import {
   type Medication,
@@ -63,7 +64,39 @@ export default function HomePage() {
     medicationId: string,
     status: 'taken' | 'skipped'
   ) => {
-    logMutation.mutate({ id: medicationId, status });
+    logMutation.mutate(
+      { id: medicationId, status },
+      {
+        onSuccess: () => {
+          const medication = medications.find(m => m.id === medicationId);
+          const medName = medication?.name || 'Medication';
+          if (status === 'taken') {
+            Toast.show({
+              type: 'success',
+              text1: `${medName} marked as taken`,
+              text2: 'Great job! Keep it up 👍',
+              position: 'bottom',
+              visibilityTime: 2000,
+            });
+          } else {
+            Toast.show({
+              type: 'info',
+              text1: `${medName} skipped`,
+              position: 'bottom',
+              visibilityTime: 2000,
+            });
+          }
+        },
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to log medication',
+            text2: 'Please try again',
+            position: 'bottom',
+          });
+        },
+      }
+    );
   };
 
   const handleRefresh = () => {

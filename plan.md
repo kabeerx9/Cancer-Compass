@@ -79,9 +79,24 @@ A comprehensive list of UI/UX issues identified in the app, prioritized by sever
 - SOS medicine is taken
 - Task is completed
 - Any mutation completes
-**Status:** [ ]
+**Status:** [x] COMPLETED
 **Priority:** High
 **Labels:** ux, feedback, usability
+
+**Changes Made:**
+Added `react-native-toast-message` to all mutation handlers across the app:
+1. **Home (index.tsx)** - Toast when medication is taken/skipped
+2. **Tasks (tasks.tsx)** - Toast for create/edit/delete/complete tasks and template assignments
+3. **Cabinet (cabinet.tsx)** - Toast for add/edit/delete/toggle medications
+4. **SOS Medicines (sos-medicines.tsx)** - Toast for add/edit/delete/log SOS medicines
+5. **Manage Templates (manage-templates.tsx)** - Toast for create/delete templates
+
+**Toast Types Used:**
+- `success` - For successful completions (medication taken, task added, etc.)
+- `info` - For neutral actions (medication skipped, deleted)
+- `error` - For failed operations
+
+**Position:** All toasts appear at the bottom of the screen
 
 ### 7. Confusing Toggle Design
 **File:** `cabinet.tsx`
@@ -251,7 +266,7 @@ A comprehensive list of UI/UX issues identified in the app, prioritized by sever
 - [ ] Add progress to long forms
 
 ### Feedback
-- [ ] Add toast messages for all actions
+- [x] Add toast messages for all actions
 - [ ] Add loading states to buttons
 - [ ] Add success animations
 - [ ] Improve empty states

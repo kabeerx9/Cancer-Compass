@@ -16,6 +16,7 @@ import {
 import { Calendar, type DateData } from 'react-native-calendars';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import {
   LogCardSkeleton,
@@ -134,9 +135,21 @@ export default function SosMedicinesPage() {
       onSuccess: () => {
         setSosAddModalVisible(false);
         setSosFormData({ name: '', purpose: '', dosage: '', instructions: '' });
+        Toast.show({
+          type: 'success',
+          text1: 'SOS medicine added',
+          text2: sosFormData.name.trim(),
+          position: 'bottom',
+        });
       },
-      onError: (error: Error) =>
-        Alert.alert('Error', error.message || 'Failed to create medicine'),
+      onError: (error: Error) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to add medicine',
+          text2: error.message,
+          position: 'bottom',
+        });
+      },
     });
   };
 
@@ -156,9 +169,21 @@ export default function SosMedicinesPage() {
         onSuccess: () => {
           setSosEditModalVisible(false);
           setSelectedSosMedicine(null);
+          Toast.show({
+            type: 'success',
+            text1: 'Medicine updated',
+            text2: sosFormData.name.trim(),
+            position: 'bottom',
+          });
         },
-        onError: (error: Error) =>
-          Alert.alert('Error', error.message || 'Failed to update medicine'),
+        onError: (error: Error) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to update medicine',
+            text2: error.message,
+            position: 'bottom',
+          });
+        },
       }
     );
   };
@@ -174,8 +199,21 @@ export default function SosMedicinesPage() {
           style: 'destructive',
           onPress: () => {
             sosDeleteMutation.mutate(medicine.id, {
-              onError: (error: Error) =>
-                Alert.alert('Error', error.message || 'Failed to delete medicine'),
+              onSuccess: () => {
+                Toast.show({
+                  type: 'info',
+                  text1: 'Medicine deleted',
+                  position: 'bottom',
+                });
+              },
+              onError: (error: Error) => {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Failed to delete medicine',
+                  text2: error.message,
+                  position: 'bottom',
+                });
+              },
             });
           },
         },
@@ -193,9 +231,22 @@ export default function SosMedicinesPage() {
           setSosTakeModalVisible(false);
           setSelectedSosMedicine(null);
           setLogFormData({ takenAt: new Date().toISOString(), notes: '' });
+          Toast.show({
+            type: 'success',
+            text1: `${selectedSosMedicine.name} logged`,
+            text2: 'Take care and get well soon 💚',
+            position: 'bottom',
+            visibilityTime: 3000,
+          });
         },
-        onError: (error: Error) =>
-          Alert.alert('Error', error.message || 'Failed to log medicine'),
+        onError: (error: Error) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to log medicine',
+            text2: error.message,
+            position: 'bottom',
+          });
+        },
       }
     );
   };

@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import { TemplateItem } from '@/components/templates/TemplateItem';
 import {
@@ -85,7 +86,23 @@ export default function ManageTemplatesPage() {
     };
 
     createMutation.mutate(templateData, {
-      onSuccess: () => setModalVisible(false),
+      onSuccess: () => {
+        setModalVisible(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Template created',
+          text2: name.trim(),
+          position: 'bottom',
+        });
+      },
+      onError: (error: Error) => {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to create template',
+          text2: error.message,
+          position: 'bottom',
+        });
+      },
     });
   };
 
@@ -100,7 +117,23 @@ export default function ManageTemplatesPage() {
           style: 'destructive',
           onPress: () => {
             deleteMutation.mutate(template.id, {
-              onSuccess: () => setViewModalVisible(false),
+              onSuccess: () => {
+                setViewModalVisible(false);
+                Toast.show({
+                  type: 'info',
+                  text1: 'Template deleted',
+                  text2: template.name,
+                  position: 'bottom',
+                });
+              },
+              onError: (error: Error) => {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Failed to delete template',
+                  text2: error.message,
+                  position: 'bottom',
+                });
+              },
             });
           },
         },
