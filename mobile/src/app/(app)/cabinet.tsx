@@ -264,26 +264,24 @@ export default function CabinetPage() {
           </Pressable>
         </View>
 
-        {medications.length > 0 && (
-          <View style={styles.statsSection}>
-            <LinearGradient
-              colors={[THEME.primary, '#0D9488']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statsCard}
-            >
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{activeMedCount}</Text>
-                <Text style={styles.statLabel}>Active</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{medications.length}</Text>
-                <Text style={styles.statLabel}>Total</Text>
-              </View>
-            </LinearGradient>
-          </View>
-        )}
+        <View style={styles.statsSection}>
+          <LinearGradient
+            colors={[THEME.primary, '#0D9488']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.statsCard}
+          >
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{activeMedCount}</Text>
+              <Text style={styles.statLabel}>Active</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{medications.length}</Text>
+              <Text style={styles.statLabel}>Total</Text>
+            </View>
+          </LinearGradient>
+        </View>
 
         <ScrollView
           style={styles.scrollView}
@@ -376,8 +374,14 @@ export default function CabinetPage() {
                         e.stopPropagation();
                         handleToggleMedicationActive(medication);
                       }}
-                      style={styles.toggleBtn}
+                      style={styles.toggleContainer}
                     >
+                      <Text style={[
+                        styles.toggleLabel,
+                        medication.isActive && styles.toggleLabelActive,
+                      ]}>
+                        {medication.isActive ? 'Active' : 'Paused'}
+                      </Text>
                       <View
                         style={[
                           styles.toggleTrack,
@@ -740,8 +744,19 @@ const styles = StyleSheet.create({
     color: THEME.textMuted,
     fontStyle: 'italic',
   },
-  toggleBtn: {
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     padding: 12,
+  },
+  toggleLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: THEME.textMuted,
+  },
+  toggleLabelActive: {
+    color: THEME.primary,
   },
   toggleTrack: {
     width: 48,

@@ -190,9 +190,16 @@ export default function ManageTemplatesPage() {
             ListEmptyComponent={
               <View className="flex-1 items-center justify-center py-12">
                 <Text className="mb-2 text-neutral-500">No templates yet.</Text>
-                <Text className="text-sm text-neutral-400">
+                <Text className="mb-6 text-sm text-neutral-400">
                   Create one to quick-start your day planning.
                 </Text>
+                <Pressable
+                  className="flex-row items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 shadow-sm active:opacity-80"
+                  onPress={openCreate}
+                >
+                  <Ionicons name="add" size={20} color="#FFF" />
+                  <Text className="font-semibold text-white">Create Template</Text>
+                </Pressable>
               </View>
             }
           />

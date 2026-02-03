@@ -101,15 +101,42 @@ Added `react-native-toast-message` to all mutation handlers across the app:
 ### 7. Confusing Toggle Design
 **File:** `cabinet.tsx`
 **Issue:** Medication toggle is custom-built, not native Switch - no label indicating what "on/off" means
-**Status:** [ ]
+**Status:** [x] COMPLETED
 **Priority:** High
 **Labels:** ux, clarity, components
 
+**Changes Made:**
+1. Added text label "Active" or "Paused" next to the toggle on each medication card
+2. Label is teal color when Active, muted gray when Paused
+3. Label appears to the left of the sliding toggle in a horizontal row layout
+4. Combined with the existing toast notifications, users now get both immediate visual feedback and confirmation messages
+
+**Result:** Users can now clearly understand what the toggle state means without confusion. The toggle clearly shows "Active" when the medication is being tracked and "Paused" when it's temporarily disabled.
+
 ### 8. Poor Empty States
 **Issue:** Some empty states lack clear CTAs, stats cards disappear when empty causing layout shift
-**Status:** [ ]
+**Status:** [x] COMPLETED
 **Priority:** High
 **Labels:** ux, empty-states, layout
+
+**Changes Made:**
+
+**Layout Shift Fixes:**
+1. **Home (index.tsx)** - Progress card now always visible, shows "0 of 0" and "0%" when no medications
+2. **Cabinet (cabinet.tsx)** - Stats card now always visible, shows "0 Active / 0 Total" when empty
+
+**CTA Button Additions:**
+1. **Home (index.tsx)** - Empty state now has "Add Medication" button that navigates to cabinet
+2. **Manage Templates (manage-templates.tsx)** - Empty state now has "Create Template" button
+3. **Calendar (calendar.tsx)** - "No templates created yet" empty state now has "Create Template" button that navigates to manage-templates
+
+**Empty State Text Improvements:**
+1. **Home (index.tsx)** - Changed from "All caught up!" (confusing) to "No medications yet" (clear) with subtitle "Add your medications to start tracking them"
+
+**Result:**
+- No more layout shifts when data becomes empty
+- Users always have a clear next action (CTA button) in empty states
+- Better messaging that actually describes the empty state
 
 ### 9. Settings Menu Items Not Categorized
 **File:** `settings.tsx`
@@ -269,7 +296,7 @@ Added `react-native-toast-message` to all mutation handlers across the app:
 - [x] Add toast messages for all actions
 - [ ] Add loading states to buttons
 - [ ] Add success animations
-- [ ] Improve empty states
+- [x] Improve empty states
 
 ### Accessibility
 - [ ] Increase all touch targets to 44px minimum

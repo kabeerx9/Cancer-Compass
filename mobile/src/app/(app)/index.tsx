@@ -310,42 +310,40 @@ export default function HomePage() {
           </Pressable>
         </View>
 
-        {/* Warm progress card */}
-        {totalCount > 0 && (
-          <View style={styles.progressSection}>
-            <LinearGradient
-              colors={[THEME.primary, '#0D9488']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.progressCard}
-            >
-              <View style={styles.progressHeader}>
-                <View>
-                  <Text style={styles.progressLabel}>Daily Progress</Text>
-                  <Text style={styles.progressCount}>
-                    {takenCount} of {totalCount} done
-                  </Text>
-                </View>
-                <View style={styles.progressPercentBox}>
-                  <Text style={styles.progressPercent}>
-                    {Math.round(progress)}%
-                  </Text>
-                </View>
+        {/* Warm progress card - always visible */}
+        <View style={styles.progressSection}>
+          <LinearGradient
+            colors={[THEME.primary, '#0D9488']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.progressCard}
+          >
+            <View style={styles.progressHeader}>
+              <View>
+                <Text style={styles.progressLabel}>Daily Progress</Text>
+                <Text style={styles.progressCount}>
+                  {takenCount} of {totalCount} done
+                </Text>
               </View>
-              <View style={styles.progressBarBg}>
-                <View
-                  style={[styles.progressBarFill, { width: `${progress}%` }]}
-                />
+              <View style={styles.progressPercentBox}>
+                <Text style={styles.progressPercent}>
+                  {totalCount > 0 ? Math.round(progress) : 0}%
+                </Text>
               </View>
-              {progress === 100 && (
-                <View style={styles.celebrationBadge}>
-                  <Ionicons name="happy-outline" size={20} color="#FFFFFF" />
-                  <Text style={styles.celebrationText}>All done! 🎉</Text>
-                </View>
-              )}
-            </LinearGradient>
-          </View>
-        )}
+            </View>
+            <View style={styles.progressBarBg}>
+              <View
+                style={[styles.progressBarFill, { width: `${totalCount > 0 ? progress : 0}%` }]}
+              />
+            </View>
+            {progress === 100 && totalCount > 0 && (
+              <View style={styles.celebrationBadge}>
+                <Ionicons name="happy-outline" size={20} color="#FFFFFF" />
+                <Text style={styles.celebrationText}>All done! 🎉</Text>
+              </View>
+            )}
+          </LinearGradient>
+        </View>
 
         {/* Medications list */}
         <View style={styles.sectionHeader}>
@@ -374,10 +372,17 @@ export default function HomePage() {
                   color={THEME.primary}
                 />
               </View>
-              <Text style={styles.emptyTitle}>All caught up!</Text>
+              <Text style={styles.emptyTitle}>No medications yet</Text>
               <Text style={styles.emptySub}>
-                No medications scheduled for today
+                Add your medications to start tracking them
               </Text>
+              <Pressable
+                style={styles.emptyActionBtn}
+                onPress={() => router.push('/cabinet')}
+              >
+                <Ionicons name="add-circle" size={20} color="#FFFFFF" />
+                <Text style={styles.emptyActionText}>Add Medication</Text>
+              </Pressable>
             </View>
           }
         />
@@ -717,5 +722,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: '80%',
     lineHeight: 22,
+    marginBottom: 24,
+  },
+  emptyActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: THEME.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 14,
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  emptyActionText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

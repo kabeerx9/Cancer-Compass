@@ -255,6 +255,13 @@ export default function CalendarScreen() {
                 <Text style={styles.emptyLegendText}>
                   No templates created yet
                 </Text>
+                <Pressable
+                  style={styles.emptyLegendButton}
+                  onPress={() => router.push('/manage-templates')}
+                >
+                  <Ionicons name="add" size={16} color="#FFFFFF" />
+                  <Text style={styles.emptyLegendButtonText}>Create Template</Text>
+                </Pressable>
               </View>
             ) : (
               <View style={styles.legendList}>
@@ -528,6 +535,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: THEME.textMuted,
     marginTop: 12,
+    marginBottom: 16,
+  },
+  emptyLegendButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    backgroundColor: THEME.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  emptyLegendButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   legendList: {
     gap: 12,
