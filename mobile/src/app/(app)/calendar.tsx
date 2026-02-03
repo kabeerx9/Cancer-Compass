@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -17,20 +16,6 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { Modal, useModal } from '@/components/ui/modal';
 import { templateMutations, templateQueries } from '@/features/templates';
-
-// Warm Healing Theme
-const THEME = {
-  primary: '#14B8A6', // Warm Teal
-  primaryLight: '#CCFBF1',
-  secondary: '#F43F5E', // Warm Coral
-  background: '#FFFBF9', // Warm cream
-  surface: '#FFFFFF',
-  textHeading: '#2D2824',
-  textBody: '#6B5D50',
-  textMuted: '#B8A89A',
-  border: '#E8E0D8',
-  shadow: 'rgba(45, 40, 36, 0.08)',
-};
 
 interface MarkedDate {
   marked?: boolean;
@@ -101,7 +86,7 @@ export default function CalendarScreen() {
       marked[selectedDate] = {
         ...marked[selectedDate],
         selected: true,
-        selectedColor: THEME.primary,
+        selectedColor: '#14B8A6',
       };
     }
 
@@ -183,48 +168,51 @@ export default function CalendarScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Pressable style={styles.backButton} onPress={() => router.push('/tasks')}>
-            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+    <SafeAreaView className="flex-1 bg-orange-50" edges={['top', 'left', 'right']}>
+      {/* Header */}
+      <View className="flex-row justify-between items-center px-6 py-4">
+        <View className="flex-row items-center flex-1">
+          <Pressable 
+            className="mr-3 p-1 active:opacity-60" 
+            onPress={() => router.push('/tasks')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#2D2824" />
           </Pressable>
-          <View style={styles.headerText}>
-            <Text style={styles.headerSubtitle}>Your</Text>
-            <Text style={styles.headerTitle}>Calendar</Text>
+          <View className="flex-1">
+            <Text className="text-sm text-stone-400 font-semibold mb-1">Your</Text>
+            <Text className="text-[28px] font-extrabold text-stone-800 -tracking-wide">
+              Calendar
+            </Text>
           </View>
         </View>
-        <View style={styles.monthBadge}>
-          <Text style={styles.monthText}>{getMonthName()}</Text>
+        <View className="bg-teal-100 px-4 py-2.5 rounded-[14px]">
+          <Text className="text-sm font-bold text-teal-600">{getMonthName()}</Text>
         </View>
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView className="flex-1" contentContainerClassName="px-6 pb-6">
         {/* Calendar Card */}
         <Animated.View entering={FadeInDown.springify()}>
-          <View style={styles.calendarCard}>
+          <View className="bg-white rounded-[20px] p-4 shadow-lg shadow-black/5 mb-6">
             <Calendar
-              style={styles.calendar}
+              className="rounded-xl"
               theme={{
-                backgroundColor: THEME.surface,
-                calendarBackground: THEME.surface,
-                textSectionTitleColor: THEME.textMuted,
-                selectedDayBackgroundColor: THEME.primary,
+                backgroundColor: '#FFFFFF',
+                calendarBackground: '#FFFFFF',
+                textSectionTitleColor: '#B8A89A',
+                selectedDayBackgroundColor: '#14B8A6',
                 selectedDayTextColor: '#FFFFFF',
-                todayTextColor: THEME.primary,
-                dayTextColor: THEME.textHeading,
-                textDisabledColor: THEME.border,
-                arrowColor: THEME.primary,
-                monthTextColor: THEME.textHeading,
+                todayTextColor: '#14B8A6',
+                dayTextColor: '#2D2824',
+                textDisabledColor: '#E8E0D8',
+                arrowColor: '#14B8A6',
+                monthTextColor: '#2D2824',
                 textMonthFontWeight: '700' as const,
                 textDayFontSize: 16,
                 textMonthFontSize: 18,
                 textDayHeaderFontSize: 13,
                 textDayHeaderFontWeight: '700' as const,
-                textSectionTitleDisabledColor: THEME.border,
+                textSectionTitleDisabledColor: '#E8E0D8',
               }}
               markedDates={getMarkedDates()}
               onDayPress={onDayPress}
@@ -238,48 +226,46 @@ export default function CalendarScreen() {
 
         {/* Templates Legend */}
         <Animated.View entering={FadeInUp.delay(100).springify()}>
-          <View style={styles.legendSection}>
-            <Text style={styles.sectionTitle}>Templates Legend</Text>
+          <View className="bg-white rounded-[20px] p-5 shadow-md shadow-black/5">
+            <Text className="text-lg font-extrabold text-stone-800 mb-4">
+              Templates Legend
+            </Text>
             {assignedLoading ? (
-              <View style={styles.loadingState}>
-                <ActivityIndicator size="small" color={THEME.primary} />
-                <Text style={styles.loadingText}>Loading...</Text>
+              <View className="flex-row items-center gap-3 py-4">
+                <ActivityIndicator size="small" color="#14B8A6" />
+                <Text className="text-sm text-stone-400 font-semibold">Loading...</Text>
               </View>
             ) : uniqueTemplates.length === 0 ? (
-              <View style={styles.emptyLegend}>
-                <Ionicons
-                  name="calendar-outline"
-                  size={32}
-                  color={THEME.textMuted}
-                />
-                <Text style={styles.emptyLegendText}>
+              <View className="items-center py-8">
+                <Ionicons name="calendar-outline" size={32} color="#B8A89A" />
+                <Text className="text-[15px] text-stone-400 mt-3 mb-4">
                   No templates created yet
                 </Text>
                 <Pressable
-                  style={styles.emptyLegendButton}
+                  className="flex-row items-center gap-1.5 bg-teal-500 px-4 py-2.5 rounded-xl shadow-md shadow-teal-500/25 active:opacity-80"
                   onPress={() => router.push('/manage-templates')}
                 >
                   <Ionicons name="add" size={16} color="#FFFFFF" />
-                  <Text style={styles.emptyLegendButtonText}>Create Template</Text>
+                  <Text className="text-sm font-semibold text-white">Create Template</Text>
                 </Pressable>
               </View>
             ) : (
-              <View style={styles.legendList}>
+              <View className="gap-3">
                 {uniqueTemplates.map((template: any, index) => (
                   <Animated.View
                     key={template.id}
                     entering={FadeInDown.delay(150 + index * 50).springify()}
-                    style={styles.legendItem}
+                    className="flex-row items-center p-3.5 bg-orange-50 rounded-[14px]"
                   >
                     <View
-                      style={[
-                        styles.legendDot,
-                        { backgroundColor: template.color },
-                      ]}
+                      className="w-3.5 h-3.5 rounded-full mr-3.5"
+                      style={{ backgroundColor: template.color }}
                     />
-                    <View style={styles.legendInfo}>
-                      <Text style={styles.legendName}>{template.name}</Text>
-                      <Text style={styles.legendTaskCount}>
+                    <View className="flex-1">
+                      <Text className="text-[15px] font-bold text-stone-800">
+                        {template.name}
+                      </Text>
+                      <Text className="text-[13px] text-stone-400 mt-0.5">
                         {template.tasks?.length || 0} tasks
                       </Text>
                     </View>
@@ -291,57 +277,49 @@ export default function CalendarScreen() {
         </Animated.View>
       </ScrollView>
 
+      {/* Assignment Modal */}
       <Modal ref={modalRef} snapPoints={['75%']} title={getDayName()}>
-        <View style={styles.modalContent}>
-          <View style={styles.modalSection}>
-            <Text style={styles.sectionLabel}>ASSIGNED TEMPLATES</Text>
+        <View className="px-6 py-5">
+          {/* Assigned Templates */}
+          <View className="mb-2">
+            <Text className="text-xs font-bold text-stone-400 mb-3 tracking-wider">
+              ASSIGNED TEMPLATES
+            </Text>
             {selectedDateTemplates.length === 0 ? (
-              <View style={styles.emptySection}>
-                <Ionicons
-                  name="folder-open-outline"
-                  size={40}
-                  color={THEME.textMuted}
-                />
-                <Text style={styles.emptySectionText}>
+              <View className="items-center py-6">
+                <Ionicons name="folder-open-outline" size={40} color="#B8A89A" />
+                <Text className="text-[15px] text-stone-400 mt-3">
                   No templates assigned
                 </Text>
               </View>
             ) : (
-              <View style={styles.assignedList}>
+              <View className="gap-3">
                 {selectedDateTemplates.map((assigned) => (
                   <Animated.View
                     key={assigned.id}
                     entering={FadeInDown.springify()}
-                    style={styles.assignedItem}
+                    className="flex-row items-center justify-between p-4 bg-orange-50 rounded-[14px]"
                   >
-                    <View style={styles.assignedLeft}>
+                    <View className="flex-row items-center flex-1">
                       <View
-                        style={[
-                          styles.assignedDot,
-                          { backgroundColor: assigned.template.color },
-                        ]}
+                        className="w-4 h-4 rounded-full mr-3.5"
+                        style={{ backgroundColor: assigned.template.color }}
                       />
-                      <View style={styles.assignedInfo}>
-                        <Text style={styles.assignedName}>
+                      <View className="flex-1">
+                        <Text className="text-base font-bold text-stone-800">
                           {assigned.template.name}
                         </Text>
                       </View>
                     </View>
                     <Pressable
-                      style={styles.removeBtn}
-                      onPress={() =>
-                        handleUnassignTemplate(assigned.templateId)
-                      }
+                      className="p-2 active:opacity-60"
+                      onPress={() => handleUnassignTemplate(assigned.templateId)}
                       disabled={unassignMutation.isPending}
                     >
                       <Ionicons
                         name="remove-circle"
                         size={24}
-                        color={
-                          unassignMutation.isPending
-                            ? THEME.textMuted
-                            : THEME.secondary
-                        }
+                        color={unassignMutation.isPending ? '#B8A89A' : '#F43F5E'}
                       />
                     </Pressable>
                   </Animated.View>
@@ -350,62 +328,57 @@ export default function CalendarScreen() {
             )}
           </View>
 
-          <View style={styles.divider} />
+          {/* Divider */}
+          <View className="h-px bg-stone-200 my-5" />
 
-          <View style={styles.modalSection}>
-            <Text style={styles.sectionLabel}>AVAILABLE TEMPLATES</Text>
+          {/* Available Templates */}
+          <View className="mb-2">
+            <Text className="text-xs font-bold text-stone-400 mb-3 tracking-wider">
+              AVAILABLE TEMPLATES
+            </Text>
             {availableTemplates.length === 0 ? (
-              <View style={styles.emptySection}>
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={40}
-                  color={THEME.textMuted}
-                />
-                <Text style={styles.emptySectionText}>
+              <View className="items-center py-6">
+                <Ionicons name="checkmark-circle-outline" size={40} color="#B8A89A" />
+                <Text className="text-[15px] text-stone-400 mt-3">
                   All templates assigned
                 </Text>
               </View>
             ) : (
-              <View style={styles.availableList}>
+              <View className="gap-3">
                 {availableTemplates.map((template: any, index) => (
                   <Animated.View
                     key={template.id}
                     entering={FadeInDown.delay(index * 50).springify()}
                   >
                     <Pressable
-                      style={styles.availableItem}
+                      className="flex-row items-center justify-between p-4 bg-orange-50 rounded-[14px] active:opacity-80"
                       onPress={() => handleAssignTemplate(template.id)}
                       disabled={assignMutation.isPending}
                     >
-                      <View style={styles.availableLeft}>
+                      <View className="flex-row items-center flex-1">
                         <View
-                          style={[
-                            styles.availableDot,
-                            { backgroundColor: template.color },
-                          ]}
+                          className="w-4 h-4 rounded-full mr-3.5"
+                          style={{ backgroundColor: template.color }}
                         />
-                        <View style={styles.availableInfo}>
-                          <Text style={styles.availableName}>
+                        <View className="flex-1">
+                          <Text className="text-base font-bold text-stone-800">
                             {template.name}
                           </Text>
-                          <Text style={styles.availableTaskCount}>
+                          <Text className="text-[13px] text-stone-400 mt-0.5">
                             {template.tasks?.length || 0} tasks
                           </Text>
                         </View>
                       </View>
                       <Pressable
-                        style={[
-                          styles.addBtn,
-                          assignMutation.isPending && styles.addBtnDisabled,
-                        ]}
+                        className={`shadow-lg shadow-teal-500/25 ${assignMutation.isPending ? 'opacity-50' : ''}`}
                         onPress={() => handleAssignTemplate(template.id)}
                         disabled={assignMutation.isPending}
                       >
                         <LinearGradient
-                          colors={[THEME.primary, '#0D9488']}
+                          colors={['#14B8A6', '#0D9488']}
                           start={{ x: 0, y: 0 }}
                           end={{ x: 1, y: 1 }}
-                          style={styles.addBtnGradient}
+                          className="w-11 h-11 rounded-xl justify-center items-center"
                         >
                           <Ionicons name="add" size={24} color="#FFFFFF" />
                         </LinearGradient>
@@ -417,10 +390,11 @@ export default function CalendarScreen() {
             )}
           </View>
 
+          {/* Saving State */}
           {assignMutation.isPending || unassignMutation.isPending ? (
-            <View style={styles.savingState}>
-              <ActivityIndicator size="small" color={THEME.primary} />
-              <Text style={styles.savingText}>Saving changes...</Text>
+            <View className="flex-row items-center justify-center gap-2.5 p-3.5 bg-teal-100 rounded-[14px]">
+              <ActivityIndicator size="small" color="#14B8A6" />
+              <Text className="text-sm font-semibold text-teal-600">Saving changes...</Text>
             </View>
           ) : null}
         </View>
@@ -428,291 +402,3 @@ export default function CalendarScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  // Header
-  header: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    flex: 1,
-  },
-  backButton: {
-    marginRight: 12,
-    padding: 4,
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '600' as const,
-    marginBottom: 4,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800' as const,
-    color: THEME.textHeading,
-    letterSpacing: -0.5,
-  },
-  monthBadge: {
-    backgroundColor: THEME.primaryLight,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 14,
-  },
-  monthText: {
-    fontSize: 14,
-    fontWeight: '700' as const,
-    color: THEME.primary,
-  },
-  // Calendar
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  calendarCard: {
-    backgroundColor: THEME.surface,
-    borderRadius: 20,
-    padding: 16,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 16,
-    elevation: 4,
-    marginBottom: 24,
-  },
-  calendar: {
-    borderRadius: 12,
-  },
-  // Legend Section
-  legendSection: {
-    backgroundColor: THEME.surface,
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '800' as const,
-    color: THEME.textHeading,
-    marginBottom: 16,
-  },
-  loadingState: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 12,
-    paddingVertical: 16,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '600' as const,
-  },
-  emptyLegend: {
-    alignItems: 'center' as const,
-    paddingVertical: 32,
-  },
-  emptyLegendText: {
-    fontSize: 15,
-    color: THEME.textMuted,
-    marginTop: 12,
-    marginBottom: 16,
-  },
-  emptyLegendButton: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 6,
-    backgroundColor: THEME.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  emptyLegendButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  legendList: {
-    gap: 12,
-  },
-  legendItem: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    padding: 14,
-    backgroundColor: THEME.background,
-    borderRadius: 14,
-  },
-  legendDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    marginRight: 14,
-  },
-  legendInfo: {
-    flex: 1,
-  },
-  legendName: {
-    fontSize: 15,
-    fontWeight: '700' as const,
-    color: THEME.textHeading,
-  },
-  legendTaskCount: {
-    fontSize: 13,
-    color: THEME.textMuted,
-    marginTop: 2,
-  },
-  // Modal
-  modalContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-  },
-  modalSection: {
-    marginBottom: 8,
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: '700' as const,
-    color: THEME.textMuted,
-    marginBottom: 12,
-    letterSpacing: 1,
-  },
-  emptySection: {
-    alignItems: 'center' as const,
-    paddingVertical: 24,
-  },
-  emptySectionText: {
-    fontSize: 15,
-    color: THEME.textMuted,
-    marginTop: 12,
-  },
-  // Assigned List
-  assignedList: {
-    gap: 12,
-  },
-  assignedItem: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    padding: 16,
-    backgroundColor: THEME.background,
-    borderRadius: 14,
-  },
-  assignedLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    flex: 1,
-  },
-  assignedDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 14,
-  },
-  assignedInfo: {
-    flex: 1,
-  },
-  assignedName: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: THEME.textHeading,
-  },
-  removeBtn: {
-    padding: 8,
-  },
-  // Available List
-  availableList: {
-    gap: 12,
-  },
-  availableItem: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    padding: 16,
-    backgroundColor: THEME.background,
-    borderRadius: 14,
-  },
-  availableLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    flex: 1,
-  },
-  availableDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 14,
-  },
-  availableInfo: {
-    flex: 1,
-  },
-  availableName: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: THEME.textHeading,
-  },
-  availableTaskCount: {
-    fontSize: 13,
-    color: THEME.textMuted,
-    marginTop: 2,
-  },
-  addBtn: {
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  addBtnDisabled: {
-    opacity: 0.5,
-  },
-  addBtnGradient: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: THEME.border,
-    marginVertical: 20,
-  },
-  savingState: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    gap: 10,
-    padding: 14,
-    backgroundColor: THEME.primaryLight,
-    borderRadius: 14,
-  },
-  savingText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
-    color: THEME.primary,
-  },
-});

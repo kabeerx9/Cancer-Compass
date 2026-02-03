@@ -1,15 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useIsFirstTime } from '@/lib/hooks';
-
-const PRIMARY = '#0D9488';
-const SLATE_50 = '#F8FAFC';
-const SLATE_500 = '#64748B';
-const SLATE_800 = '#1E293B';
 
 export default function Onboarding() {
   const [_, setIsFirstTime] = useIsFirstTime();
@@ -21,68 +16,78 @@ export default function Onboarding() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView className="flex-1 bg-neutral-50">
+      <View className="flex-1 px-6">
         {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="heart" size={64} color={PRIMARY} />
+        <View className="items-center pt-10 pb-8">
+          <View className="w-[120px] h-[120px] rounded-[60px] bg-teal-50 justify-center items-center mb-6">
+            <Ionicons name="heart" size={64} color="#0D9488" />
           </View>
-          <Text style={styles.title}>Cancer Compass</Text>
-          <Text style={styles.subtitle}>
+          <Text className="text-[32px] font-bold text-neutral-800 mb-2">
+            Cancer Compass
+          </Text>
+          <Text className="text-base text-neutral-500 text-center">
             Your personal medication & wellness companion
           </Text>
         </View>
 
         {/* Features List */}
-        <View style={styles.featuresSection}>
-          <View style={styles.featureRow}>
-            <View style={styles.featureIcon}>
-              <Ionicons name="medical-outline" size={24} color={PRIMARY} />
+        <View className="flex-1 pt-4">
+          <View className="flex-row items-center mb-5 bg-white p-4 rounded-2xl shadow-sm">
+            <View className="w-12 h-12 rounded-xl bg-teal-50 justify-center items-center mr-4">
+              <Ionicons name="medical-outline" size={24} color="#0D9488" />
             </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Track Medications</Text>
-              <Text style={styles.featureDescription}>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-neutral-800 mb-1">
+                Track Medications
+              </Text>
+              <Text className="text-sm text-neutral-500">
                 Never miss a dose with smart reminders
               </Text>
             </View>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIcon}>
-              <Ionicons name="calendar-outline" size={24} color={PRIMARY} />
+          <View className="flex-row items-center mb-5 bg-white p-4 rounded-2xl shadow-sm">
+            <View className="w-12 h-12 rounded-xl bg-teal-50 justify-center items-center mr-4">
+              <Ionicons name="calendar-outline" size={24} color="#0D9488" />
             </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Daily Schedule</Text>
-              <Text style={styles.featureDescription}>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-neutral-800 mb-1">
+                Daily Schedule
+              </Text>
+              <Text className="text-sm text-neutral-500">
                 Organize your medications by time of day
               </Text>
             </View>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIcon}>
-              <Ionicons name="analytics-outline" size={24} color={PRIMARY} />
+          <View className="flex-row items-center mb-5 bg-white p-4 rounded-2xl shadow-sm">
+            <View className="w-12 h-12 rounded-xl bg-teal-50 justify-center items-center mr-4">
+              <Ionicons name="analytics-outline" size={24} color="#0D9488" />
             </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Progress Tracking</Text>
-              <Text style={styles.featureDescription}>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-neutral-800 mb-1">
+                Progress Tracking
+              </Text>
+              <Text className="text-sm text-neutral-500">
                 Monitor your adherence over time
               </Text>
             </View>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIcon}>
+          <View className="flex-row items-center mb-5 bg-white p-4 rounded-2xl shadow-sm">
+            <View className="w-12 h-12 rounded-xl bg-teal-50 justify-center items-center mr-4">
               <Ionicons
                 name="shield-checkmark-outline"
                 size={24}
-                color={PRIMARY}
+                color="#0D9488"
               />
             </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Secure & Private</Text>
-              <Text style={styles.featureDescription}>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-neutral-800 mb-1">
+                Secure & Private
+              </Text>
+              <Text className="text-sm text-neutral-500">
                 Your health data stays safe and private
               </Text>
             </View>
@@ -90,9 +95,12 @@ export default function Onboarding() {
         </View>
 
         {/* CTA Button */}
-        <View style={styles.ctaSection}>
-          <Pressable style={styles.ctaButton} onPress={handleGetStarted}>
-            <Text style={styles.ctaText}>Get Started</Text>
+        <View className="py-6">
+          <Pressable
+            className="bg-teal-600 h-14 rounded-2xl flex-row justify-center items-center shadow-lg shadow-teal-600/30 active:scale-95 active:bg-teal-700"
+            onPress={handleGetStarted}
+          >
+            <Text className="text-lg font-bold text-white mr-2">Get Started</Text>
             <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </Pressable>
         </View>
@@ -100,100 +108,3 @@ export default function Onboarding() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: SLATE_50,
-  },
-  content: {
-    flex: 1,
-    padding: 24,
-  },
-  heroSection: {
-    alignItems: 'center',
-    paddingTop: 40,
-    paddingBottom: 32,
-  },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#F0FDFA',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: SLATE_800,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: SLATE_500,
-    textAlign: 'center',
-  },
-  featuresSection: {
-    flex: 1,
-    paddingTop: 16,
-  },
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  featureIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#F0FDFA',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  featureText: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: SLATE_800,
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: SLATE_500,
-  },
-  ctaSection: {
-    paddingVertical: 24,
-  },
-  ctaButton: {
-    backgroundColor: PRIMARY,
-    height: 56,
-    borderRadius: 16,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  ctaText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginRight: 8,
-  },
-});

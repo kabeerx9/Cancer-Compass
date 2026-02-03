@@ -2,21 +2,8 @@ import { useAuth, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Warm Healing Theme
-const THEME = {
-  primary: '#14B8A6',
-  primaryLight: '#CCFBF1',
-  background: '#FFFBF9',
-  surface: '#FFFFFF',
-  textHeading: '#2D2824',
-  textBody: '#6B5D50',
-  textMuted: '#B8A89A',
-  border: '#E8E0D8',
-  danger: '#F43F5E',
-};
 
 interface MenuItem {
   id: string;
@@ -61,8 +48,8 @@ export default function ProfilePage() {
       title: 'Settings',
       subtitle: 'App preferences & account',
       icon: 'settings-outline',
-      iconBg: THEME.primaryLight,
-      iconColor: THEME.primary,
+      iconBg: 'bg-teal-100',
+      iconColor: '#14B8A6',
       onPress: () => router.push('/settings'),
       showArrow: true,
     },
@@ -71,7 +58,7 @@ export default function ProfilePage() {
       title: 'Patient Info',
       subtitle: 'Personal details & contacts',
       icon: 'document-text-outline',
-      iconBg: '#EEF2FF',
+      iconBg: 'bg-indigo-50',
       iconColor: '#6366F1',
       onPress: () => router.push('/quick-info'),
       showArrow: true,
@@ -81,7 +68,7 @@ export default function ProfilePage() {
       title: 'Templates',
       subtitle: 'Manage day templates',
       icon: 'duplicate-outline',
-      iconBg: '#FEF3C7',
+      iconBg: 'bg-amber-100',
       iconColor: '#F59E0B',
       onPress: () => router.push('/manage-templates'),
       showArrow: true,
@@ -91,7 +78,7 @@ export default function ProfilePage() {
       title: 'Calendar',
       subtitle: 'View schedule & assignments',
       icon: 'calendar-outline',
-      iconBg: '#E0E7FF',
+      iconBg: 'bg-indigo-100',
       iconColor: '#8B5CF6',
       onPress: () => router.push('/calendar'),
       showArrow: true,
@@ -100,8 +87,8 @@ export default function ProfilePage() {
       id: 'signout',
       title: 'Sign Out',
       icon: 'log-out-outline',
-      iconBg: '#FFE4E6',
-      iconColor: THEME.danger,
+      iconBg: 'bg-rose-100',
+      iconColor: '#F43F5E',
       onPress: handleSignOut,
       showArrow: false,
     },
@@ -114,173 +101,69 @@ export default function ProfilePage() {
   const initial = firstName.charAt(0).toUpperCase();
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+    <View className="flex-1 bg-orange-50">
+      <SafeAreaView className="flex-1">
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 16 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Profile Header */}
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
+          <View className="items-center pt-8 pb-6">
+            <View className="mb-4">
               {user?.imageUrl ? (
-                <Image source={{ uri: user.imageUrl }} style={styles.avatar} />
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  className="w-25 h-25 rounded-full border-4 border-white"
+                  style={{ width: 100, height: 100 }}
+                />
               ) : (
-                <View style={styles.avatarPlaceholder}>
-                  <Text style={styles.avatarText}>{initial}</Text>
+                <View
+                  className="w-25 h-25 rounded-full bg-teal-500 justify-center items-center border-4 border-white"
+                  style={{ width: 100, height: 100 }}
+                >
+                  <Text className="text-4xl font-extrabold text-white">{initial}</Text>
                 </View>
               )}
             </View>
 
-            <Text style={styles.name}>{fullName}</Text>
-            {email ? <Text style={styles.email}>{email}</Text> : null}
+            <Text className="text-2xl font-extrabold text-stone-800 mb-1">{fullName}</Text>
+            {email ? <Text className="text-sm text-stone-400">{email}</Text> : null}
           </View>
 
           {/* Menu Items */}
-          <View style={styles.menuContainer}>
+          <View className="px-6 gap-2">
             {menuItems.map((item) => (
               <Pressable
                 key={item.id}
-                style={styles.menuItem}
+                className="flex-row items-center bg-white rounded-xl p-4 border border-stone-200 active:bg-stone-50"
                 onPress={item.onPress}
               >
-                <View style={[styles.iconContainer, { backgroundColor: item.iconBg }]}>
+                <View className={`w-11 h-11 rounded-xl justify-center items-center mr-4 ${item.iconBg}`}>
                   <Ionicons name={item.icon} size={22} color={item.iconColor} />
                 </View>
 
-                <View style={styles.menuContent}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
+                <View className="flex-1">
+                  <Text className="text-base font-bold text-stone-800 mb-0.5">{item.title}</Text>
                   {item.subtitle ? (
-                    <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                    <Text className="text-sm text-stone-400">{item.subtitle}</Text>
                   ) : null}
                 </View>
 
                 {item.showArrow ? (
-                  <Ionicons name="chevron-forward" size={20} color={THEME.textMuted} />
+                  <Ionicons name="chevron-forward" size={20} color="#B8A89A" />
                 ) : null}
               </Pressable>
             ))}
           </View>
 
           {/* Version */}
-          <View style={styles.versionContainer}>
-            <Text style={styles.versionText}>Cancer Compass v1.0</Text>
-            <Text style={styles.versionSubtext}>Built with care for your journey</Text>
+          <View className="items-center mt-8 py-4">
+            <Text className="text-sm text-stone-400 font-semibold">Cancer Compass v1.0</Text>
+            <Text className="text-xs text-stone-400 mt-1">Built with care for your journey</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 16, // Reduced bottom padding
-  },
-
-  // Profile Header
-  profileHeader: {
-    alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 24,
-  },
-  avatarContainer: {
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: THEME.surface,
-  },
-  avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: THEME.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: THEME.surface,
-  },
-  avatarText: {
-    fontSize: 40,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    marginBottom: 4,
-  },
-  email: {
-    fontSize: 15,
-    color: THEME.textMuted,
-  },
-
-  // Menu
-  menuContainer: {
-    paddingHorizontal: 24,
-    gap: 8,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  menuContent: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    marginBottom: 2,
-  },
-  menuSubtitle: {
-    fontSize: 13,
-    color: THEME.textMuted,
-  },
-
-  // Version
-  versionContainer: {
-    alignItems: 'center',
-    marginTop: 32,
-    paddingVertical: 16,
-  },
-  versionText: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '600',
-  },
-  versionSubtext: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    marginTop: 4,
-  },
-});

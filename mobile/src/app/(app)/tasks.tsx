@@ -455,10 +455,10 @@ export default function TasksPage() {
                 </Text>
 
                 <View className="flex-row gap-4">
-                  <Pressable
-                    className="rounded-xl bg-primary-600 px-5 py-3 shadow-sm active:opacity-80"
-                    onPress={() => setModalVisible(true)}
-                  >
+              <Pressable
+                className="rounded-xl bg-teal-600 px-5 py-3 shadow-sm active:opacity-80"
+                onPress={() => setModalVisible(true)}
+              >
                     <Text className="font-semibold text-white">Add Task</Text>
                   </Pressable>
                   <Pressable
@@ -511,7 +511,7 @@ export default function TasksPage() {
               placeholderTextColor="#9CA3AF"
             />
             <Pressable
-              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
+              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-teal-600'}`}
               onPress={handleAddTask}
               disabled={!newTaskTitle.trim() || createMutation.isPending}
             >
@@ -561,7 +561,7 @@ export default function TasksPage() {
               placeholderTextColor="#9CA3AF"
             />
             <Pressable
-              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-primary-600'}`}
+              className={`flex-row items-center justify-center rounded-xl py-4 ${!newTaskTitle.trim() ? 'bg-neutral-200' : 'bg-teal-600'}`}
               onPress={handleSaveEdit}
               disabled={!newTaskTitle.trim() || updateMutation.isPending}
             >

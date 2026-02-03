@@ -8,7 +8,6 @@ import {
   Alert,
   Modal,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -30,21 +29,6 @@ import {
   type SosMedicine,
   type UpdateSosMedicineData,
 } from '@/features/sos-medicine';
-
-// Warm Healing Theme
-const THEME = {
-  primary: '#14B8A6',
-  primaryLight: '#CCFBF1',
-  secondary: '#F43F5E',
-  secondaryLight: '#FFE4E6',
-  background: '#FFFBF9',
-  surface: '#FFFFFF',
-  textHeading: '#2D2824',
-  textBody: '#6B5D50',
-  textMuted: '#B8A89A',
-  border: '#E8E0D8',
-  shadow: 'rgba(45, 40, 36, 0.08)',
-};
 
 type SosViewMode = 'cabinet' | 'history';
 
@@ -276,13 +260,13 @@ export default function SosMedicinesPage() {
       if (!marked[localDateStr]) {
         marked[localDateStr] = { marked: true, dots: [] };
       }
-      marked[localDateStr].dots.push({ color: THEME.secondary });
+      marked[localDateStr].dots.push({ color: '#F43F5E' });
     });
     if (selectedDate) {
       marked[selectedDate] = {
         ...marked[selectedDate],
         selected: true,
-        selectedColor: THEME.secondary,
+        selectedColor: '#F43F5E',
       };
     }
     return marked;
@@ -300,114 +284,98 @@ export default function SosMedicinesPage() {
     sosUpdateMutation.isPending;
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+    <View className="flex-1 bg-orange-50">
+      <SafeAreaView className="flex-1">
         {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+        <View className="flex-row items-center px-4 pt-5 pb-4">
+          <Pressable className="p-2 mr-2 active:opacity-70" onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#2D2824" />
           </Pressable>
           <View>
-            <Text style={styles.headerSubtitle}>Emergency</Text>
-            <Text style={styles.headerTitle}>Emergency Medicines</Text>
+            <Text className="text-sm font-semibold text-stone-400 mb-1">Emergency</Text>
+            <Text className="text-[28px] font-extrabold text-stone-800 tracking-tight">Emergency Medicines</Text>
           </View>
         </View>
 
         {/* Stats Card */}
-        <View style={styles.statsSection}>
+        <View className="px-6 mb-4">
           <LinearGradient
-            colors={[THEME.secondary, '#E11D48']}
+            colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.statsCard}
+            className="flex-row rounded-[20px] p-5 shadow-lg"
           >
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{sosMedicines.length}</Text>
-              <Text style={styles.statLabel}>Medicines</Text>
+            <View className="flex-1 items-center">
+              <Text className="text-[28px] font-extrabold text-white leading-8">{sosMedicines.length}</Text>
+              <Text className="text-[13px] font-semibold text-white/90 mt-0.5">Medicines</Text>
             </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{sosStats?.totalUses || 0}</Text>
-              <Text style={styles.statLabel}>Total Uses</Text>
+            <View className="w-px bg-white/20" />
+            <View className="flex-1 items-center">
+              <Text className="text-[28px] font-extrabold text-white leading-8">{sosStats?.totalUses || 0}</Text>
+              <Text className="text-[13px] font-semibold text-white/90 mt-0.5">Total Uses</Text>
             </View>
           </LinearGradient>
         </View>
 
         {/* View Mode Toggle */}
-        <View style={styles.sosToggleContainer}>
+        <View className="flex-row mx-6 mb-4 bg-white rounded-xl p-1 border border-stone-200">
           <Pressable
-            style={[styles.sosToggleBtn, sosViewMode === 'cabinet' && styles.sosToggleBtnActive]}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg ${sosViewMode === 'cabinet' ? 'bg-rose-500' : 'bg-transparent active:bg-stone-100'}`}
             onPress={() => setSosViewMode('cabinet')}
           >
             <Ionicons
               name="medical-outline"
               size={18}
-              color={sosViewMode === 'cabinet' ? '#FFFFFF' : THEME.textBody}
+              color={sosViewMode === 'cabinet' ? '#FFFFFF' : '#6B5D50'}
             />
-            <Text
-              style={[
-                styles.sosToggleText,
-                sosViewMode === 'cabinet' && styles.sosToggleTextActive,
-              ]}
-            >
+            <Text className={`text-sm font-semibold ${sosViewMode === 'cabinet' ? 'text-white' : 'text-stone-600'}`}>
               Cabinet
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.sosToggleBtn, sosViewMode === 'history' && styles.sosToggleBtnActive]}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg ${sosViewMode === 'history' ? 'bg-rose-500' : 'bg-transparent active:bg-stone-100'}`}
             onPress={() => setSosViewMode('history')}
           >
             <Ionicons
               name="calendar-outline"
               size={18}
-              color={sosViewMode === 'history' ? '#FFFFFF' : THEME.textBody}
+              color={sosViewMode === 'history' ? '#FFFFFF' : '#6B5D50'}
             />
-            <Text
-              style={[
-                styles.sosToggleText,
-                sosViewMode === 'history' && styles.sosToggleTextActive,
-              ]}
-            >
+            <Text className={`text-sm font-semibold ${sosViewMode === 'history' ? 'text-white' : 'text-stone-600'}`}>
               History
             </Text>
           </Pressable>
         </View>
 
         {/* Content */}
-        <View style={styles.scrollView}>
+        <View className="flex-1 px-6 pb-24">
           {/* CABINET VIEW */}
           {sosViewMode === 'cabinet' && (
             <>
               {isLoadingSosMedicines ? (
                 <>
-                  <View style={{ marginBottom: 12 }}>
+                  <View className="mb-3">
                     <Skeleton width="100%" height={100} borderRadius={16} />
                   </View>
-                  <View style={{ marginBottom: 12 }}>
+                  <View className="mb-3">
                     <Skeleton width="100%" height={100} borderRadius={16} />
                   </View>
                 </>
               ) : sosMedicines.length === 0 ? (
-                <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>
-                  <View
-                    style={[
-                      styles.emptyIconCircle,
-                      { backgroundColor: THEME.secondaryLight },
-                    ]}
-                  >
-                    <Ionicons name="alert-circle-outline" size={48} color={THEME.secondary} />
+                <Animated.View className="items-center pt-16" entering={FadeInDown.springify()}>
+                  <View className="w-24 h-24 rounded-full bg-rose-100 justify-center items-center mb-5">
+                    <Ionicons name="alert-circle-outline" size={48} color="#F43F5E" />
                   </View>
-                  <Text style={styles.emptyTitle}>No Emergency Medicines</Text>
-                  <Text style={styles.emptySubtitle}>
+                  <Text className="text-[22px] font-extrabold text-stone-800 mb-2">No Emergency Medicines</Text>
+                  <Text className="text-[15px] text-stone-600 text-center max-w-[80%] leading-6 mb-6">
                     Add emergency medicines you take only when needed
                   </Text>
                   <Pressable
-                    style={[styles.emptyAction, { backgroundColor: THEME.secondaryLight }]}
+                    className="flex-row items-center gap-2 bg-rose-100 px-5 py-3 rounded-[14px] active:opacity-80"
                     onPress={openSosAddModal}
                   >
-                    <Ionicons name="add-circle" size={20} color={THEME.secondary} />
-                    <Text style={[styles.emptyActionText, { color: THEME.secondary }]}
-                    >
+                    <Ionicons name="add-circle" size={20} color="#F43F5E" />
+                    <Text className="text-[15px] font-bold text-rose-500">
                       Add First Medicine
                     </Text>
                   </Pressable>
@@ -419,61 +387,56 @@ export default function SosMedicinesPage() {
                       key={medicine.id}
                       entering={FadeInDown.delay(index * 50).springify()}
                     >
-                      <View style={styles.card}>
-                        <View style={styles.cardLeft}>
-                          <View
-                            style={[
-                              styles.iconBox,
-                              { backgroundColor: THEME.secondaryLight },
-                            ]}
-                          >
+                      <View className="flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-stone-200 shadow-sm">
+                        <View className="mr-4">
+                          <View className="w-[52px] h-[52px] rounded-2xl bg-rose-100 justify-center items-center">
                             <Ionicons
                               name="medical"
                               size={22}
-                              color={THEME.secondary}
+                              color="#F43F5E"
                             />
                           </View>
                         </View>
 
-                        <View style={styles.cardCenter}>
-                          <Text style={styles.medName}>
+                        <View className="flex-1">
+                          <Text className="text-[17px] font-bold text-stone-800 mb-1.5">
                             {medicine.name}
                           </Text>
                           {medicine.purpose && (
-                            <Text style={styles.medPurpose}>{medicine.purpose}</Text>
+                            <Text className="text-xs text-stone-400 italic mb-1">{medicine.purpose}</Text>
                           )}
                           {medicine.dosage && (
-                            <Text style={styles.medMeta}>{medicine.dosage}</Text>
+                            <Text className="text-[13px] text-stone-600 font-semibold">{medicine.dosage}</Text>
                           )}
                         </View>
 
-                        <View style={styles.cardRight}>
+                        <View className="items-end gap-2">
                           <Pressable
-                            style={styles.takeBtn}
+                            className="rounded-[10px] overflow-hidden shadow-md active:opacity-90 shadow-rose-500/30"
                             onPress={() => openSosTakeModal(medicine)}
                           >
                             <LinearGradient
-                              colors={[THEME.secondary, '#E11D48']}
+                              colors={['#F43F5E', '#E11D48']}
                               start={{ x: 0, y: 0 }}
                               end={{ x: 1, y: 1 }}
-                              style={styles.takeBtnGradient}
+                              className="py-2.5 px-5 items-center justify-center"
                             >
-                              <Text style={styles.takeBtnText}>Take</Text>
+                              <Text className="text-sm font-bold text-white">Take</Text>
                             </LinearGradient>
                           </Pressable>
 
-                          <View style={styles.actionRow}>
+                          <View className="flex-row gap-2">
                             <Pressable
                               onPress={() => openSosEditModal(medicine)}
-                              style={styles.smallBtn}
+                              className="p-3 active:opacity-70"
                             >
-                              <Ionicons name="create-outline" size={20} color={THEME.textBody} />
+                              <Ionicons name="create-outline" size={20} color="#6B5D50" />
                             </Pressable>
                             <Pressable
                               onPress={() => handleDeleteSosMedicine(medicine)}
-                              style={styles.smallBtn}
+                              className="p-3 active:opacity-70"
                             >
-                              <Ionicons name="trash-outline" size={20} color={THEME.textMuted} />
+                              <Ionicons name="trash-outline" size={20} color="#A8A29E" />
                             </Pressable>
                           </View>
                         </View>
@@ -488,20 +451,20 @@ export default function SosMedicinesPage() {
           {/* HISTORY VIEW */}
           {sosViewMode === 'history' && (
             <Animated.View entering={FadeInDown.springify()}>
-              <View style={[styles.calendarCard, { borderColor: THEME.secondaryLight }]}>
+              <View className="bg-white rounded-[20px] p-4 mb-4 border border-rose-100">
                 <Calendar
-                  style={styles.calendar}
+                  className="rounded-xl"
                   theme={{
-                    backgroundColor: THEME.surface,
-                    calendarBackground: THEME.surface,
-                    textSectionTitleColor: THEME.textMuted,
-                    selectedDayBackgroundColor: THEME.secondary,
+                    backgroundColor: '#FFFFFF',
+                    calendarBackground: '#FFFFFF',
+                    textSectionTitleColor: '#B8A89A',
+                    selectedDayBackgroundColor: '#F43F5E',
                     selectedDayTextColor: '#FFFFFF',
-                    todayTextColor: THEME.secondary,
-                    dayTextColor: THEME.textHeading,
-                    textDisabledColor: THEME.border,
-                    arrowColor: THEME.secondary,
-                    monthTextColor: THEME.textHeading,
+                    todayTextColor: '#F43F5E',
+                    dayTextColor: '#2D2824',
+                    textDisabledColor: '#E8E0D8',
+                    arrowColor: '#F43F5E',
+                    monthTextColor: '#2D2824',
                     textMonthFontWeight: '700',
                     textDayFontSize: 16,
                     textMonthFontSize: 18,
@@ -518,8 +481,8 @@ export default function SosMedicinesPage() {
                 />
               </View>
 
-              <View style={[styles.logsSection, { borderColor: THEME.secondaryLight }]}>
-                <Text style={styles.logsTitle}>
+              <View className="bg-white rounded-[20px] p-5 border border-rose-100">
+                <Text className="text-lg font-bold text-stone-800 mb-4">
                   {selectedDate ? `Logs for ${selectedDate}` : 'All Logs'}
                 </Text>
                 {isLoadingSosLogs ? (
@@ -534,26 +497,21 @@ export default function SosMedicinesPage() {
                       <Animated.View
                         key={log.id}
                         entering={FadeInDown.delay(index * 30).springify()}
-                        style={styles.logItem}
+                        className="flex-row items-center mb-4"
                       >
-                        <View style={styles.logLeft}>
-                          <View
-                            style={[
-                              styles.logIconBox,
-                              { backgroundColor: THEME.secondaryLight },
-                            ]}
-                          >
-                            <Ionicons name="medical" size={18} color={THEME.secondary} />
+                        <View className="mr-3">
+                          <View className="w-10 h-10 rounded-lg bg-rose-100 justify-center items-center">
+                            <Ionicons name="medical" size={18} color="#F43F5E" />
                           </View>
                         </View>
-                        <View style={styles.logCenter}>
-                          <Text style={styles.logMedicineName}>
+                        <View className="flex-1">
+                          <Text className="text-[15px] font-bold text-stone-800 mb-0.5">
                             {log.sosMedicine?.name || 'Unknown Medicine'}
                           </Text>
-                          <Text style={styles.logTime}>
+                          <Text className="text-[13px] text-stone-400">
                             {formatDate(log.takenAt)} at {formatTime(log.takenAt)}
                           </Text>
-                          {log.notes && <Text style={styles.logNotes}>{log.notes}</Text>}
+                          {log.notes && <Text className="text-[13px] text-stone-600 mt-1 italic">{log.notes}</Text>}
                         </View>
                       </Animated.View>
                     )
@@ -561,7 +519,7 @@ export default function SosMedicinesPage() {
                 )}
                 {(selectedDate ? getLogsForDate(selectedDate) : allSosLogs).length === 0 &&
                   !isLoadingSosLogs && (
-                    <Text style={styles.noLogsText}>
+                    <Text className="text-sm text-stone-400 text-center py-5">
                       {selectedDate ? 'No medicines taken on this date' : 'No logs yet'}
                     </Text>
                   )}
@@ -571,12 +529,12 @@ export default function SosMedicinesPage() {
         </View>
 
         {/* Floating Add Button */}
-        <Pressable style={styles.fab} onPress={openSosAddModal}>
+        <Pressable className="absolute bottom-6 right-6 rounded-[28px] overflow-hidden shadow-lg shadow-rose-500/30 active:opacity-90" onPress={openSosAddModal}>
           <LinearGradient
-            colors={[THEME.secondary, '#E11D48']}
+            colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.fabGradient}
+            className="w-14 h-14 items-center justify-center"
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>
@@ -589,65 +547,65 @@ export default function SosMedicinesPage() {
           presentationStyle="pageSheet"
           onRequestClose={() => setSosAddModalVisible(false)}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add SOS Medicine</Text>
-              <Pressable onPress={() => setSosAddModalVisible(false)} style={styles.closeBtn}>
-                <Ionicons name="close" size={24} color={THEME.textHeading} />
+          <View className="flex-1 bg-orange-50">
+            <View className="flex-row justify-between items-center px-6 pt-5 pb-4 border-b border-stone-200">
+              <Text className="text-[22px] font-extrabold text-stone-800">Add SOS Medicine</Text>
+              <Pressable onPress={() => setSosAddModalVisible(false)} className="p-2 active:opacity-70">
+                <Ionicons name="close" size={24} color="#2D2824" />
               </Pressable>
             </View>
 
-            <View style={styles.modalBody}>
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Name *</Text>
+            <View className="flex-1 p-6">
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Name *</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   placeholder="e.g., Pain Reliever"
                   value={sosFormData.name}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, name: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Purpose *</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Purpose *</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   placeholder="What symptom or condition is this for?"
                   value={sosFormData.purpose}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, purpose: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Dosage</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Dosage</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   placeholder="e.g., 500mg, 1 tablet"
                   value={sosFormData.dosage}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, dosage: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Instructions</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Instructions</Text>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800 min-h-[100px]"
                   placeholder="Any special instructions or warnings"
                   value={sosFormData.instructions}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, instructions: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                   multiline
                   numberOfLines={3}
                 />
               </View>
             </View>
 
-            <View style={styles.modalFooter}>
+            <View className="p-6 border-t border-stone-200">
               <Pressable
-                style={[styles.saveBtn, { backgroundColor: THEME.secondary }]}
+                className="flex-row items-center justify-center gap-2 bg-rose-500 py-4 rounded-[14px] active:opacity-80"
                 onPress={handleSaveSosMedicine}
                 disabled={saving}
               >
@@ -656,7 +614,7 @@ export default function SosMedicinesPage() {
                 ) : (
                   <>
                     <Ionicons name="checkmark-circle" size={20} color="#FFFFFF" />
-                    <Text style={styles.saveText}>Save Medicine</Text>
+                    <Text className="text-base font-bold text-white">Save Medicine</Text>
                   </>
                 )}
               </Pressable>
@@ -671,61 +629,61 @@ export default function SosMedicinesPage() {
           presentationStyle="pageSheet"
           onRequestClose={() => setSosEditModalVisible(false)}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Edit SOS Medicine</Text>
-              <Pressable onPress={() => setSosEditModalVisible(false)} style={styles.closeBtn}>
-                <Ionicons name="close" size={24} color={THEME.textHeading} />
+          <View className="flex-1 bg-orange-50">
+            <View className="flex-row justify-between items-center px-6 pt-5 pb-4 border-b border-stone-200">
+              <Text className="text-[22px] font-extrabold text-stone-800">Edit SOS Medicine</Text>
+              <Pressable onPress={() => setSosEditModalVisible(false)} className="p-2 active:opacity-70">
+                <Ionicons name="close" size={24} color="#2D2824" />
               </Pressable>
             </View>
 
-            <View style={styles.modalBody}>
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Name</Text>
+            <View className="flex-1 p-6">
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Name</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   value={sosFormData.name}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, name: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Purpose</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Purpose</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   value={sosFormData.purpose}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, purpose: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Dosage</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Dosage</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800"
                   value={sosFormData.dosage}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, dosage: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Instructions</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-stone-800 mb-2">Instructions</Text>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800 min-h-[100px]"
                   value={sosFormData.instructions}
                   onChangeText={(t) => setSosFormData({ ...sosFormData, instructions: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#A8A29E"
                   multiline
                   numberOfLines={3}
                 />
               </View>
             </View>
 
-            <View style={styles.modalFooter}>
+            <View className="p-6 border-t border-stone-200">
               <Pressable
-                style={[styles.saveBtn, { backgroundColor: THEME.secondary }]}
+                className="flex-row items-center justify-center gap-2 bg-rose-500 py-4 rounded-[14px] active:opacity-80"
                 onPress={handleUpdateSosMedicine}
                 disabled={saving}
               >
@@ -734,7 +692,7 @@ export default function SosMedicinesPage() {
                 ) : (
                   <>
                     <Ionicons name="checkmark-circle" size={20} color="#FFFFFF" />
-                    <Text style={styles.saveText}>Update Medicine</Text>
+                    <Text className="text-base font-bold text-white">Update Medicine</Text>
                   </>
                 )}
               </Pressable>
@@ -750,47 +708,47 @@ export default function SosMedicinesPage() {
           transparent={true}
           onRequestClose={() => setSosTakeModalVisible(false)}
         >
-          <View style={styles.overlay}>
-            <View style={styles.takeModalContainer}>
-              <View style={styles.takeModalHeader}>
-                <Text style={styles.takeModalTitle}>Take {selectedSosMedicine?.name}</Text>
-                <Pressable onPress={() => setSosTakeModalVisible(false)} style={styles.closeBtn}>
-                  <Ionicons name="close" size={24} color={THEME.textHeading} />
+          <View className="flex-1 bg-black/50 justify-end">
+            <View className="bg-white rounded-t-3xl max-h-[85%]">
+              <View className="flex-row justify-between items-center p-6 border-b border-stone-200">
+                <Text className="text-xl font-extrabold text-stone-800">Take {selectedSosMedicine?.name}</Text>
+                <Pressable onPress={() => setSosTakeModalVisible(false)} className="p-2 active:opacity-70">
+                  <Ionicons name="close" size={24} color="#2D2824" />
                 </Pressable>
               </View>
 
-              <View style={styles.takeModalBody}>
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>Time</Text>
-                  <Text style={[styles.timeDisplay, { color: THEME.secondary }]}>
+              <View className="p-6">
+                <View className="mb-5">
+                  <Text className="text-sm font-semibold text-stone-800 mb-2">Time</Text>
+                  <Text className="text-lg font-bold text-rose-500">
                     {formatTime(logFormData.takenAt)}
                   </Text>
                 </View>
 
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>Notes (Optional)</Text>
+                <View className="mb-5">
+                  <Text className="text-sm font-semibold text-stone-800 mb-2">Notes (Optional)</Text>
                   <TextInput
-                    style={[styles.input, styles.textArea]}
+                    className="bg-white border border-stone-200 rounded-xl px-4 py-3.5 text-base text-stone-800 min-h-[100px]"
                     placeholder="What's happening? Any symptoms?"
                     value={logFormData.notes}
                     onChangeText={(t) => setLogFormData({ ...logFormData, notes: t })}
-                    placeholderTextColor={THEME.textMuted}
+                    placeholderTextColor="#A8A29E"
                     multiline
                     numberOfLines={4}
                   />
                 </View>
               </View>
 
-              <View style={styles.takeModalFooter}>
-                <Pressable style={styles.takeConfirmBtn} onPress={handleLogSosMedicine}>
+              <View className="p-6 pt-0">
+                <Pressable className="rounded-[14px] overflow-hidden active:opacity-90" onPress={handleLogSosMedicine}>
                   <LinearGradient
-                    colors={[THEME.secondary, '#E11D48']}
+                    colors={['#F43F5E', '#E11D48']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={styles.takeConfirmGradient}
+                    className="flex-row items-center justify-center gap-2 py-4"
                   >
                     <Ionicons name="checkmark" size={24} color="#FFFFFF" />
-                    <Text style={styles.takeConfirmText}>Confirm</Text>
+                    <Text className="text-base font-bold text-white">Confirm</Text>
                   </LinearGradient>
                 </Pressable>
               </View>
@@ -801,421 +759,3 @@ export default function SosMedicinesPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  backBtn: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    letterSpacing: -0.5,
-  },
-  statsSection: {
-    paddingHorizontal: 24,
-    marginBottom: 16,
-  },
-  statsCard: {
-    flexDirection: 'row',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    lineHeight: 32,
-  },
-  statLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.9)',
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  sosToggleContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 24,
-    marginBottom: 16,
-    backgroundColor: THEME.surface,
-    borderRadius: 12,
-    padding: 4,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  sosToggleBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  sosToggleBtnActive: {
-    backgroundColor: THEME.secondary,
-  },
-  sosToggleText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textBody,
-  },
-  sosToggleTextActive: {
-    color: '#FFFFFF',
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 100,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  emptyIconCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: THEME.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  emptyTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    color: THEME.textBody,
-    textAlign: 'center',
-    maxWidth: '80%',
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  emptyAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: THEME.primaryLight,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 14,
-  },
-  emptyActionText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  cardLeft: {
-    marginRight: 16,
-  },
-  cardCenter: {
-    flex: 1,
-  },
-  cardRight: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  iconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: THEME.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  medName: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    marginBottom: 6,
-  },
-  medMeta: {
-    fontSize: 13,
-    color: THEME.textBody,
-    fontWeight: '600',
-  },
-  medPurpose: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    fontStyle: 'italic',
-    marginBottom: 4,
-  },
-  takeBtn: {
-    borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: THEME.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  takeBtnGradient: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  takeBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  smallBtn: {
-    padding: 12,
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
-    borderRadius: 28,
-    overflow: 'hidden',
-    shadowColor: THEME.secondary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  fabGradient: {
-    width: 56,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: THEME.textHeading,
-  },
-  closeBtn: {
-    padding: 8,
-  },
-  modalBody: {
-    flex: 1,
-    padding: 24,
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textHeading,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: THEME.surface,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: THEME.textHeading,
-  },
-  textArea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  modalFooter: {
-    padding: 24,
-    borderTopWidth: 1,
-    borderTopColor: THEME.border,
-  },
-  saveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    borderRadius: 14,
-  },
-  saveText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(45, 40, 36, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  takeModalContainer: {
-    backgroundColor: THEME.surface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '85%',
-  },
-  takeModalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  takeModalTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: THEME.textHeading,
-  },
-  takeModalBody: {
-    padding: 24,
-  },
-  timeDisplay: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  takeModalFooter: {
-    padding: 24,
-    paddingTop: 0,
-  },
-  takeConfirmBtn: {
-    borderRadius: 14,
-    overflow: 'hidden',
-  },
-  takeConfirmGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-  },
-  takeConfirmText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  calendarCard: {
-    backgroundColor: THEME.surface,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-  },
-  calendar: {
-    borderRadius: 12,
-  },
-  logsSection: {
-    backgroundColor: THEME.surface,
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-  },
-  logsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    marginBottom: 16,
-  },
-  logItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  logLeft: {
-    marginRight: 12,
-  },
-  logIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logCenter: {
-    flex: 1,
-  },
-  logMedicineName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    marginBottom: 2,
-  },
-  logTime: {
-    fontSize: 13,
-    color: THEME.textMuted,
-  },
-  logNotes: {
-    fontSize: 13,
-    color: THEME.textBody,
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
-  noLogsText: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    textAlign: 'center',
-    paddingVertical: 20,
-  },
-});

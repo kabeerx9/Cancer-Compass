@@ -6,25 +6,10 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Warm Healing Theme
-const THEME = {
-  primary: '#14B8A6', // Warm Teal
-  primaryLight: '#CCFBF1',
-  background: '#FFFBF9', // Warm cream
-  surface: '#FFFFFF',
-  textHeading: '#2D2824',
-  textBody: '#6B5D50',
-  textMuted: '#B8A89A',
-  border: '#E8E0D8',
-  shadow: 'rgba(45, 40, 36, 0.08)',
-  danger: '#F43F5E',
-};
 
 interface SettingItem {
   id: string;
@@ -100,138 +85,63 @@ export default function SettingsPage() {
   ];
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+    <View className="flex-1 bg-[#FFFBF9]">
+      <SafeAreaView className="flex-1">
         {/* Header with back button */}
-        <View style={styles.header}>
+        <View className="flex-row items-center px-6 pt-5 pb-4 gap-3">
           <Pressable
             onPress={() => router.back()}
-            style={styles.backBtn}
+            className="p-2 -ml-2 active:opacity-60"
           >
-            <Ionicons name="arrow-back" size={24} color={THEME.textHeading} />
+            <Ionicons name="arrow-back" size={24} className="text-gray-900" />
           </Pressable>
-          <Text style={styles.headerTitle}>Settings</Text>
+          <Text className="text-[28px] font-extrabold text-gray-900 tracking-tight">
+            Settings
+          </Text>
         </View>
 
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerClassName="px-6 pb-4"
           showsVerticalScrollIndicator={false}
         >
           {settingItems.map((item) => (
             <Pressable
               key={item.id}
-              style={styles.settingItem}
+              className="flex-row items-center bg-white rounded-xl p-4 mb-2 border border-gray-200 shadow-sm active:bg-gray-50 active:scale-[0.98]"
               onPress={item.onPress}
             >
-              <View style={styles.iconContainer}>
+              <View className="w-10 h-10 rounded-[10px] bg-teal-100 justify-center items-center mr-4">
                 <Ionicons
                   name={item.icon}
                   size={22}
-                  color={item.danger ? THEME.danger : THEME.primary}
+                  className={item.danger ? 'text-rose-500' : 'text-teal-500'}
                 />
               </View>
               <Text
-                style={[
-                  styles.settingTitle,
-                  item.danger && styles.dangerText,
-                ]}
+                className={`flex-1 text-base font-semibold text-gray-900 ${item.danger ? 'text-rose-500' : ''}`}
               >
                 {item.title}
               </Text>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={THEME.textMuted}
+                className="text-gray-400"
               />
             </Pressable>
           ))}
 
           {/* Version Info */}
-          <View style={styles.versionContainer}>
-            <Text style={styles.versionText}>Version 1.0.0</Text>
-            <Text style={styles.versionSubtext}>© 2025 Cancer Compass</Text>
+          <View className="items-center mt-8 py-4">
+            <Text className="text-sm text-gray-400 font-semibold">
+              Version 1.0.0
+            </Text>
+            <Text className="text-xs text-gray-400 mt-1">
+              © 2025 Cancer Compass
+            </Text>
           </View>
         </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
-    gap: 12,
-  },
-  backBtn: {
-    padding: 8,
-    marginLeft: -8,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    letterSpacing: -0.5,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 16, // Reduced padding
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: THEME.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  settingTitle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.textHeading,
-  },
-  dangerText: {
-    color: THEME.danger,
-  },
-  versionContainer: {
-    alignItems: 'center',
-    marginTop: 32,
-    paddingVertical: 16,
-  },
-  versionText: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '600',
-  },
-  versionSubtext: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    marginTop: 4,
-  },
-});

@@ -10,7 +10,6 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -28,20 +27,6 @@ import {
   medicationQueries,
   type UpdateMedicationData,
 } from '@/features/medications';
-
-const THEME = {
-  primary: '#14B8A6',
-  primaryLight: '#CCFBF1',
-  secondary: '#F43F5E',
-  secondaryLight: '#FFE4E6',
-  background: '#FFFBF9',
-  surface: '#FFFFFF',
-  textHeading: '#2D2824',
-  textBody: '#6B5D50',
-  textMuted: '#B8A89A',
-  border: '#E8E0D8',
-  shadow: 'rgba(45, 40, 36, 0.08)',
-};
 
 const quickLabels = [
   'Before Breakfast',
@@ -228,69 +213,78 @@ export default function CabinetPage() {
     medicationUpdateMutation.isPending;
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
+    <View className="flex-1 bg-neutral-50">
+      <SafeAreaView className="flex-1">
+        <View className="flex-row justify-between items-center px-6 pt-5 pb-4">
           <View>
-            <Text style={styles.headerTitle}>Medications</Text>
+            <Text className="text-[28px] font-extrabold text-neutral-800 tracking-tight">
+              Medications
+            </Text>
           </View>
-          <Pressable style={styles.avatar} onPress={() => router.push('/profile')}>
+          <Pressable 
+            className="w-12 h-12 rounded-full overflow-hidden active:opacity-80"
+            onPress={() => router.push('/profile')}
+          >
             <LinearGradient
-              colors={[THEME.primary, '#0D9488']}
+              colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.avatarGradient}
+              className="w-full h-full justify-center items-center"
             >
               <Ionicons name="medical" size={24} color="#FFFFFF" />
             </LinearGradient>
           </Pressable>
         </View>
 
-        <View style={styles.sosButtonContainer}>
+        <View className="px-6 mb-4">
           <Pressable
-            style={styles.sosButton}
+            className="rounded-xl overflow-hidden shadow-md active:opacity-90"
             onPress={() => router.push('/sos-medicines')}
           >
             <LinearGradient
-              colors={[THEME.secondary, '#E11D48']}
+              colors={['#F43F5E', '#E11D48']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.sosButtonGradient}
+              className="flex-row items-center justify-between py-3.5 px-4"
             >
               <Ionicons name="alert-circle" size={20} color="#FFFFFF" />
-              <Text style={styles.sosButtonText}>SOS Medicines</Text>
+              <Text className="text-[15px] font-bold text-white">SOS Medicines</Text>
               <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
             </LinearGradient>
           </Pressable>
         </View>
 
-        <View style={styles.statsSection}>
+        <View className="px-6 mb-4">
           <LinearGradient
-            colors={[THEME.primary, '#0D9488']}
+            colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.statsCard}
+            className="flex-row rounded-[20px] p-5 shadow-lg"
           >
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{activeMedCount}</Text>
-              <Text style={styles.statLabel}>Active</Text>
+            <View className="flex-1 items-center">
+              <Text className="text-[28px] font-extrabold text-white leading-[32px]">
+                {activeMedCount}
+              </Text>
+              <Text className="text-[13px] font-semibold text-white/90 mt-0.5">Active</Text>
             </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{medications.length}</Text>
-              <Text style={styles.statLabel}>Total</Text>
+            <View className="w-px bg-white/20" />
+            <View className="flex-1 items-center">
+              <Text className="text-[28px] font-extrabold text-white leading-[32px]">
+                {medications.length}
+              </Text>
+              <Text className="text-[13px] font-semibold text-white/90 mt-0.5">Total</Text>
             </View>
           </LinearGradient>
         </View>
 
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerClassName="px-6 pb-24"
           refreshControl={
             <RefreshControl
               refreshing={isManuallyRefreshing}
               onRefresh={handleRefresh}
-              tintColor={THEME.primary}
+              tintColor="#14B8A6"
             />
           }
         >
@@ -302,17 +296,20 @@ export default function CabinetPage() {
               <MedicationCardSkeleton />
             </>
           ) : medications.length === 0 ? (
-            <Animated.View style={styles.emptyState} entering={FadeInDown.springify()}>
-              <View style={styles.emptyIconCircle}>
-                <Ionicons name="medical-outline" size={48} color={THEME.primary} />
+            <Animated.View className="items-center pt-[60px]" entering={FadeInDown.springify()}>
+              <View className="w-24 h-24 rounded-full bg-teal-100 justify-center items-center mb-5">
+                <Ionicons name="medical-outline" size={48} color="#14B8A6" />
               </View>
-              <Text style={styles.emptyTitle}>No Medications</Text>
-              <Text style={styles.emptySubtitle}>
+              <Text className="text-[22px] font-extrabold text-neutral-800 mb-2">No Medications</Text>
+              <Text className="text-[15px] text-amber-700 text-center max-w-[80%] leading-[22px] mb-6">
                 Add your daily medications to start tracking them
               </Text>
-              <Pressable style={styles.emptyAction} onPress={openMedAddModal}>
-                <Ionicons name="add-circle" size={20} color={THEME.primary} />
-                <Text style={styles.emptyActionText}>Add First Medication</Text>
+              <Pressable 
+                className="flex-row items-center gap-2 bg-teal-100 px-5 py-3 rounded-[14px] active:bg-teal-200"
+                onPress={openMedAddModal}
+              >
+                <Ionicons name="add-circle" size={20} color="#14B8A6" />
+                <Text className="text-[15px] font-bold text-teal-500">Add First Medication</Text>
               </Pressable>
             </Animated.View>
           ) : (
@@ -323,49 +320,38 @@ export default function CabinetPage() {
                   entering={FadeInDown.delay(index * 50).springify()}
                 >
                   <Pressable
-                    style={[
-                      styles.card,
-                      !medication.isActive && styles.cardInactive,
-                    ]}
+                    className={`flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-neutral-200 shadow-sm active:opacity-90 ${!medication.isActive ? 'bg-neutral-100 opacity-60' : ''}`}
                     onPress={() => openMedDetailModal(medication)}
                   >
-                    <View style={styles.cardLeft}>
-                      <View
-                        style={[
-                          styles.iconBox,
-                          !medication.isActive && styles.iconBoxInactive,
-                        ]}
-                      >
+                    <View className="mr-4">
+                      <View className={`w-[52px] h-[52px] rounded-2xl justify-center items-center ${medication.isActive ? 'bg-teal-100' : 'bg-neutral-200'}`}>
                         <Ionicons
                           name="medical"
                           size={22}
-                          color={medication.isActive ? THEME.primary : THEME.textMuted}
+                          color={medication.isActive ? '#14B8A6' : '#B8A89A'}
                         />
                       </View>
                     </View>
 
-                    <View style={styles.cardCenter}>
+                    <View className="flex-1">
                       <Text
-                        style={[
-                          styles.medName,
-                          !medication.isActive && styles.textInactive,
-                        ]}
+                        className={`text-[17px] font-bold text-neutral-800 mb-1.5 ${!medication.isActive ? 'text-neutral-400 line-through' : ''}`}
                       >
                         {medication.name}
                       </Text>
-                      <View style={styles.metaRow}>
-                        <Text style={styles.medMeta}>
+                      <View className="flex-row items-center mb-1">
+                        <Text className="text-[13px] text-amber-700 font-semibold">
                           {medication.dosage || 'No dosage'}
                         </Text>
                         {medication.time && (
                           <>
-                            <Text style={styles.dot}>•</Text>
-                            <Text style={styles.medMeta}>{medication.time}</Text>
+                            <Text className="mx-2 text-neutral-400 text-xs">•</Text>
+                            <Text className="text-[13px] text-amber-700 font-semibold">{medication.time}</Text>
                           </>
                         )}
                       </View>
                       {medication.purpose && (
-                        <Text style={styles.medPurpose}>{medication.purpose}</Text>
+                        <Text className="text-xs text-neutral-400 italic">{medication.purpose}</Text>
                       )}
                     </View>
 
@@ -374,25 +360,16 @@ export default function CabinetPage() {
                         e.stopPropagation();
                         handleToggleMedicationActive(medication);
                       }}
-                      style={styles.toggleContainer}
+                      className="flex-row items-center gap-2 p-3"
                     >
-                      <Text style={[
-                        styles.toggleLabel,
-                        medication.isActive && styles.toggleLabelActive,
-                      ]}>
+                      <Text className={`text-xs font-semibold ${medication.isActive ? 'text-teal-500' : 'text-neutral-400'}`}>
                         {medication.isActive ? 'Active' : 'Paused'}
                       </Text>
                       <View
-                        style={[
-                          styles.toggleTrack,
-                          medication.isActive && styles.toggleTrackActive,
-                        ]}
+                        className={`w-12 h-7 rounded-full p-0.5 ${medication.isActive ? 'bg-teal-500' : 'bg-neutral-200'}`}
                       >
                         <View
-                          style={[
-                            styles.toggleThumb,
-                            medication.isActive && styles.toggleThumbActive,
-                          ]}
+                          className={`w-6 h-6 rounded-full bg-white shadow-sm ${medication.isActive ? 'translate-x-5' : 'translate-x-0'}`}
                         />
                       </View>
                     </Pressable>
@@ -403,12 +380,15 @@ export default function CabinetPage() {
           )}
         </ScrollView>
 
-        <Pressable style={styles.fab} onPress={openMedAddModal}>
+        <Pressable 
+          className="absolute right-6 bottom-6 rounded-[28px] overflow-hidden shadow-lg active:opacity-90"
+          onPress={openMedAddModal}
+        >
           <LinearGradient
-            colors={[THEME.primary, '#0D9488']}
+            colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.fabGradient}
+            className="w-14 h-14 items-center justify-center"
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>
@@ -428,71 +408,65 @@ export default function CabinetPage() {
           presentationStyle="pageSheet"
           onRequestClose={closeMedEditModal}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+          <View className="flex-1 bg-neutral-50">
+            <View className="flex-row justify-between items-center px-6 pt-5 pb-4 border-b border-neutral-200">
+              <Text className="text-xl font-extrabold text-neutral-800">
                 {editingMedication ? 'Edit Medication' : 'Add Medication'}
               </Text>
-              <Pressable onPress={closeMedEditModal} style={styles.closeBtn}>
-                <Ionicons name="close" size={24} color={THEME.textHeading} />
+              <Pressable onPress={closeMedEditModal} className="p-2">
+                <Ionicons name="close" size={24} color="#2D2824" />
               </Pressable>
             </View>
 
-            <ScrollView style={styles.modalBody}>
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Name</Text>
+            <ScrollView className="flex-1 p-6">
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-neutral-800 mb-1">Name</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
                   placeholder="Medication name"
                   value={medFormData.name}
                   onChangeText={(t) => setMedFormData({ ...medFormData, name: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#B8A89A"
                 />
               </View>
 
-              <View style={styles.row}>
-                <View style={[styles.formGroup, { flex: 1, marginRight: 12 }]}>
-                  <Text style={styles.label}>Dosage</Text>
+              <View className="flex-row">
+                <View className="flex-1 mr-3 mb-5">
+                  <Text className="text-sm font-semibold text-neutral-800 mb-1">Dosage</Text>
                   <TextInput
-                    style={styles.input}
+                    className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
                     placeholder="e.g. 50mg"
                     value={medFormData.dosage}
                     onChangeText={(t) => setMedFormData({ ...medFormData, dosage: t })}
-                    placeholderTextColor={THEME.textMuted}
+                    placeholderTextColor="#B8A89A"
                   />
                 </View>
-                <View style={[styles.formGroup, { flex: 1 }]}>
-                  <Text style={styles.label}>Time</Text>
+                <View className="flex-1 mb-5">
+                  <Text className="text-sm font-semibold text-neutral-800 mb-1">Time</Text>
                   <TextInput
-                    style={styles.input}
+                    className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
                     placeholder="08:00"
                     value={medFormData.time}
                     onChangeText={(t) => setMedFormData({ ...medFormData, time: t })}
-                    placeholderTextColor={THEME.textMuted}
+                    placeholderTextColor="#B8A89A"
                   />
                 </View>
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>When to Take</Text>
-                <Text style={styles.helpText}>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-neutral-800 mb-1">When to Take</Text>
+                <Text className="text-xs text-neutral-400 mb-3 italic">
                   Select when you typically take this medication
                 </Text>
-                <View style={styles.chips}>
+                <View className="flex-row flex-wrap gap-2.5">
                   {quickLabels.map((label) => (
                     <Pressable
                       key={label}
-                      style={[
-                        styles.chip,
-                        medFormData.timeLabel === label && styles.chipActive,
-                      ]}
+                      className={`px-4 py-2.5 rounded-full border ${medFormData.timeLabel === label ? 'bg-teal-500 border-teal-500' : 'bg-white border-neutral-200'} active:opacity-80`}
                       onPress={() => setMedFormData({ ...medFormData, timeLabel: label })}
                     >
                       <Text
-                        style={[
-                          styles.chipText,
-                          medFormData.timeLabel === label && styles.chipTextActive,
-                        ]}
+                        className={`text-[13px] font-semibold ${medFormData.timeLabel === label ? 'text-white' : 'text-amber-700'}`}
                       >
                         {label}
                       </Text>
@@ -501,23 +475,23 @@ export default function CabinetPage() {
                 </View>
               </View>
 
-              <View style={styles.formGroup}>
-                <Text style={styles.label}>Purpose (Optional)</Text>
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-neutral-800 mb-1">Purpose (Optional)</Text>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800 min-h-[100px]"
                   placeholder="What is it for?"
                   value={medFormData.purpose}
                   onChangeText={(t) => setMedFormData({ ...medFormData, purpose: t })}
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor="#B8A89A"
                   multiline
                   numberOfLines={3}
                 />
               </View>
             </ScrollView>
 
-            <View style={styles.modalFooter}>
+            <View className="p-6 border-t border-neutral-200">
               <Pressable
-                style={[styles.saveBtn, { backgroundColor: THEME.primary }]}
+                className="flex-row items-center justify-center gap-2 py-4 rounded-xl bg-teal-500 active:bg-teal-600 disabled:opacity-50"
                 onPress={handleSaveMedication}
                 disabled={saving}
               >
@@ -526,7 +500,7 @@ export default function CabinetPage() {
                 ) : (
                   <>
                     <Ionicons name="checkmark-circle" size={20} color="#FFFFFF" />
-                    <Text style={styles.saveText}>
+                    <Text className="text-base font-bold text-white">
                       {editingMedication ? 'Update' : 'Save'} Medication
                     </Text>
                   </>
@@ -539,369 +513,3 @@ export default function CabinetPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    letterSpacing: -0.5,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    overflow: 'hidden',
-  },
-  avatarGradient: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sosButtonContainer: {
-    paddingHorizontal: 24,
-    marginBottom: 16,
-  },
-  sosButton: {
-    borderRadius: 14,
-    overflow: 'hidden',
-    shadowColor: THEME.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sosButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  sosButtonText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  statsSection: {
-    paddingHorizontal: 24,
-    marginBottom: 16,
-  },
-  statsCard: {
-    flexDirection: 'row',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    lineHeight: 32,
-  },
-  statLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.9)',
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 100,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  emptyIconCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: THEME.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  emptyTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: THEME.textHeading,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    color: THEME.textBody,
-    textAlign: 'center',
-    maxWidth: '80%',
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  emptyAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: THEME.primaryLight,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 14,
-  },
-  emptyActionText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  cardInactive: {
-    backgroundColor: '#F5F0EB',
-    opacity: 0.6,
-  },
-  cardLeft: {
-    marginRight: 16,
-  },
-  cardCenter: {
-    flex: 1,
-  },
-  iconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: THEME.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconBoxInactive: {
-    backgroundColor: THEME.border,
-  },
-  medName: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: THEME.textHeading,
-    marginBottom: 6,
-  },
-  textInactive: {
-    color: THEME.textMuted,
-    textDecorationLine: 'line-through',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  medMeta: {
-    fontSize: 13,
-    color: THEME.textBody,
-    fontWeight: '600',
-  },
-  dot: {
-    marginHorizontal: 8,
-    color: THEME.textMuted,
-    fontSize: 12,
-  },
-  medPurpose: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    fontStyle: 'italic',
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 12,
-  },
-  toggleLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: THEME.textMuted,
-  },
-  toggleLabelActive: {
-    color: THEME.primary,
-  },
-  toggleTrack: {
-    width: 48,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: THEME.border,
-    padding: 2,
-  },
-  toggleTrackActive: {
-    backgroundColor: THEME.primary,
-  },
-  toggleThumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  toggleThumbActive: {
-    transform: [{ translateX: 20 }],
-  },
-  fab: {
-    position: 'absolute',
-    right: 24,
-    bottom: 24,
-    borderRadius: 28,
-    overflow: 'hidden',
-    shadowColor: THEME.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  fabGradient: {
-    width: 56,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: THEME.textHeading,
-  },
-  closeBtn: {
-    padding: 8,
-  },
-  modalBody: {
-    flex: 1,
-    padding: 24,
-  },
-  modalFooter: {
-    padding: 24,
-    borderTopWidth: 1,
-    borderTopColor: THEME.border,
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textHeading,
-    marginBottom: 4,
-  },
-  helpText: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    marginBottom: 12,
-    fontStyle: 'italic',
-  },
-  input: {
-    backgroundColor: THEME.surface,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: THEME.textHeading,
-  },
-  textArea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    backgroundColor: THEME.surface,
-  },
-  chipActive: {
-    backgroundColor: THEME.primary,
-    borderColor: THEME.primary,
-  },
-  chipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: THEME.textBody,
-  },
-  chipTextActive: {
-    color: '#FFFFFF',
-  },
-  saveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    borderRadius: 14,
-  },
-  saveText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-});
