@@ -76,7 +76,7 @@ function RootNavigator() {
       {/* Protected routes - only accessible when signed in */}
       <Stack.Protected guard={!!isSignedIn}>
         <Stack.Screen name="(app)" />
-        <Stack.Screen name="quick-info" />
+        <Stack.Screen name="(app)/quick-info" />
       </Stack.Protected>
     </Stack>
   );

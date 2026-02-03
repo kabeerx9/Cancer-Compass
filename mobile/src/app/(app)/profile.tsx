@@ -2,24 +2,21 @@ import { useAuth, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-interface MenuItem {
-  id: string;
-  title: string;
-  subtitle?: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  iconBg: string;
-  iconColor: string;
-  onPress: () => void;
-  showArrow?: boolean;
-}
 
 export default function ProfilePage() {
   const { signOut } = useAuth();
-  const { user } = useUser();
+  const { user, isLoaded: isUserLoaded } = useUser();
   const router = useRouter();
+
+  if (!isUserLoaded) {
+    return (
+      <View className="flex-1 items-center justify-center bg-orange-50">
+        <ActivityIndicator size="large" color="#14B8A6" />
+      </View>
+    );
+  }
 
   const handleSignOut = () => {
     Alert.alert(

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
+  ActivityIndicator,
   Animated,
   FlatList,
   Pressable,
@@ -24,10 +25,19 @@ import { MedicationCardSkeleton, StatCardSkeleton } from '@/components/skeleton'
 
 export default function HomePage() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isLoaded: isUserLoaded } = useUser();
   const queryClient = useQueryClient();
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
+
+  // Wait for user to load before rendering
+  if (!isUserLoaded) {
+    return (
+      <View className="flex-1 items-center justify-center bg-orange-50">
+        <ActivityIndicator size="large" color="#14B8A6" />
+      </View>
+    );
+  }
 
   const {
     data: medications = [],
