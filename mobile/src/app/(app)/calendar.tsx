@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar, type DateData } from 'react-native-calendars';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+
 
 import { Modal, useModal } from '@/components/ui/modal';
 import { templateMutations, templateQueries } from '@/features/templates';
@@ -192,8 +192,8 @@ export default function CalendarScreen() {
 
       <ScrollView className="flex-1" contentContainerClassName="px-6 pb-6">
         {/* Calendar Card */}
-        <Animated.View entering={FadeInDown.springify()}>
-          <View className="bg-white rounded-[20px] p-4 shadow-lg shadow-black/5 mb-6">
+        <View>
+          <View className="bg-white rounded-[20px] p-4 mb-6">
             <Calendar
               className="rounded-xl"
               theme={{
@@ -222,11 +222,11 @@ export default function CalendarScreen() {
               current={today}
             />
           </View>
-        </Animated.View>
+        </View>
 
         {/* Templates Legend */}
-        <Animated.View entering={FadeInUp.delay(100).springify()}>
-          <View className="bg-white rounded-[20px] p-5 shadow-md shadow-black/5">
+        <View>
+          <View className="bg-white rounded-[20px] p-5">
             <Text className="text-lg font-extrabold text-stone-800 mb-4">
               Templates Legend
             </Text>
@@ -242,7 +242,7 @@ export default function CalendarScreen() {
                   No templates created yet
                 </Text>
                 <Pressable
-                  className="flex-row items-center gap-1.5 bg-teal-500 px-4 py-2.5 rounded-xl shadow-md shadow-teal-500/25 active:opacity-80"
+                  className="flex-row items-center gap-1.5 bg-teal-500 px-4 py-2.5 rounded-xl active:opacity-80"
                   onPress={() => router.push('/manage-templates')}
                 >
                   <Ionicons name="add" size={16} color="#FFFFFF" />
@@ -252,9 +252,8 @@ export default function CalendarScreen() {
             ) : (
               <View className="gap-3">
                 {uniqueTemplates.map((template: any, index) => (
-                  <Animated.View
+                  <View
                     key={template.id}
-                    entering={FadeInDown.delay(150 + index * 50).springify()}
                     className="flex-row items-center p-3.5 bg-orange-50 rounded-[14px]"
                   >
                     <View
@@ -269,12 +268,12 @@ export default function CalendarScreen() {
                         {template.tasks?.length || 0} tasks
                       </Text>
                     </View>
-                  </Animated.View>
+                  </View>
                 ))}
               </View>
             )}
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* Assignment Modal */}
@@ -295,9 +294,8 @@ export default function CalendarScreen() {
             ) : (
               <View className="gap-3">
                 {selectedDateTemplates.map((assigned) => (
-                  <Animated.View
+                  <View
                     key={assigned.id}
-                    entering={FadeInDown.springify()}
                     className="flex-row items-center justify-between p-4 bg-orange-50 rounded-[14px]"
                   >
                     <View className="flex-row items-center flex-1">
@@ -322,7 +320,7 @@ export default function CalendarScreen() {
                         color={unassignMutation.isPending ? '#B8A89A' : '#F43F5E'}
                       />
                     </Pressable>
-                  </Animated.View>
+                  </View>
                 ))}
               </View>
             )}
@@ -346,9 +344,8 @@ export default function CalendarScreen() {
             ) : (
               <View className="gap-3">
                 {availableTemplates.map((template: any, index) => (
-                  <Animated.View
+                  <View
                     key={template.id}
-                    entering={FadeInDown.delay(index * 50).springify()}
                   >
                     <Pressable
                       className="flex-row items-center justify-between p-4 bg-orange-50 rounded-[14px] active:opacity-80"
@@ -370,7 +367,7 @@ export default function CalendarScreen() {
                         </View>
                       </View>
                       <Pressable
-                        className={`shadow-lg shadow-teal-500/25 ${assignMutation.isPending ? 'opacity-50' : ''}`}
+                        className={`${assignMutation.isPending ? 'opacity-50' : ''}`}
                         onPress={() => handleAssignTemplate(template.id)}
                         disabled={assignMutation.isPending}
                       >
@@ -384,7 +381,7 @@ export default function CalendarScreen() {
                         </LinearGradient>
                       </Pressable>
                     </Pressable>
-                  </Animated.View>
+                  </View>
                 ))}
               </View>
             )}

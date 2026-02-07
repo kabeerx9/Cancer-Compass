@@ -194,7 +194,7 @@ export default function ManageTemplatesPage() {
                   Create one to quick-start your day planning.
                 </Text>
                 <Pressable
-                  className="flex-row items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 shadow-sm active:opacity-80"
+                  className="flex-row items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 active:opacity-80"
                   onPress={openCreate}
                 >
                   <Ionicons name="add" size={20} color="#FFF" />
@@ -206,7 +206,7 @@ export default function ManageTemplatesPage() {
         )}
 
         <Pressable
-          className="absolute bottom-6 right-6 size-14 items-center justify-center rounded-full bg-teal-600 shadow-lg active:opacity-90"
+          className="absolute bottom-6 right-6 size-14 items-center justify-center rounded-full bg-teal-600 active:opacity-90"
           onPress={openCreate}
         >
           <Ionicons name="add" size={32} color="#FFF" />

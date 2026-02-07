@@ -15,7 +15,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -649,7 +649,7 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
   const hasData = patientInfo?.name || patientInfo?.bloodType || patientInfo?.diagnosis;
 
   return (
-    <Animated.View entering={FadeInDown.springify()}>
+    <View>
       {/* Edit Button */}
       <Pressable className="mb-5 active:opacity-90" onPress={onEdit}>
         <LinearGradient
@@ -678,7 +678,7 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
       ) : (
         <>
           {/* Basic Info Card */}
-          <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm">
+          <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
             <View className="flex-row items-center mb-4 gap-2.5">
               <Ionicons name="person" size={20} color="#0d9488" />
               <Text className="text-base font-bold text-amber-950 flex-1">Basic Information</Text>
@@ -705,7 +705,7 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
 
           {/* Insurance Card */}
           {(patientInfo?.insuranceProvider || patientInfo?.insurancePolicyNumber) && (
-            <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm">
+            <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
               <View className="flex-row items-center mb-4 gap-2.5">
                 <Ionicons name="shield-checkmark" size={20} color="#0d9488" />
                 <Text className="text-base font-bold text-amber-950 flex-1">Insurance</Text>
@@ -721,7 +721,7 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
 
           {/* Emergency Contact Card */}
           {(patientInfo?.emergencyContactName || patientInfo?.emergencyContactPhone) && (
-            <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm">
+            <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
               <View className="flex-row items-center mb-4 gap-2.5">
                 <Ionicons name="call" size={20} color="#dc2626" />
                 <Text className="text-base font-bold text-amber-950 flex-1">Emergency Contact</Text>
@@ -747,8 +747,8 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
       )}
 
       {/* Current Medications Card */}
-      {medications.length > 0 && (
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm">
+          {medications.length > 0 && (
+            <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
           <View className="flex-row items-center mb-4 gap-2.5">
             <Ionicons name="medical" size={20} color="#0d9488" />
             <Text className="text-base font-bold text-amber-950 flex-1">Current Medications</Text>
@@ -766,7 +766,28 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
           ))}
         </View>
       )}
-    </Animated.View>
+
+      {/* Current Medications Card */}
+      {medications.length > 0 && (
+        <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
+          <View className="flex-row items-center mb-4 gap-2.5">
+            <Ionicons name="medical" size={20} color="#0d9488" />
+            <Text className="text-base font-bold text-amber-950 flex-1">Current Medications</Text>
+            <View className="bg-teal-100 px-2.5 py-1 rounded-xl">
+              <Text className="text-xs font-bold text-teal-600">{medications.length}</Text>
+            </View>
+          </View>
+          {medications.map((med) => (
+            <View key={med.id} className="py-2.5 border-b border-amber-200 last:border-b-0">
+              <Text className="text-base font-semibold text-amber-950 mb-0.5">{med.name}</Text>
+              <Text className="text-sm text-stone-400">
+                {med.dosage || ''} {med.timeLabel ? `• ${med.timeLabel}` : ''}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -819,7 +840,7 @@ function ContactsView({
   const totalContacts = Object.values(contactsByCategory).flat().length;
 
   return (
-    <Animated.View entering={FadeInDown.springify()}>
+    <View>
       {/* Add Button */}
       <Pressable className="mb-5 active:opacity-90" onPress={onAddContact}>
         <LinearGradient
@@ -861,7 +882,7 @@ function ContactsView({
               {categoryContacts.map((contact) => (
                 <Pressable
                   key={contact.id}
-                  className="flex-row items-center bg-white rounded-xl p-3.5 mb-2.5 border border-amber-200 shadow-sm active:opacity-80"
+                  className="flex-row items-center bg-white rounded-xl p-3.5 mb-2.5 border border-amber-200 active:opacity-80"
                   onPress={() => onEditContact(contact)}
                 >
                   <View className="flex-1">
@@ -909,6 +930,6 @@ function ContactsView({
           );
         })
       )}
-    </Animated.View>
+    </View>
   );
 }

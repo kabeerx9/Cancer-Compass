@@ -13,7 +13,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LogCardSkeleton, Skeleton } from '@/components/skeleton';
@@ -200,19 +200,17 @@ export default function InsightsPage() {
           </ScrollView>
         </View>
 
-        {/* Summary Button */}
-        <View className="px-6 mb-4">
-          <Pressable
-            className={`rounded-[14px] overflow-hidden ${
-              showSummary ? 'shadow-lg shadow-teal-500/25' : ''
-            }`}
-            onPress={() => setShowSummary(!showSummary)}
-          >
+          {/* Summary Button */}
+          <View className="px-6 mb-4">
+            <Pressable
+              className="rounded-[14px]"
+              onPress={() => setShowSummary(!showSummary)}
+            >
             <LinearGradient
               colors={showSummary ? ['#14B8A6', '#0D9488'] : ['#F3F4F6', '#E5E7EB']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-center gap-2 py-3.5"
+              className="flex-row items-center justify-center rounded-[14px] gap-2 py-3.5"
             >
               <Ionicons
                 name={showSummary ? 'close' : 'sparkles'}
@@ -243,9 +241,8 @@ export default function InsightsPage() {
         >
           {/* AI Summary Card */}
           {showSummary && (
-            <Animated.View
-              entering={FadeInDown.springify()}
-              className="bg-white rounded-[20px] p-5 mb-5 border border-[#E8E0D8] shadow-sm"
+            <View
+              className="bg-white rounded-[20px] p-5 mb-5 border border-[#E8E0D8]"
             >
               {isLoadingSummary ? (
                 <View className="items-center py-5">
@@ -277,27 +274,27 @@ export default function InsightsPage() {
                   </View>
                 </>
               ) : null}
-            </Animated.View>
+            </View>
           )}
 
           {/* Add Today's Log Button */}
           {!hasTodayLog && !isLoadingLogs && (
-            <Animated.View entering={FadeInDown.springify()} className="mb-5">
+            <View className="mb-5">
               <Pressable
-                className="rounded-[14px] overflow-hidden shadow-lg shadow-teal-500/25 active:opacity-90"
+                className="rounded-[14px] active:opacity-90"
                 onPress={() => setAddModalVisible(true)}
               >
                 <LinearGradient
                   colors={['#14B8A6', '#0D9488']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="flex-row items-center justify-center gap-2 py-3.5"
+                  className="flex-row items-center justify-center rounded-[14px] gap-2 py-3.5"
                 >
                   <Ionicons name="add-circle" size={20} color="#FFFFFF" />
                   <Text className="text-[15px] font-bold text-white">Log Today's Symptoms</Text>
                 </LinearGradient>
               </Pressable>
-            </Animated.View>
+            </View>
           )}
 
           {/* Logs List */}
@@ -307,8 +304,7 @@ export default function InsightsPage() {
             </Text>
 
             {logs.length === 0 ? (
-              <Animated.View
-                entering={FadeInDown.springify()}
+              <View
                 className="items-center pt-10"
               >
                 <View className="w-20 h-20 rounded-full bg-teal-50 justify-center items-center mb-4">
@@ -318,13 +314,12 @@ export default function InsightsPage() {
                 <Text className="text-sm text-[#B8A89A] text-center">
                   Start logging your symptoms to track your health journey
                 </Text>
-              </Animated.View>
+              </View>
             ) : (
-              <Animated.View entering={FadeInDown.springify()}>
+              <View>
                 {logs.map((log, index) => (
-                  <Animated.View
+                  <View
                     key={log.id}
-                    entering={FadeInDown.delay(index * 50).springify()}
                     className="bg-white rounded-2xl p-4 mb-3 border border-[#E8E0D8]"
                   >
                     <View className="mb-3">
@@ -335,9 +330,9 @@ export default function InsightsPage() {
                       </View>
                     </View>
                     <Text className="text-[15px] text-[#6B5D50] leading-[22px]">{log.content}</Text>
-                  </Animated.View>
+                  </View>
                 ))}
-              </Animated.View>
+              </View>
             )}
           </View>
         </ScrollView>
@@ -350,13 +345,13 @@ export default function InsightsPage() {
           onRequestClose={() => setAddModalVisible(false)}
         >
           <View className="flex-1 bg-black/50 justify-center items-center px-6">
-            <View className="bg-white rounded-3xl p-6 w-full max-w-[360px] shadow-2xl items-center">
+            <View className="bg-white rounded-3xl p-6 w-full max-w-[360px] items-center">
               <View className="mb-4">
                 <LinearGradient
                   colors={['#14B8A6', '#0D9488']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="w-16 h-16 rounded-full justify-center items-center shadow-lg shadow-teal-500/30"
+                  className="w-16 h-16 rounded-full justify-center items-center"
                 >
                   <Ionicons name="create-outline" size={28} color="#FFFFFF" />
                 </LinearGradient>
@@ -381,7 +376,7 @@ export default function InsightsPage() {
               />
 
               <Pressable
-                className="w-full mb-3 rounded-xl overflow-hidden active:opacity-90"
+                className="w-full mb-3 rounded-xl active:opacity-90"
                 onPress={handleSaveSymptom}
                 disabled={createMutation.isPending || !symptomContent.trim()}
               >
@@ -389,7 +384,7 @@ export default function InsightsPage() {
                   colors={['#14B8A6', '#0D9488']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className={`py-3.5 items-center justify-center ${
+                  className={`py-3.5 items-center justify-center rounded-xl ${
                     !symptomContent.trim() || createMutation.isPending ? 'opacity-50' : ''
                   }`}
                 >

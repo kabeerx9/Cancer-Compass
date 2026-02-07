@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -303,7 +303,7 @@ export default function SosMedicinesPage() {
             colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="flex-row rounded-[20px] p-5 shadow-lg"
+            className="flex-row rounded-[20px] p-5"
           >
             <View className="flex-1 items-center">
               <Text className="text-[28px] font-extrabold text-white leading-8">{sosMedicines.length}</Text>
@@ -362,7 +362,7 @@ export default function SosMedicinesPage() {
                   </View>
                 </>
               ) : sosMedicines.length === 0 ? (
-                <Animated.View className="items-center pt-16" entering={FadeInDown.springify()}>
+                <View className="items-center pt-16">
                   <View className="w-24 h-24 rounded-full bg-rose-100 justify-center items-center mb-5">
                     <Ionicons name="alert-circle-outline" size={48} color="#F43F5E" />
                   </View>
@@ -379,15 +379,14 @@ export default function SosMedicinesPage() {
                       Add First Medicine
                     </Text>
                   </Pressable>
-                </Animated.View>
+                </View>
               ) : (
-                <Animated.View entering={FadeInDown.springify()}>
+                <View>
                   {sosMedicines.map((medicine, index) => (
-                    <Animated.View
+                    <View
                       key={medicine.id}
-                      entering={FadeInDown.delay(index * 50).springify()}
                     >
-                      <View className="flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-stone-200 shadow-sm">
+                      <View className="flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-stone-200">
                         <View className="mr-4">
                           <View className="w-[52px] h-[52px] rounded-2xl bg-rose-100 justify-center items-center">
                             <Ionicons
@@ -412,14 +411,14 @@ export default function SosMedicinesPage() {
 
                         <View className="items-end gap-2">
                           <Pressable
-                            className="rounded-[10px] overflow-hidden shadow-md active:opacity-90 shadow-rose-500/30"
+                            className="rounded-[10px] active:opacity-90"
                             onPress={() => openSosTakeModal(medicine)}
                           >
                             <LinearGradient
                               colors={['#F43F5E', '#E11D48']}
                               start={{ x: 0, y: 0 }}
                               end={{ x: 1, y: 1 }}
-                              className="py-2.5 px-5 items-center justify-center"
+                              className="rounded-[10px] py-2.5 px-5 items-center justify-center"
                             >
                               <Text className="text-sm font-bold text-white">Take</Text>
                             </LinearGradient>
@@ -441,16 +440,16 @@ export default function SosMedicinesPage() {
                           </View>
                         </View>
                       </View>
-                    </Animated.View>
+                    </View>
                   ))}
-                </Animated.View>
+                </View>
               )}
             </>
           )}
 
           {/* HISTORY VIEW */}
           {sosViewMode === 'history' && (
-            <Animated.View entering={FadeInDown.springify()}>
+            <View>
               <View className="bg-white rounded-[20px] p-4 mb-4 border border-rose-100">
                 <Calendar
                   className="rounded-xl"
@@ -494,9 +493,8 @@ export default function SosMedicinesPage() {
                 ) : (
                   (selectedDate ? getLogsForDate(selectedDate) : allSosLogs).map(
                     (log, index) => (
-                      <Animated.View
+                      <View
                         key={log.id}
-                        entering={FadeInDown.delay(index * 30).springify()}
                         className="flex-row items-center mb-4"
                       >
                         <View className="mr-3">
@@ -513,7 +511,7 @@ export default function SosMedicinesPage() {
                           </Text>
                           {log.notes && <Text className="text-[13px] text-stone-600 mt-1 italic">{log.notes}</Text>}
                         </View>
-                      </Animated.View>
+                      </View>
                     )
                   )
                 )}
@@ -524,17 +522,17 @@ export default function SosMedicinesPage() {
                     </Text>
                   )}
               </View>
-            </Animated.View>
+            </View>
           )}
         </View>
 
-        {/* Floating Add Button */}
-        <Pressable className="absolute bottom-6 right-6 rounded-[28px] overflow-hidden shadow-lg shadow-rose-500/30 active:opacity-90" onPress={openSosAddModal}>
+          {/* Floating Add Button */}
+        <Pressable className="absolute bottom-6 right-6 h-14 w-14 rounded-[28px] active:opacity-90" onPress={openSosAddModal}>
           <LinearGradient
             colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="w-14 h-14 items-center justify-center"
+            className="h-full w-full items-center justify-center rounded-[28px]"
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>
@@ -740,12 +738,12 @@ export default function SosMedicinesPage() {
               </View>
 
               <View className="p-6 pt-0">
-                <Pressable className="rounded-[14px] overflow-hidden active:opacity-90" onPress={handleLogSosMedicine}>
+                <Pressable className="rounded-[14px] active:opacity-90" onPress={handleLogSosMedicine}>
                   <LinearGradient
                     colors={['#F43F5E', '#E11D48']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    className="flex-row items-center justify-center gap-2 py-4"
+                    className="flex-row items-center justify-center rounded-[14px] gap-2 py-4"
                   >
                     <Ionicons name="checkmark" size={24} color="#FFFFFF" />
                     <Text className="text-base font-bold text-white">Confirm</Text>

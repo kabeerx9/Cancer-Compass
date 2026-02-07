@@ -14,7 +14,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -222,14 +222,14 @@ export default function CabinetPage() {
             </Text>
           </View>
           <Pressable 
-            className="w-12 h-12 rounded-full overflow-hidden active:opacity-80"
+            className="h-12 w-12 rounded-full active:opacity-80"
             onPress={() => router.push('/profile')}
           >
             <LinearGradient
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="w-full h-full justify-center items-center"
+              className="h-full w-full justify-center items-center rounded-full"
             >
               <Ionicons name="medical" size={24} color="#FFFFFF" />
             </LinearGradient>
@@ -238,14 +238,14 @@ export default function CabinetPage() {
 
         <View className="px-6 mb-4">
           <Pressable
-            className="rounded-xl overflow-hidden shadow-md active:opacity-90"
+            className="rounded-xl active:opacity-90"
             onPress={() => router.push('/sos-medicines')}
           >
             <LinearGradient
               colors={['#F43F5E', '#E11D48']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-between py-3.5 px-4"
+              className="flex-row items-center justify-between rounded-xl py-3.5 px-4"
             >
               <Ionicons name="alert-circle" size={20} color="#FFFFFF" />
               <Text className="text-[15px] font-bold text-white">SOS Medicines</Text>
@@ -259,7 +259,7 @@ export default function CabinetPage() {
             colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="flex-row rounded-[20px] p-5 shadow-lg"
+            className="flex-row rounded-[20px] p-5"
           >
             <View className="flex-1 items-center">
               <Text className="text-[28px] font-extrabold text-white leading-[32px]">
@@ -296,7 +296,7 @@ export default function CabinetPage() {
               <MedicationCardSkeleton />
             </>
           ) : medications.length === 0 ? (
-            <Animated.View className="items-center pt-[60px]" entering={FadeInDown.springify()}>
+            <View className="items-center pt-[60px]">
               <View className="w-24 h-24 rounded-full bg-teal-100 justify-center items-center mb-5">
                 <Ionicons name="medical-outline" size={48} color="#14B8A6" />
               </View>
@@ -311,16 +311,13 @@ export default function CabinetPage() {
                 <Ionicons name="add-circle" size={20} color="#14B8A6" />
                 <Text className="text-[15px] font-bold text-teal-500">Add First Medication</Text>
               </Pressable>
-            </Animated.View>
+            </View>
           ) : (
-            <Animated.View entering={FadeInDown.springify()}>
-              {medications.map((medication, index) => (
-                <Animated.View
-                  key={medication.id}
-                  entering={FadeInDown.delay(index * 50).springify()}
-                >
+            <View>
+              {medications.map((medication) => (
+                <View key={medication.id}>
                   <Pressable
-                    className={`flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-neutral-200 shadow-sm active:opacity-90 ${!medication.isActive ? 'bg-neutral-100 opacity-60' : ''}`}
+                    className={`flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-neutral-200 active:opacity-90 ${!medication.isActive ? 'bg-neutral-100 opacity-60' : ''}`}
                     onPress={() => openMedDetailModal(medication)}
                   >
                     <View className="mr-4">
@@ -368,27 +365,27 @@ export default function CabinetPage() {
                       <View
                         className={`w-12 h-7 rounded-full p-0.5 ${medication.isActive ? 'bg-teal-500' : 'bg-neutral-200'}`}
                       >
-                        <View
-                          className={`w-6 h-6 rounded-full bg-white shadow-sm ${medication.isActive ? 'translate-x-5' : 'translate-x-0'}`}
-                        />
+                      <View
+                        className={`w-6 h-6 rounded-full bg-white ${medication.isActive ? 'translate-x-5' : 'translate-x-0'}`}
+                      />
                       </View>
                     </Pressable>
                   </Pressable>
-                </Animated.View>
+                </View>
               ))}
-            </Animated.View>
+            </View>
           )}
         </ScrollView>
 
         <Pressable 
-          className="absolute right-6 bottom-6 rounded-[28px] overflow-hidden shadow-lg active:opacity-90"
+          className="absolute right-6 bottom-6 h-14 w-14 rounded-[28px] active:opacity-90"
           onPress={openMedAddModal}
         >
           <LinearGradient
             colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="w-14 h-14 items-center justify-center"
+            className="h-full w-full items-center justify-center rounded-[28px]"
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>

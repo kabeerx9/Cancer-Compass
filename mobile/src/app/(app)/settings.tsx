@@ -106,11 +106,11 @@ export default function SettingsPage() {
           showsVerticalScrollIndicator={false}
         >
           {settingItems.map((item) => (
-            <Pressable
-              key={item.id}
-              className="flex-row items-center bg-white rounded-xl p-4 mb-2 border border-gray-200 shadow-sm active:bg-gray-50 active:scale-[0.98]"
-              onPress={item.onPress}
-            >
+          <Pressable
+            key={item.id}
+            className="flex-row items-center bg-white rounded-xl p-4 mb-2 border border-gray-200 active:bg-gray-50 active:scale-[0.98]"
+            onPress={item.onPress}
+          >
               <View className="w-10 h-10 rounded-[10px] bg-teal-100 justify-center items-center mr-4">
                 <Ionicons
                   name={item.icon}

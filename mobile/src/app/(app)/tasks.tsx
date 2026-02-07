@@ -351,7 +351,7 @@ export default function TasksPage() {
         </View>
 
         {/* Date Navigator */}
-        <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm">
+        <View className="m-4 flex-row items-center justify-between rounded-2xl border border-neutral-100 bg-white p-3">
           <View className="flex-row items-center">
             <Pressable
               onPress={handlePrevDay}
@@ -456,13 +456,13 @@ export default function TasksPage() {
 
                 <View className="flex-row gap-4">
               <Pressable
-                className="rounded-xl bg-teal-600 px-5 py-3 shadow-sm active:opacity-80"
+                className="rounded-xl bg-teal-600 px-5 py-3 active:opacity-80"
                 onPress={() => setModalVisible(true)}
               >
                     <Text className="font-semibold text-white">Add Task</Text>
                   </Pressable>
                   <Pressable
-                    className="rounded-xl border border-neutral-200 bg-white px-5 py-3 shadow-sm active:bg-neutral-50"
+                    className="rounded-xl border border-neutral-200 bg-white px-5 py-3 active:bg-neutral-50"
                     onPress={() => setApplyVisible(true)}
                   >
                     <Text className="font-semibold text-neutral-700">

@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   ActivityIndicator,
-  Animated,
   FlatList,
   Pressable,
   RefreshControl,
@@ -27,7 +26,6 @@ export default function HomePage() {
   const router = useRouter();
   const { user, isLoaded: isUserLoaded } = useUser();
   const queryClient = useQueryClient();
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const [isManuallyRefreshing, setIsManuallyRefreshing] = React.useState(false);
 
   // Wait for user to load before rendering
@@ -46,13 +44,7 @@ export default function HomePage() {
   } = useQuery(medicationQueries.today());
   const logMutation = useMutation(medicationMutations.log(queryClient));
 
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 400,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+
 
   const handleLogMedication = (
     medicationId: string,
@@ -116,23 +108,16 @@ export default function HomePage() {
 
   const renderMedicationItem = ({
     item: medication,
-    index,
   }: {
     item: Medication;
     index: number;
   }) => {
-    const translateY = fadeAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [20, 0],
-    });
-
     const isTaken = medication.todayStatus === 'taken';
     const isSkipped = medication.todayStatus === 'skipped';
 
     return (
-      <Animated.View
-        style={{ transform: [{ translateY }] }}
-        className={`mb-2.5 rounded-2xl border p-3 shadow-sm ${
+      <View
+        className={`mb-2.5 rounded-2xl border p-3 ${
           isTaken
             ? 'border-green-200 bg-green-50'
             : isSkipped
@@ -208,7 +193,7 @@ export default function HomePage() {
             )}
           </View>
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -259,14 +244,14 @@ export default function HomePage() {
             </Text>
           </View>
           <Pressable
-            className="size-12 overflow-hidden rounded-full shadow-lg active:opacity-80"
+            className="h-12 w-12 rounded-full active:opacity-80"
             onPress={() => router.push('/profile')}
           >
             <LinearGradient
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="size-full items-center justify-center"
+              className="h-full w-full items-center justify-center rounded-full"
             >
               <Text className="text-xl font-extrabold text-white">
                 {firstName[0].toUpperCase()}
@@ -278,14 +263,14 @@ export default function HomePage() {
         {/* Patient Info Quick Access */}
         <View className="mb-4 px-6">
           <Pressable
-            className="overflow-hidden rounded-2xl shadow-lg active:opacity-90"
+            className="rounded-2xl active:opacity-90"
             onPress={() => router.push('/quick-info')}
           >
             <LinearGradient
               colors={['#6366F1', '#4F46E5']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-between px-4 py-4"
+              className="flex-row items-center justify-between rounded-2xl px-4 py-4"
             >
               <View className="flex-row items-center flex-1">
                 <View className="mr-3 size-12 items-center justify-center rounded-full bg-white/20">
@@ -303,12 +288,12 @@ export default function HomePage() {
 
         {/* Warm progress card - always visible */}
         <View className="mb-6 px-6">
-          <View className="overflow-hidden rounded-3xl shadow-xl">
+          <View className="rounded-3xl">
             <LinearGradient
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="p-5"
+              className="rounded-3xl p-5"
             >
               <View className="mb-4 flex-row items-start justify-between">
                 <View>
@@ -376,7 +361,7 @@ export default function HomePage() {
                 Add your first medication to start tracking your daily health routine
               </Text>
               <Pressable
-                className="flex-row items-center gap-2 rounded-2xl bg-teal-500 px-6 py-4 shadow-lg shadow-teal-500/30 active:scale-[0.98]"
+                className="flex-row items-center gap-2 rounded-2xl bg-teal-500 px-6 py-4 active:scale-[0.98]"
                 onPress={() => router.push('/cabinet')}
               >
                 <Ionicons name="add-circle" size={22} color="#FFFFFF" />
