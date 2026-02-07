@@ -10,6 +10,18 @@ export class PatientInfoController {
     private medicationRepository: MedicationRepository,
   ) {}
 
+  private getParamValue(param: string | string[] | undefined): string | null {
+    if (typeof param === 'string') {
+      return param;
+    }
+
+    if (Array.isArray(param) && typeof param[0] === 'string') {
+      return param[0];
+    }
+
+    return null;
+  }
+
   // ============================================
   // PATIENT INFO
   // ============================================
@@ -122,7 +134,12 @@ export class PatientInfoController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid contact id'));
+        return;
+      }
+
       const result = await this.patientInfoService.getContactById(id, userId);
       res.status(result.success ? 200 : 404).json(result);
     } catch (error) {
@@ -176,7 +193,12 @@ export class PatientInfoController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid contact id'));
+        return;
+      }
+
       const { name, role, phone, email, category, notes } = req.body;
 
       if (category && !['medical_team', 'hospital', 'logistics', 'personal'].includes(category)) {
@@ -207,7 +229,12 @@ export class PatientInfoController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid contact id'));
+        return;
+      }
+
       const result = await this.patientInfoService.deleteContact(id, userId);
       res.status(result.success ? 200 : 404).json(result);
     } catch (error) {

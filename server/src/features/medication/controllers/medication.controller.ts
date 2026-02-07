@@ -6,6 +6,18 @@ import { MedicationService } from '../services/medication.service';
 export class MedicationController {
   constructor(private medicationService: MedicationService) {}
 
+  private getParamValue(param: string | string[] | undefined): string | null {
+    if (typeof param === 'string') {
+      return param;
+    }
+
+    if (Array.isArray(param) && typeof param[0] === 'string') {
+      return param[0];
+    }
+
+    return null;
+  }
+
   /**
    * GET /medications
    * Get all medications for the authenticated user
@@ -56,7 +68,12 @@ export class MedicationController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid medication id'));
+        return;
+      }
+
       const result = await this.medicationService.getMedicationById(id, userId);
       res.status(result.success ? 200 : 404).json(result);
     } catch (error) {
@@ -105,7 +122,12 @@ export class MedicationController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid medication id'));
+        return;
+      }
+
       const { name, purpose, dosage, time, timeLabel, isActive } = req.body;
 
       const result = await this.medicationService.updateMedication(
@@ -131,7 +153,12 @@ export class MedicationController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid medication id'));
+        return;
+      }
+
       const result = await this.medicationService.deleteMedication(id, userId);
       res.status(result.success ? 200 : 404).json(result);
     } catch (error) {
@@ -151,7 +178,12 @@ export class MedicationController {
         return;
       }
 
-      const { id } = req.params;
+      const id = this.getParamValue(req.params.id);
+      if (!id) {
+        res.status(400).json(unifiedResponse(false, 'Invalid medication id'));
+        return;
+      }
+
       const { status } = req.body;
 
       if (!status || !['taken', 'skipped'].includes(status)) {
