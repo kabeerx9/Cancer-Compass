@@ -1,7 +1,6 @@
 import axios, { type AxiosInstance } from 'axios';
 
-const BASE_URL =
-  'https://07e8-2405-201-6804-c098-38d8-3800-b191-96ca.ngrok-free.app/v1';
+const BASE_URL = 'https://cancer-compass-production.up.railway.app/v1';
 
 export const client: AxiosInstance = axios.create({
   baseURL: BASE_URL,
