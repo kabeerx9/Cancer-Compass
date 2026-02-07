@@ -44,8 +44,6 @@ export default function HomePage() {
   } = useQuery(medicationQueries.today());
   const logMutation = useMutation(medicationMutations.log(queryClient));
 
-
-
   const handleLogMedication = (
     medicationId: string,
     status: 'taken' | 'skipped'
@@ -54,7 +52,7 @@ export default function HomePage() {
       { id: medicationId, status },
       {
         onSuccess: () => {
-          const medication = medications.find(m => m.id === medicationId);
+          const medication = medications.find((m) => m.id === medicationId);
           const medName = medication?.name || 'Medication';
           if (status === 'taken') {
             Toast.show({
@@ -121,8 +119,8 @@ export default function HomePage() {
           isTaken
             ? 'border-green-200 bg-green-50'
             : isSkipped
-            ? 'border-neutral-200 bg-neutral-100 opacity-50'
-            : 'border-neutral-200 bg-white'
+              ? 'border-neutral-200 bg-neutral-100 opacity-50'
+              : 'border-neutral-200 bg-white'
         }`}
       >
         <View className="flex-row items-center">
@@ -203,6 +201,7 @@ export default function HomePage() {
       <View className="flex-1 bg-orange-50/30">
         <SafeAreaView className="flex-1">
           {/* Header Skeleton */}
+
           <View className="flex-row items-center justify-between px-6 py-5">
             <View>
               <Skeleton width={80} height={16} borderRadius={6} />
@@ -260,7 +259,13 @@ export default function HomePage() {
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <Text className="text-xl font-extrabold text-white">
                 {firstName[0].toUpperCase()}
@@ -279,15 +284,25 @@ export default function HomePage() {
               colors={['#6366F1', '#4F46E5']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16,
+                paddingVertical: 16,
+              }}
             >
               <View className="flex-row items-center flex-1">
                 <View className="mr-3 size-12 items-center justify-center rounded-full bg-white/20">
                   <Ionicons name="person-circle" size={28} color="#FFFFFF" />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-lg font-bold text-white">Patient Info</Text>
-                  <Text className="mt-0.5 text-sm text-white/80">Medical details & contacts</Text>
+                  <Text className="text-lg font-bold text-white">
+                    Patient Info
+                  </Text>
+                  <Text className="mt-0.5 text-sm text-white/80">
+                    Medical details & contacts
+                  </Text>
                 </View>
               </View>
               <Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
@@ -328,7 +343,9 @@ export default function HomePage() {
               {progress === 100 && totalCount > 0 && (
                 <View className="mt-3 flex-row items-center gap-2 self-start rounded-xl bg-white/15 px-3 py-1.5">
                   <Ionicons name="happy-outline" size={18} color="#FFFFFF" />
-                  <Text className="text-sm font-bold text-white">All done! 🎉</Text>
+                  <Text className="text-sm font-bold text-white">
+                    All done! 🎉
+                  </Text>
                 </View>
               )}
             </LinearGradient>
@@ -367,14 +384,17 @@ export default function HomePage() {
                 No medications yet
               </Text>
               <Text className="mb-8 max-w-[80%] text-center text-base leading-relaxed text-neutral-600">
-                Add your first medication to start tracking your daily health routine
+                Add your first medication to start tracking your daily health
+                routine
               </Text>
               <Pressable
                 className="flex-row items-center gap-2 rounded-2xl bg-teal-500 px-6 py-4 active:scale-[0.98]"
                 onPress={() => router.push('/cabinet')}
               >
                 <Ionicons name="add-circle" size={22} color="#FFFFFF" />
-                <Text className="text-lg font-bold text-white">Add Medication</Text>
+                <Text className="text-lg font-bold text-white">
+                  Add Medication
+                </Text>
               </Pressable>
             </View>
           }
