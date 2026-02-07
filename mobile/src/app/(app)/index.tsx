@@ -251,7 +251,7 @@ export default function HomePage() {
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="h-full w-full items-center justify-center rounded-full"
+              style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' }}
             >
               <Text className="text-xl font-extrabold text-white">
                 {firstName[0].toUpperCase()}
@@ -263,14 +263,14 @@ export default function HomePage() {
         {/* Patient Info Quick Access */}
         <View className="mb-4 px-6">
           <Pressable
-            className="rounded-2xl active:opacity-90"
+            className="rounded-2xl overflow-hidden active:opacity-90"
             onPress={() => router.push('/quick-info')}
           >
             <LinearGradient
               colors={['#6366F1', '#4F46E5']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-between rounded-2xl px-4 py-4"
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16 }}
             >
               <View className="flex-row items-center flex-1">
                 <View className="mr-3 size-12 items-center justify-center rounded-full bg-white/20">
@@ -288,12 +288,12 @@ export default function HomePage() {
 
         {/* Warm progress card - always visible */}
         <View className="mb-6 px-6">
-          <View className="rounded-3xl">
+          <View className="rounded-3xl overflow-hidden">
             <LinearGradient
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="rounded-3xl p-5"
+              style={{ padding: 20 }}
             >
               <View className="mb-4 flex-row items-start justify-between">
                 <View>

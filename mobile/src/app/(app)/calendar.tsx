@@ -367,7 +367,7 @@ export default function CalendarScreen() {
                         </View>
                       </View>
                       <Pressable
-                        className={`${assignMutation.isPending ? 'opacity-50' : ''}`}
+                        className={`rounded-xl overflow-hidden ${assignMutation.isPending ? 'opacity-50' : ''}`}
                         onPress={() => handleAssignTemplate(template.id)}
                         disabled={assignMutation.isPending}
                       >
@@ -375,7 +375,7 @@ export default function CalendarScreen() {
                           colors={['#14B8A6', '#0D9488']}
                           start={{ x: 0, y: 0 }}
                           end={{ x: 1, y: 1 }}
-                          className="w-11 h-11 rounded-xl justify-center items-center"
+                          className="w-11 h-11 justify-center items-center"
                         >
                           <Ionicons name="add" size={24} color="#FFFFFF" />
                         </LinearGradient>

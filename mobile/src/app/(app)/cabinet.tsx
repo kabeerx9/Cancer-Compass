@@ -229,7 +229,7 @@ export default function CabinetPage() {
               colors={['#14B8A6', '#0D9488']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="h-full w-full justify-center items-center rounded-full"
+              style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' }}
             >
               <Ionicons name="medical" size={24} color="#FFFFFF" />
             </LinearGradient>
@@ -238,14 +238,14 @@ export default function CabinetPage() {
 
         <View className="px-6 mb-4">
           <Pressable
-            className="rounded-xl active:opacity-90"
+            className="rounded-xl overflow-hidden active:opacity-90"
             onPress={() => router.push('/sos-medicines')}
           >
             <LinearGradient
               colors={['#F43F5E', '#E11D48']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-between rounded-xl py-3.5 px-4"
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, paddingHorizontal: 16 }}
             >
               <Ionicons name="alert-circle" size={20} color="#FFFFFF" />
               <Text className="text-[15px] font-bold text-white">SOS Medicines</Text>
@@ -259,7 +259,7 @@ export default function CabinetPage() {
             colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="flex-row rounded-[20px] p-5"
+            style={{ flexDirection: 'row', borderRadius: 20, padding: 20 }}
           >
             <View className="flex-1 items-center">
               <Text className="text-[28px] font-extrabold text-white leading-[32px]">
@@ -385,7 +385,7 @@ export default function CabinetPage() {
             colors={['#14B8A6', '#0D9488']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="h-full w-full items-center justify-center rounded-[28px]"
+            style={{ width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' }}
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>

@@ -203,14 +203,14 @@ export default function InsightsPage() {
           {/* Summary Button */}
           <View className="px-6 mb-4">
             <Pressable
-              className="rounded-[14px]"
+              className="rounded-[14px] overflow-hidden"
               onPress={() => setShowSummary(!showSummary)}
             >
             <LinearGradient
               colors={showSummary ? ['#14B8A6', '#0D9488'] : ['#F3F4F6', '#E5E7EB']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="flex-row items-center justify-center rounded-[14px] gap-2 py-3.5"
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14 }}
             >
               <Ionicons
                 name={showSummary ? 'close' : 'sparkles'}
@@ -281,14 +281,14 @@ export default function InsightsPage() {
           {!hasTodayLog && !isLoadingLogs && (
             <View className="mb-5">
               <Pressable
-                className="rounded-[14px] active:opacity-90"
+                className="rounded-[14px] overflow-hidden active:opacity-90"
                 onPress={() => setAddModalVisible(true)}
               >
                 <LinearGradient
                   colors={['#14B8A6', '#0D9488']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="flex-row items-center justify-center rounded-[14px] gap-2 py-3.5"
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14 }}
                 >
                   <Ionicons name="add-circle" size={20} color="#FFFFFF" />
                   <Text className="text-[15px] font-bold text-white">Log Today's Symptoms</Text>
@@ -376,7 +376,7 @@ export default function InsightsPage() {
               />
 
               <Pressable
-                className="w-full mb-3 rounded-xl active:opacity-90"
+                className="w-full mb-3 rounded-xl overflow-hidden active:opacity-90"
                 onPress={handleSaveSymptom}
                 disabled={createMutation.isPending || !symptomContent.trim()}
               >
@@ -384,7 +384,7 @@ export default function InsightsPage() {
                   colors={['#14B8A6', '#0D9488']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className={`py-3.5 items-center justify-center rounded-xl ${
+                  className={`py-3.5 items-center justify-center ${
                     !symptomContent.trim() || createMutation.isPending ? 'opacity-50' : ''
                   }`}
                 >

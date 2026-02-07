@@ -303,7 +303,7 @@ export default function SosMedicinesPage() {
             colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="flex-row rounded-[20px] p-5"
+            style={{ flexDirection: 'row', borderRadius: 20, padding: 20 }}
           >
             <View className="flex-1 items-center">
               <Text className="text-[28px] font-extrabold text-white leading-8">{sosMedicines.length}</Text>
@@ -411,14 +411,14 @@ export default function SosMedicinesPage() {
 
                         <View className="items-end gap-2">
                           <Pressable
-                            className="rounded-[10px] active:opacity-90"
+                            className="rounded-[10px] overflow-hidden active:opacity-90"
                             onPress={() => openSosTakeModal(medicine)}
                           >
                             <LinearGradient
                               colors={['#F43F5E', '#E11D48']}
                               start={{ x: 0, y: 0 }}
                               end={{ x: 1, y: 1 }}
-                              className="rounded-[10px] py-2.5 px-5 items-center justify-center"
+                              className="py-2.5 px-5 items-center justify-center"
                             >
                               <Text className="text-sm font-bold text-white">Take</Text>
                             </LinearGradient>
@@ -527,12 +527,12 @@ export default function SosMedicinesPage() {
         </View>
 
           {/* Floating Add Button */}
-        <Pressable className="absolute bottom-6 right-6 h-14 w-14 rounded-[28px] active:opacity-90" onPress={openSosAddModal}>
+        <Pressable className="absolute bottom-6 right-6 h-14 w-14 rounded-[28px] overflow-hidden active:opacity-90" onPress={openSosAddModal}>
           <LinearGradient
             colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="h-full w-full items-center justify-center rounded-[28px]"
+            className="h-full w-full items-center justify-center"
           >
             <Ionicons name="add" size={28} color="#FFFFFF" />
           </LinearGradient>
@@ -738,12 +738,12 @@ export default function SosMedicinesPage() {
               </View>
 
               <View className="p-6 pt-0">
-                <Pressable className="rounded-[14px] active:opacity-90" onPress={handleLogSosMedicine}>
+                <Pressable className="rounded-[14px] overflow-hidden active:opacity-90" onPress={handleLogSosMedicine}>
                   <LinearGradient
                     colors={['#F43F5E', '#E11D48']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    className="flex-row items-center justify-center rounded-[14px] gap-2 py-4"
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16 }}
                   >
                     <Ionicons name="checkmark" size={24} color="#FFFFFF" />
                     <Text className="text-base font-bold text-white">Confirm</Text>

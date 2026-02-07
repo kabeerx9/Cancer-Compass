@@ -38,7 +38,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: ACTIVE_COLOR,
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarLabelStyle: styles.tabBarLabel,
-        tabBarActiveBackgroundColor: ACTIVE_BG_COLOR,
+
         tabBarItemStyle: styles.tabBarItem,
       }}
     >

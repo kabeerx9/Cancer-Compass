@@ -651,12 +651,12 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
   return (
     <View>
       {/* Edit Button */}
-      <Pressable className="mb-5 active:opacity-90" onPress={onEdit}>
+      <Pressable className="mb-5 rounded-2xl overflow-hidden active:opacity-90" onPress={onEdit}>
         <LinearGradient
           colors={['#0d9488', '#0f766e']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          className="flex-row items-center justify-center py-4 rounded-2xl gap-2.5"
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16 }}
         >
           <Ionicons name="create-outline" size={24} color="#FFFFFF" />
           <Text className="text-base font-bold text-white">
@@ -842,12 +842,12 @@ function ContactsView({
   return (
     <View>
       {/* Add Button */}
-      <Pressable className="mb-5 active:opacity-90" onPress={onAddContact}>
+      <Pressable className="mb-5 rounded-2xl overflow-hidden active:opacity-90" onPress={onAddContact}>
         <LinearGradient
           colors={['#0d9488', '#0f766e']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          className="flex-row items-center justify-center py-4 rounded-2xl gap-2.5"
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16 }}
         >
           <Ionicons name="add-circle-outline" size={24} color="#FFFFFF" />
           <Text className="text-base font-bold text-white">Add Contact</Text>
