@@ -201,7 +201,6 @@ export default function HomePage() {
       <View className="flex-1 bg-orange-50/30">
         <SafeAreaView className="flex-1">
           {/* Header Skeleton */}
-
           <View className="flex-row items-center justify-between px-6 py-5">
             <View>
               <Skeleton width={80} height={16} borderRadius={6} />
