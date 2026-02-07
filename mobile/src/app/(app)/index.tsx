@@ -20,7 +20,7 @@ import {
   medicationMutations,
   medicationQueries,
 } from '@/features/medications';
-import { MedicationCardSkeleton, StatCardSkeleton } from '@/components/skeleton';
+import { MedicationCardSkeleton, Skeleton } from '@/components/skeleton';
 
 export default function HomePage() {
   const router = useRouter();
@@ -205,18 +205,27 @@ export default function HomePage() {
           {/* Header Skeleton */}
           <View className="flex-row items-center justify-between px-6 py-5">
             <View>
-              <View className="mb-2 h-5 w-24 rounded-lg bg-neutral-200" />
-              <View className="h-7 w-36 rounded-lg bg-neutral-200" />
+              <Skeleton width={80} height={16} borderRadius={6} />
+              <View className="mt-2">
+                <Skeleton width={120} height={28} borderRadius={8} />
+              </View>
             </View>
-            <View className="size-12 rounded-full bg-neutral-200" />
+            <Skeleton width={48} height={48} borderRadius={24} />
+          </View>
+
+          {/* Patient Info Card Skeleton */}
+          <View className="mb-4 px-6">
+            <Skeleton width="100%" height={72} borderRadius={16} />
           </View>
 
           {/* Progress Card Skeleton */}
-          <StatCardSkeleton />
+          <View className="mb-6 px-6">
+            <Skeleton width="100%" height={120} borderRadius={24} />
+          </View>
 
           {/* Section Title Skeleton */}
           <View className="mb-4 px-6">
-            <View className="h-7 w-44 rounded-lg bg-neutral-200" />
+            <Skeleton width={160} height={28} borderRadius={8} />
           </View>
 
           {/* Medication Cards Skeleton */}
