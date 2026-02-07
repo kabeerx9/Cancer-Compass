@@ -8,6 +8,7 @@ import {
   Alert,
   Modal,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -348,7 +349,7 @@ export default function SosMedicinesPage() {
         </View>
 
         {/* Content */}
-        <View className="flex-1 px-6 pb-24">
+        <View className="flex-1 px-6">
           {/* CABINET VIEW */}
           {sosViewMode === 'cabinet' && (
             <>
@@ -385,8 +386,10 @@ export default function SosMedicinesPage() {
                   {sosMedicines.map((medicine, index) => (
                     <View
                       key={medicine.id}
+                      className="bg-white rounded-[18px] mb-3 border border-stone-200 overflow-hidden"
                     >
-                      <View className="flex-row items-center bg-white rounded-[18px] p-4 mb-3 border border-stone-200">
+                      {/* Main Content */}
+                      <View className="flex-row items-center p-4">
                         <View className="mr-4">
                           <View className="w-[52px] h-[52px] rounded-2xl bg-rose-100 justify-center items-center">
                             <Ionicons
@@ -408,48 +411,59 @@ export default function SosMedicinesPage() {
                             <Text className="text-[13px] text-stone-600 font-semibold">{medicine.dosage}</Text>
                           )}
                         </View>
+                      </View>
 
-                        <View className="items-end gap-2">
-                          <Pressable
-                            className="rounded-[10px] overflow-hidden active:opacity-90"
-                            onPress={() => openSosTakeModal(medicine)}
-                          >
-                            <LinearGradient
-                              colors={['#F43F5E', '#E11D48']}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 1 }}
-                              className="py-2.5 px-5 items-center justify-center"
-                            >
-                              <Text className="text-sm font-bold text-white">Take</Text>
-                            </LinearGradient>
-                          </Pressable>
+                      {/* Bottom Action Bar */}
+                      <View className="flex-row items-center border-t border-stone-100">
+                        {/* Take Button */}
+                        <Pressable
+                          className="flex-1 flex-row items-center justify-center gap-2 py-3.5 active:opacity-80"
+                          style={{ backgroundColor: '#F43F5E' }}
+                          onPress={() => openSosTakeModal(medicine)}
+                        >
+                          <Ionicons name="checkmark-circle" size={18} color="white" />
+                          <Text className="text-sm font-bold text-white">Take Now</Text>
+                        </Pressable>
 
-                          <View className="flex-row gap-2">
-                            <Pressable
-                              onPress={() => openSosEditModal(medicine)}
-                              className="p-3 active:opacity-70"
-                            >
-                              <Ionicons name="create-outline" size={20} color="#6B5D50" />
-                            </Pressable>
-                            <Pressable
-                              onPress={() => handleDeleteSosMedicine(medicine)}
-                              className="p-3 active:opacity-70"
-                            >
-                              <Ionicons name="trash-outline" size={20} color="#A8A29E" />
-                            </Pressable>
-                          </View>
-                        </View>
+                        {/* Divider */}
+                        <View className="w-px h-8 bg-white/20" />
+
+                        {/* Edit Button */}
+                        <Pressable
+                          className="px-4 py-3.5 active:opacity-70"
+                          style={{ backgroundColor: '#F43F5E' }}
+                          onPress={() => openSosEditModal(medicine)}
+                        >
+                          <Ionicons name="create-outline" size={18} color="white" />
+                        </Pressable>
+
+                        {/* Divider */}
+                        <View className="w-px h-8 bg-white/20" />
+
+                        {/* Delete Button */}
+                        <Pressable
+                          className="px-4 py-3.5 active:opacity-70"
+                          style={{ backgroundColor: '#F43F5E' }}
+                          onPress={() => handleDeleteSosMedicine(medicine)}
+                        >
+                          <Ionicons name="trash-outline" size={18} color="white" />
+                        </Pressable>
                       </View>
                     </View>
                   ))}
                 </View>
               )}
+              <View className="h-24" />
             </>
           )}
 
           {/* HISTORY VIEW */}
           {sosViewMode === 'history' && (
-            <View>
+            <ScrollView 
+              className="flex-1 -mx-6"
+              contentContainerClassName="px-6 pb-24"
+              showsVerticalScrollIndicator={false}
+            >
               <View className="bg-white rounded-[20px] p-4 mb-4 border border-rose-100">
                 <Calendar
                   className="rounded-xl"
@@ -522,19 +536,22 @@ export default function SosMedicinesPage() {
                     </Text>
                   )}
               </View>
-            </View>
+            </ScrollView>
           )}
         </View>
 
           {/* Floating Add Button */}
-        <Pressable className="absolute bottom-6 right-6 h-14 w-14 rounded-[28px] overflow-hidden active:opacity-90" onPress={openSosAddModal}>
+        <Pressable 
+          style={{ position: 'absolute', bottom: 24, right: 24, width: 64, height: 64, borderRadius: 32, overflow: 'hidden' }} 
+          onPress={openSosAddModal}
+        >
           <LinearGradient
             colors={['#F43F5E', '#E11D48']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            className="h-full w-full items-center justify-center"
+            style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="add" size={28} color="#FFFFFF" />
+            <Ionicons name="add" size={32} color="#FFFFFF" />
           </LinearGradient>
         </Pressable>
 
