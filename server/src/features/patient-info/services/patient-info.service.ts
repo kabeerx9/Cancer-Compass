@@ -146,16 +146,41 @@ export class PatientInfoService {
       }
     }
 
-    // Current Medications
+    // Current Medications (grouped by name)
     if (medications && medications.length > 0) {
       text += '── Current Medications ──\n';
+
+      // Group by name
+      interface MedGroup {
+        name: string;
+        entries: Array<{ dosage?: string | null; timeSlotId?: number | null; time?: string | null }>
+      }
+      const groups: Record<string, MedGroup> = {};
+
       medications.forEach(med => {
-        let medLine = `• ${med.name}`;
-        if (med.dosage) medLine += ` (${med.dosage})`;
-        const timeLabel = getTimeSlotLabel(med.timeSlotId);
-        if (timeLabel) medLine += ` - ${timeLabel}`;
-        else if (med.time) medLine += ` - ${med.time}`;
-        text += medLine + '\n';
+        if (!groups[med.name]) {
+          groups[med.name] = { name: med.name, entries: [] };
+        }
+        groups[med.name].entries.push({
+          dosage: med.dosage,
+          timeSlotId: med.timeSlotId,
+          time: med.time,
+        });
+      });
+
+      Object.values(groups).forEach(group => {
+        text += `• ${group.name}\n`;
+        // Sort entries by timeSlotId
+        group.entries.sort((a, b) => (a.timeSlotId || 99) - (b.timeSlotId || 99));
+        group.entries.forEach(entry => {
+          const timeLabel = getTimeSlotLabel(entry.timeSlotId) || entry.time || '';
+          const dosageStr = entry.dosage ? ` - ${entry.dosage}` : '';
+          if (timeLabel) {
+            text += `    ${timeLabel}${dosageStr}\n`;
+          } else if (dosageStr) {
+            text += `    ${dosageStr.substring(3)}\n`; // Remove " - " prefix
+          }
+        });
       });
       text += '\n';
     }

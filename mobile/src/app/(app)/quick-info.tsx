@@ -747,29 +747,68 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
       )}
 
       {/* Current Medications Card */}
-          {medications.length > 0 && (
+          {medications.length > 0 && (() => {
+            // Group medications by groupId or by name for single entries
+            const slotLabels: Record<number, string> = { 1: 'Before Breakfast', 2: 'After Breakfast', 3: 'Before Lunch', 4: 'After Lunch', 5: 'Before Dinner', 6: 'After Dinner', 7: 'Bedtime' };
+
+            type MedEntry = { timeSlotId: number | null; dosage: string | null; time: string | null };
+            type GroupedMed = { name: string; purpose: string | null; entries: MedEntry[] };
+
+            const grouped = medications.reduce((acc, med) => {
+              // Use groupId if available, otherwise create a unique key from name+id
+              const key = med.groupId || `solo_${med.id}`;
+              if (!acc[key]) {
+                acc[key] = {
+                  name: med.name,
+                  purpose: med.purpose,
+                  entries: [],
+                };
+              }
+              acc[key].entries.push({
+                timeSlotId: med.timeSlotId,
+                dosage: med.dosage,
+                time: med.time,
+              });
+              return acc;
+            }, {} as Record<string, GroupedMed>);
+
+            const groupedMeds: GroupedMed[] = Object.values(grouped);
+            // Sort entries within each group by timeSlotId
+            groupedMeds.forEach((g: GroupedMed) => g.entries.sort((a: MedEntry, b: MedEntry) => (a.timeSlotId || 99) - (b.timeSlotId || 99)));
+
+            return (
             <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
           <View className="flex-row items-center mb-4 gap-2.5">
             <Ionicons name="medical" size={20} color="#0d9488" />
             <Text className="text-base font-bold text-amber-950 flex-1">Current Medications</Text>
             <View className="bg-teal-100 px-2.5 py-1 rounded-xl">
-              <Text className="text-xs font-bold text-teal-600">{medications.length}</Text>
+              <Text className="text-xs font-bold text-teal-600">{groupedMeds.length}</Text>
             </View>
           </View>
-          {medications.map((med) => {
-            const slotLabels: Record<number, string> = { 1: 'Before Breakfast', 2: 'After Breakfast', 3: 'Before Lunch', 4: 'After Lunch', 5: 'Before Dinner', 6: 'After Dinner', 7: 'Bedtime' };
-            const timeLabel = med.timeSlotId && slotLabels[med.timeSlotId] ? slotLabels[med.timeSlotId] : '';
-            return (
-            <View key={med.id} className="py-2.5 border-b border-amber-200 last:border-b-0">
-              <Text className="text-base font-semibold text-amber-950 mb-0.5">{med.name}</Text>
-              <Text className="text-sm text-stone-400">
-                {med.dosage || ''} {timeLabel ? `• ${timeLabel}` : ''}
-              </Text>
+          {groupedMeds.map((group, idx) => (
+            <View key={idx} className="py-2.5 border-b border-amber-200 last:border-b-0">
+              <Text className="text-base font-semibold text-amber-950 mb-1.5">{group.name}</Text>
+              {group.purpose && (
+                <Text className="text-xs text-stone-400 mb-2 italic">{group.purpose}</Text>
+              )}
+              <View className="flex-row flex-wrap gap-1.5">
+                {group.entries.map((entry, entryIdx) => {
+                  const label = entry.timeSlotId && slotLabels[entry.timeSlotId] ? slotLabels[entry.timeSlotId] : (entry.time || 'As needed');
+                  return (
+                    <View key={entryIdx} className="bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg flex-row items-center gap-1">
+                      <Text className="text-xs font-medium text-teal-700">{label}</Text>
+                      {entry.dosage && (
+                        <Text className="text-xs font-bold text-teal-900">{entry.dosage}</Text>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
             </View>
-            );
-          })}
+          ))}
         </View>
-      )}
+            );
+          })()}
 
     </View>
   );
