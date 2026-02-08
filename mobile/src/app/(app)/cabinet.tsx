@@ -279,7 +279,7 @@ export default function CabinetPage() {
 
         <ScrollView
           className="flex-1"
-          contentContainerClassName="px-6 pb-24"
+          contentContainerClassName="px-6 pb-8"
           refreshControl={
             <RefreshControl
               refreshing={isManuallyRefreshing}

@@ -429,7 +429,7 @@ export default function TasksPage() {
               />
             )}
             renderSectionHeader={renderSectionHeader}
-            contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+            contentContainerStyle={{ padding: 24, paddingBottom: 16 }}
             refreshControl={
               <RefreshControl
                 refreshing={isManuallyRefreshing}
