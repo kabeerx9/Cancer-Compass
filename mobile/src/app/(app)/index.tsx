@@ -362,7 +362,7 @@ export default function HomePage() {
           data={medications}
           renderItem={renderMedicationItem}
           keyExtractor={(item) => item.id}
-          contentContainerClassName="px-6 pb-8"
+          contentContainerClassName="px-6 pb-28"
           refreshControl={
             <RefreshControl
               refreshing={isManuallyRefreshing}

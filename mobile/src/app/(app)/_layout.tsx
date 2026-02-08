@@ -27,8 +27,9 @@ export default function TabLayout() {
   }
 
   // Calculate dynamic tab bar height and padding based on safe area
-  const tabBarPaddingBottom = Platform.OS === 'ios' ? Math.max(28, bottom) : Math.max(12, bottom + 8);
-  const tabBarHeight = Platform.OS === 'ios' ? Math.max(88, 60 + bottom) : Math.max(68, 52 + bottom);
+  // Using position: absolute, so we need proper bottom padding for system nav bar
+  const tabBarPaddingBottom = Math.max(Platform.OS === 'ios' ? 28 : 12, bottom);
+  const tabBarHeight = 64 + tabBarPaddingBottom;
 
   return (
     <>
@@ -158,11 +159,19 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
     borderTopColor: '#E8E0D8',
     borderTopWidth: 1,
     paddingTop: 8,
-    elevation: 0,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   tabBarLabel: {
     fontSize: 11,
