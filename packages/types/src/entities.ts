@@ -31,14 +31,34 @@ export interface Role {
 // MEDICATIONS (from your plan.md)
 // =============================================================================
 
+// Time slot definitions with built-in sort order
+export const TIME_SLOTS = {
+  1: { id: 1, label: "Before Breakfast", sortOrder: 1 },
+  2: { id: 2, label: "After Breakfast",  sortOrder: 2 },
+  3: { id: 3, label: "Before Lunch",     sortOrder: 3 },
+  4: { id: 4, label: "After Lunch",      sortOrder: 4 },
+  5: { id: 5, label: "Before Dinner",    sortOrder: 5 },
+  6: { id: 6, label: "After Dinner",     sortOrder: 6 },
+  7: { id: 7, label: "Bedtime",          sortOrder: 7 },
+} as const;
+
+export type TimeSlotId = keyof typeof TIME_SLOTS;
+
+// Helper to get label from timeSlotId
+export const getTimeSlotLabel = (id: number | null | undefined): string | null => {
+  if (!id || !(id in TIME_SLOTS)) return null;
+  return TIME_SLOTS[id as TimeSlotId].label;
+};
+
 export interface Medication {
   id: string;
   userId: string;
   name: string;
   purpose: string | null;
   dosage: string | null;
-  time: string | null; // Time string like "08:00"
-  timeLabel: string | null; // e.g., "Before breakfast"
+  time: string | null;      // Time string like "08:00"
+  timeSlotId: number | null; // 1-7, maps to TIME_SLOTS
+  groupId: string | null;    // Links multi-timing entries
   isActive: boolean;
   createdAt: Date | string;
 }

@@ -11,8 +11,23 @@ interface MedicationForExport {
   name: string;
   dosage?: string | null;
   time?: string | null;
-  timeLabel?: string | null;
+  timeSlotId?: number | null;
 }
+
+// Time slot label helper
+const TIME_SLOTS: Record<number, string> = {
+  1: 'Before Breakfast',
+  2: 'After Breakfast',
+  3: 'Before Lunch',
+  4: 'After Lunch',
+  5: 'Before Dinner',
+  6: 'After Dinner',
+  7: 'Bedtime',
+};
+const getTimeSlotLabel = (id: number | null | undefined): string | null => {
+  if (!id || !(id in TIME_SLOTS)) return null;
+  return TIME_SLOTS[id];
+};
 
 export class PatientInfoService {
   constructor(private readonly patientInfoRepository: PatientInfoRepository) {}
@@ -137,7 +152,8 @@ export class PatientInfoService {
       medications.forEach(med => {
         let medLine = `• ${med.name}`;
         if (med.dosage) medLine += ` (${med.dosage})`;
-        if (med.timeLabel) medLine += ` - ${med.timeLabel}`;
+        const timeLabel = getTimeSlotLabel(med.timeSlotId);
+        if (timeLabel) medLine += ` - ${timeLabel}`;
         else if (med.time) medLine += ` - ${med.time}`;
         text += medLine + '\n';
       });

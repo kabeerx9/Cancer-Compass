@@ -6,7 +6,8 @@ export interface CreateMedicationInput {
   purpose?: string;
   dosage?: string;
   time?: string;
-  timeLabel?: string;
+  timeSlotId?: number;
+  groupId?: string;
 }
 
 export interface UpdateMedicationInput {
@@ -14,7 +15,7 @@ export interface UpdateMedicationInput {
   purpose?: string;
   dosage?: string;
   time?: string;
-  timeLabel?: string;
+  timeSlotId?: number;
   isActive?: boolean;
 }
 
@@ -35,7 +36,7 @@ export class MedicationRepository {
   async findAllByUserId(userId: string) {
     return this.prisma.medication.findMany({
       where: { userId },
-      orderBy: [{ time: 'asc' }, { timeLabel: 'asc' }, { name: 'asc' }],
+      orderBy: [{ timeSlotId: 'asc' }, { name: 'asc' }],
       include: {
         logs: {
           where: {
@@ -52,7 +53,7 @@ export class MedicationRepository {
   async findActiveByUserId(userId: string) {
     return this.prisma.medication.findMany({
       where: { userId, isActive: true },
-      orderBy: [{ time: 'asc' }, { timeLabel: 'asc' }, { name: 'asc' }],
+      orderBy: [{ timeSlotId: 'asc' }, { name: 'asc' }],
       include: {
         logs: {
           where: {
@@ -92,7 +93,8 @@ export class MedicationRepository {
         purpose: data.purpose,
         dosage: data.dosage,
         time: data.time,
-        timeLabel: data.timeLabel,
+        timeSlotId: data.timeSlotId,
+        groupId: data.groupId,
       },
     });
   }

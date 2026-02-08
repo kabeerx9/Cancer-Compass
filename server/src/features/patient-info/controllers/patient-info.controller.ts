@@ -267,7 +267,7 @@ export class PatientInfoController {
           name: m.name,
           dosage: m.dosage,
           time: m.time,
-          timeLabel: m.timeLabel,
+          timeSlotId: m.timeSlotId,
         })),
       );
       res.status(result.success ? 200 : 400).json(result);

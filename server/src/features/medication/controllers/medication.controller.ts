@@ -83,7 +83,7 @@ export class MedicationController {
 
   /**
    * POST /medications
-   * Create a new medication
+   * Create a new medication (supports multiple time slots)
    */
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -93,15 +93,20 @@ export class MedicationController {
         return;
       }
 
-      const { name, purpose, dosage, time, timeLabel } = req.body;
+      const { name, purpose, timeSlots } = req.body;
 
       if (!name) {
         res.status(400).json(unifiedResponse(false, 'Name is required'));
         return;
       }
 
+      if (!timeSlots || !Array.isArray(timeSlots) || timeSlots.length === 0) {
+        res.status(400).json(unifiedResponse(false, 'At least one time slot is required'));
+        return;
+      }
+
       const result = await this.medicationService.createMedication(
-        { name, purpose, dosage, time, timeLabel },
+        { name, purpose, timeSlots },
         userId,
       );
       res.status(result.success ? 201 : 400).json(result);
@@ -128,11 +133,11 @@ export class MedicationController {
         return;
       }
 
-      const { name, purpose, dosage, time, timeLabel, isActive } = req.body;
+      const { name, purpose, dosage, time, timeSlotId, isActive } = req.body;
 
       const result = await this.medicationService.updateMedication(
         id,
-        { name, purpose, dosage, time, timeLabel, isActive },
+        { name, purpose, dosage, time, timeSlotId, isActive },
         userId,
       );
       res.status(result.success ? 200 : 404).json(result);

@@ -1,10 +1,22 @@
 import { unifiedResponse } from 'uni-response';
+import { randomUUID } from 'crypto';
 
 import {
   CreateMedicationInput,
   MedicationRepository,
   UpdateMedicationInput,
 } from '../repositories/medication.repository';
+
+// Input type for multi-timing medication creation
+export interface CreateMedicationServiceInput {
+  name: string;
+  purpose?: string;
+  timeSlots: Array<{
+    timeSlotId: number;
+    dosage?: string;
+    time?: string;
+  }>;
+}
 
 export class MedicationService {
   constructor(private readonly medicationRepository: MedicationRepository) {}
@@ -34,12 +46,26 @@ export class MedicationService {
     return unifiedResponse(true, 'Medication retrieved', medication);
   }
 
-  async createMedication(data: Omit<CreateMedicationInput, 'userId'>, userId: string) {
-    const medication = await this.medicationRepository.create({
-      ...data,
-      userId,
-    });
-    return unifiedResponse(true, 'Medication created', medication);
+  async createMedication(data: CreateMedicationServiceInput, userId: string) {
+    // Generate groupId if multiple time slots
+    const groupId = data.timeSlots.length > 1 ? randomUUID() : undefined;
+
+    // Create separate entry for each time slot
+    const createdMedications = await Promise.all(
+      data.timeSlots.map((slot) =>
+        this.medicationRepository.create({
+          userId,
+          name: data.name,
+          purpose: data.purpose,
+          dosage: slot.dosage,
+          time: slot.time,
+          timeSlotId: slot.timeSlotId,
+          groupId,
+        })
+      )
+    );
+
+    return unifiedResponse(true, 'Medication(s) created', createdMedications);
   }
 
   async updateMedication(id: string, data: UpdateMedicationInput, userId: string) {

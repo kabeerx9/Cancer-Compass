@@ -33,16 +33,17 @@ model User {
 }
 
 model Medication {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  name      String
-  purpose   String?
-  dosage    String?
-  time      String?  // Optional "HH:MM" format
-  timeLabel String?  @map("time_label") // "Before Breakfast", etc.
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  name       String
+  purpose    String?
+  dosage     String?
+  time       String?  // Optional "HH:MM" format
+  timeSlotId Int?     @map("time_slot_id") // 1-7, maps to TIME_SLOTS constant
+  groupId    String?  @map("group_id")     // Links multi-timing entries
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   logs MedicationLog[]
