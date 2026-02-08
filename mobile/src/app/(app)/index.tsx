@@ -31,7 +31,7 @@ export default function HomePage() {
   // Wait for user to load before rendering
   if (!isUserLoaded) {
     return (
-      <View className="flex-1 items-center justify-center bg-orange-50">
+      <View className="flex-1 items-center justify-center bg-neutral-50">
         <ActivityIndicator size="large" color="#14B8A6" />
       </View>
     );
@@ -115,12 +115,12 @@ export default function HomePage() {
 
     return (
       <View
-        className={`mb-2.5 rounded-2xl border p-3 ${
+        className={`mb-2.5 rounded-2xl border p-3 shadow-sm ${
           isTaken
             ? 'border-green-200 bg-green-50'
             : isSkipped
               ? 'border-neutral-200 bg-neutral-100 opacity-50'
-              : 'border-neutral-200 bg-white'
+              : 'border-neutral-100 bg-white'
         }`}
       >
         <View className="flex-row items-center">
@@ -198,7 +198,7 @@ export default function HomePage() {
   // Loading skeleton view
   if (isLoading) {
     return (
-      <View className="flex-1 bg-orange-50/30">
+      <View className="flex-1 bg-neutral-50">
         <SafeAreaView className="flex-1">
           {/* Header Skeleton */}
           <View className="flex-row items-center justify-between px-6 py-5">
@@ -238,7 +238,7 @@ export default function HomePage() {
   }
 
   return (
-    <View className="flex-1 bg-orange-50/30">
+    <View className="flex-1 bg-neutral-50">
       <SafeAreaView className="flex-1">
         {/* Header with greeting */}
         <View className="flex-row items-center justify-between px-6 py-5">
