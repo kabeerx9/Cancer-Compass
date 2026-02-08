@@ -756,14 +756,18 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
               <Text className="text-xs font-bold text-teal-600">{medications.length}</Text>
             </View>
           </View>
-          {medications.map((med) => (
+          {medications.map((med) => {
+            const slotLabels: Record<number, string> = { 1: 'Before Breakfast', 2: 'After Breakfast', 3: 'Before Lunch', 4: 'After Lunch', 5: 'Before Dinner', 6: 'After Dinner', 7: 'Bedtime' };
+            const timeLabel = med.timeSlotId && slotLabels[med.timeSlotId] ? slotLabels[med.timeSlotId] : '';
+            return (
             <View key={med.id} className="py-2.5 border-b border-amber-200 last:border-b-0">
               <Text className="text-base font-semibold text-amber-950 mb-0.5">{med.name}</Text>
               <Text className="text-sm text-stone-400">
-                {med.dosage || ''} {med.timeLabel ? `• ${med.timeLabel}` : ''}
+                {med.dosage || ''} {timeLabel ? `• ${timeLabel}` : ''}
               </Text>
             </View>
-          ))}
+            );
+          })}
         </View>
       )}
 

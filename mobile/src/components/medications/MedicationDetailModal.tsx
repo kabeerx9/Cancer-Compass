@@ -37,6 +37,21 @@ const THEME = {
   dangerLight: '#FEE2E2',
 };
 
+// Time slot label helper
+const TIME_SLOTS: Record<number, string> = {
+  1: 'Before Breakfast',
+  2: 'After Breakfast',
+  3: 'Before Lunch',
+  4: 'After Lunch',
+  5: 'Before Dinner',
+  6: 'After Dinner',
+  7: 'Bedtime',
+};
+const getTimeSlotLabel = (id: number | null | undefined): string | null => {
+  if (!id || !(id in TIME_SLOTS)) return null;
+  return TIME_SLOTS[id];
+};
+
 interface MedicationDetailModalProps {
   visible: boolean;
   medicationId: string | null;
@@ -206,11 +221,11 @@ export function MedicationDetailModal({
                   {medication.dosage && (
                     <Text style={styles.metaText}>{medication.dosage}</Text>
                   )}
-                  {medication.dosage && medication.timeLabel && (
+                  {medication.dosage && medication.timeSlotId && (
                     <Text style={styles.metaDot}>•</Text>
                   )}
-                  {medication.timeLabel && (
-                    <Text style={styles.metaText}>{medication.timeLabel}</Text>
+                  {medication.timeSlotId && (
+                    <Text style={styles.metaText}>{getTimeSlotLabel(medication.timeSlotId)}</Text>
                   )}
                 </View>
                 {medication.purpose && (

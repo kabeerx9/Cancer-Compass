@@ -1,9 +1,11 @@
 export interface CreateMedicationData {
   name: string;
   purpose?: string;
-  dosage?: string;
-  time?: string;
-  timeLabel?: string;
+  timeSlots: Array<{
+    timeSlotId: number;
+    dosage?: string;
+    time?: string;
+  }>;
 }
 
 export interface UpdateMedicationData {
@@ -11,7 +13,7 @@ export interface UpdateMedicationData {
   purpose?: string;
   dosage?: string;
   time?: string;
-  timeLabel?: string;
+  timeSlotId?: number;
   isActive?: boolean;
 }
 
@@ -22,13 +24,16 @@ export interface Medication {
   purpose: string | null;
   dosage: string | null;
   time: string | null;
-  timeLabel: string | null;
+  timeSlotId: number | null;
+  groupId: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   logs?: MedicationLog[];
   todayStatus?: 'taken' | 'skipped' | null;
   todayTakenAt?: string | null;
+  // Computed field for display
+  timeSlotLabel?: string | null;
 }
 
 export interface MedicationLog {

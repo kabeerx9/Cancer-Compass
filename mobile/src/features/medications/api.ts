@@ -40,8 +40,9 @@ export const medicationApi = {
     return response.data.data;
   },
 
-  create: async (data: CreateMedicationData): Promise<Medication> => {
-    const response = await client.post<ApiResponse<Medication>>(
+  // Returns array of created medications (one per time slot)
+  create: async (data: CreateMedicationData): Promise<Medication[]> => {
+    const response = await client.post<ApiResponse<Medication[]>>(
       '/medications',
       data
     );

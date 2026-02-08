@@ -22,6 +22,21 @@ import {
 } from '@/features/medications';
 import { MedicationCardSkeleton, Skeleton } from '@/components/skeleton';
 
+// Time slot label helper
+const TIME_SLOTS: Record<number, string> = {
+  1: 'Before Breakfast',
+  2: 'After Breakfast',
+  3: 'Before Lunch',
+  4: 'After Lunch',
+  5: 'Before Dinner',
+  6: 'After Dinner',
+  7: 'Bedtime',
+};
+const getTimeSlotLabel = (id: number | null | undefined): string | null => {
+  if (!id || !(id in TIME_SLOTS)) return null;
+  return TIME_SLOTS[id];
+};
+
 export default function HomePage() {
   const router = useRouter();
   const { user, isLoaded: isUserLoaded } = useUser();
@@ -145,9 +160,9 @@ export default function HomePage() {
                 {medication.dosage}
               </Text>
             )}
-            {medication.timeLabel && (
+            {medication.timeSlotId && (
               <Text className="text-xs font-medium text-neutral-400">
-                {medication.timeLabel}
+                {getTimeSlotLabel(medication.timeSlotId)}
               </Text>
             )}
           </View>
