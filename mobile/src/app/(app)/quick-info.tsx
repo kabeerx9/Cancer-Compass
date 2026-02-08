@@ -767,26 +767,6 @@ function PatientInfoView({ patientInfo, medications, onEdit }: PatientInfoViewPr
         </View>
       )}
 
-      {/* Current Medications Card */}
-      {medications.length > 0 && (
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-amber-200">
-          <View className="flex-row items-center mb-4 gap-2.5">
-            <Ionicons name="medical" size={20} color="#0d9488" />
-            <Text className="text-base font-bold text-amber-950 flex-1">Current Medications</Text>
-            <View className="bg-teal-100 px-2.5 py-1 rounded-xl">
-              <Text className="text-xs font-bold text-teal-600">{medications.length}</Text>
-            </View>
-          </View>
-          {medications.map((med) => (
-            <View key={med.id} className="py-2.5 border-b border-amber-200 last:border-b-0">
-              <Text className="text-base font-semibold text-amber-950 mb-0.5">{med.name}</Text>
-              <Text className="text-sm text-stone-400">
-                {med.dosage || ''} {med.timeLabel ? `• ${med.timeLabel}` : ''}
-              </Text>
-            </View>
-          ))}
-        </View>
-      )}
     </View>
   );
 }
