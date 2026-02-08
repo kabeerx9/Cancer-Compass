@@ -130,15 +130,32 @@ export default function CabinetPage() {
   };
 
   const openMedEditModal = (medication: Medication) => {
-    setEditingMedication(medication);
-    setEditFormData({
-      name: medication.name,
-      purpose: medication.purpose || '',
-      dosage: medication.dosage || '',
-      time: medication.time || '',
-      timeSlotId: medication.timeSlotId,
-    });
-    setMedEditModalVisible(true);
+    // Close detail modal first to avoid modal stacking
+    setMedDetailModalVisible(false);
+    setSelectedMedicationId(null);
+
+    // Open edit modal after a small delay to allow detail modal to close
+    setTimeout(() => {
+      setEditingMedication(medication);
+
+      // Find all entries in this group (or just this one if no groupId)
+      const groupEntries = medication.groupId
+        ? medications.filter(m => m.groupId === medication.groupId)
+        : [medication];
+
+      // Populate addFormData with all group entries (reuse same form structure)
+      setAddFormData({
+        name: medication.name,
+        purpose: medication.purpose || '',
+        selectedSlots: groupEntries.map(entry => ({
+          timeSlotId: entry.timeSlotId || 0,
+          dosage: entry.dosage || '',
+          time: entry.time || '',
+        })),
+      });
+
+      setMedEditModalVisible(true);
+    }, 100);
   };
 
   const closeMedEditModal = () => {
@@ -176,46 +193,53 @@ export default function CabinetPage() {
     });
   };
 
-  const handleSaveMedication = () => {
+  const handleSaveMedication = async () => {
+    // Both add and edit now use addFormData
+    if (!addFormData.name.trim()) {
+      Alert.alert('Error', 'Medication name is required');
+      return;
+    }
+    if (addFormData.selectedSlots.length === 0) {
+      Alert.alert('Error', 'Please select at least one time slot');
+      return;
+    }
+
     if (editingMedication) {
-      // Edit mode - update single entry
-      if (!editFormData.name.trim()) {
-        Alert.alert('Error', 'Medication name is required');
-        return;
-      }
-      const updateData: UpdateMedicationData = {
-        name: editFormData.name.trim(),
-        purpose: editFormData.purpose?.trim() || undefined,
-        dosage: editFormData.dosage?.trim() || undefined,
-        time: editFormData.time?.trim() || undefined,
-        timeSlotId: editFormData.timeSlotId || undefined,
-      };
-      medicationUpdateMutation.mutate(
-        { id: editingMedication.id, data: updateData },
-        {
-          onSuccess: () => {
-            closeMedEditModal();
-          },
-          onError: (error: Error) => {
-            Toast.show({
-              type: 'error',
-              text1: 'Failed to update medication',
-              text2: error.message,
-              position: 'bottom',
-            });
-          },
+      // Edit mode: delete all old group entries, then create new ones
+      // Find all entries in this group
+      const groupEntries = editingMedication.groupId
+        ? medications.filter(m => m.groupId === editingMedication.groupId)
+        : [editingMedication];
+
+      try {
+        // Delete all old entries
+        for (const entry of groupEntries) {
+          await medicationDeleteMutation.mutateAsync(entry.id);
         }
-      );
+
+        // Create new entries with the updated data
+        const createData: CreateMedicationData = {
+          name: addFormData.name.trim(),
+          purpose: addFormData.purpose?.trim() || undefined,
+          timeSlots: addFormData.selectedSlots.map((slot) => ({
+            timeSlotId: slot.timeSlotId,
+            dosage: slot.dosage?.trim() || undefined,
+            time: slot.time?.trim() || undefined,
+          })),
+        };
+
+        await medicationCreateMutation.mutateAsync(createData);
+        closeMedEditModal();
+      } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to update medication',
+          text2: error instanceof Error ? error.message : 'Unknown error',
+          position: 'bottom',
+        });
+      }
     } else {
       // Add mode - create with multiple time slots
-      if (!addFormData.name.trim()) {
-        Alert.alert('Error', 'Medication name is required');
-        return;
-      }
-      if (addFormData.selectedSlots.length === 0) {
-        Alert.alert('Error', 'Please select at least one time slot');
-        return;
-      }
       const createData: CreateMedicationData = {
         name: addFormData.name.trim(),
         purpose: addFormData.purpose?.trim() || undefined,
@@ -499,152 +523,81 @@ export default function CabinetPage() {
             </View>
 
             <ScrollView className="flex-1 p-6">
-              {editingMedication ? (
-                /* Edit Mode: Single entry form */
-                <>
-                  <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">Name</Text>
-                    <TextInput
-                      className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
-                      placeholder="Medication name"
-                      value={editFormData.name}
-                      onChangeText={(t) => setEditFormData({ ...editFormData, name: t })}
-                      placeholderTextColor="#B8A89A"
-                    />
-                  </View>
+              {/* Unified form for both Add and Edit modes (uses addFormData) */}
+              <>
+                <View className="mb-5">
+                  <Text className="text-sm font-semibold text-neutral-800 mb-1">Name</Text>
+                  <TextInput
+                    className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
+                    placeholder="Medication name"
+                    value={addFormData.name}
+                    onChangeText={(t) => setAddFormData({ ...addFormData, name: t })}
+                    placeholderTextColor="#B8A89A"
+                  />
+                </View>
 
-                  <View className="flex-row">
-                    <View className="flex-1 mr-3 mb-5">
-                      <Text className="text-sm font-semibold text-neutral-800 mb-1">Dosage</Text>
-                      <TextInput
-                        className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
-                        placeholder="e.g. 50mg"
-                        value={editFormData.dosage}
-                        onChangeText={(t) => setEditFormData({ ...editFormData, dosage: t })}
-                        placeholderTextColor="#B8A89A"
-                      />
-                    </View>
-                    <View className="flex-1 mb-5">
-                      <Text className="text-sm font-semibold text-neutral-800 mb-1">Time</Text>
-                      <TextInput
-                        className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
-                        placeholder="08:00"
-                        value={editFormData.time}
-                        onChangeText={(t) => setEditFormData({ ...editFormData, time: t })}
-                        placeholderTextColor="#B8A89A"
-                      />
-                    </View>
-                  </View>
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">When to Take</Text>
-                    <View className="flex-row flex-wrap gap-2.5">
-                      {TIME_SLOTS.map((slot) => (
+                <View className="mb-5">
+                  <Text className="text-sm font-semibold text-neutral-800 mb-1">When to Take</Text>
+                  <Text className="text-xs text-neutral-400 mb-3 italic">
+                    Select one or more times (you can set different dosages for each)
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2.5">
+                    {TIME_SLOTS.map((slot) => {
+                      const isSelected = addFormData.selectedSlots.some((s) => s.timeSlotId === slot.id);
+                      return (
                         <Pressable
                           key={slot.id}
-                          className={`px-4 py-2.5 rounded-full border ${editFormData.timeSlotId === slot.id ? 'bg-teal-500 border-teal-500' : 'bg-white border-neutral-200'} active:opacity-80`}
-                          onPress={() => setEditFormData({ ...editFormData, timeSlotId: slot.id })}
+                          className={`px-4 py-2.5 rounded-full border ${isSelected ? 'bg-teal-500 border-teal-500' : 'bg-white border-neutral-200'} active:opacity-80`}
+                          onPress={() => toggleSlotSelection(slot.id)}
                         >
                           <Text
-                            className={`text-[13px] font-semibold ${editFormData.timeSlotId === slot.id ? 'text-white' : 'text-amber-700'}`}
+                            className={`text-[13px] font-semibold ${isSelected ? 'text-white' : 'text-amber-700'}`}
                           >
                             {slot.label}
                           </Text>
                         </Pressable>
-                      ))}
-                    </View>
+                      );
+                    })}
                   </View>
+                </View>
 
+                {/* Dosage inputs for each selected slot */}
+                {addFormData.selectedSlots.length > 0 && (
                   <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">Purpose (Optional)</Text>
-                    <TextInput
-                      className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800 min-h-[100px]"
-                      placeholder="What is it for?"
-                      value={editFormData.purpose}
-                      onChangeText={(t) => setEditFormData({ ...editFormData, purpose: t })}
-                      placeholderTextColor="#B8A89A"
-                      multiline
-                      numberOfLines={3}
-                    />
-                  </View>
-                </>
-              ) : (
-                /* Add Mode: Multi-select time slots */
-                <>
-                  <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">Name</Text>
-                    <TextInput
-                      className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800"
-                      placeholder="Medication name"
-                      value={addFormData.name}
-                      onChangeText={(t) => setAddFormData({ ...addFormData, name: t })}
-                      placeholderTextColor="#B8A89A"
-                    />
-                  </View>
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">When to Take</Text>
-                    <Text className="text-xs text-neutral-400 mb-3 italic">
-                      Select one or more times (you can set different dosages for each)
-                    </Text>
-                    <View className="flex-row flex-wrap gap-2.5">
-                      {TIME_SLOTS.map((slot) => {
-                        const isSelected = addFormData.selectedSlots.some((s) => s.timeSlotId === slot.id);
+                    <Text className="text-sm font-semibold text-neutral-800 mb-3">Dosage for Each Time</Text>
+                    {addFormData.selectedSlots
+                      .sort((a, b) => a.timeSlotId - b.timeSlotId)
+                      .map((slot) => {
+                        const slotInfo = TIME_SLOTS.find((s) => s.id === slot.timeSlotId);
                         return (
-                          <Pressable
-                            key={slot.id}
-                            className={`px-4 py-2.5 rounded-full border ${isSelected ? 'bg-teal-500 border-teal-500' : 'bg-white border-neutral-200'} active:opacity-80`}
-                            onPress={() => toggleSlotSelection(slot.id)}
-                          >
-                            <Text
-                              className={`text-[13px] font-semibold ${isSelected ? 'text-white' : 'text-amber-700'}`}
-                            >
-                              {slot.label}
-                            </Text>
-                          </Pressable>
+                          <View key={slot.timeSlotId} className="flex-row items-center mb-3">
+                            <Text className="text-sm text-neutral-600 w-36">{slotInfo?.label}</Text>
+                            <TextInput
+                              className="flex-1 bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-base text-neutral-800"
+                              placeholder="e.g. 50mg"
+                              value={slot.dosage}
+                              onChangeText={(t) => updateSlotDosage(slot.timeSlotId, t)}
+                              placeholderTextColor="#B8A89A"
+                            />
+                          </View>
                         );
                       })}
-                    </View>
                   </View>
+                )}
 
-                  {/* Dosage inputs for each selected slot */}
-                  {addFormData.selectedSlots.length > 0 && (
-                    <View className="mb-5">
-                      <Text className="text-sm font-semibold text-neutral-800 mb-3">Dosage for Each Time</Text>
-                      {addFormData.selectedSlots
-                        .sort((a, b) => a.timeSlotId - b.timeSlotId)
-                        .map((slot) => {
-                          const slotInfo = TIME_SLOTS.find((s) => s.id === slot.timeSlotId);
-                          return (
-                            <View key={slot.timeSlotId} className="flex-row items-center mb-3">
-                              <Text className="text-sm text-neutral-600 w-36">{slotInfo?.label}</Text>
-                              <TextInput
-                                className="flex-1 bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-base text-neutral-800"
-                                placeholder="e.g. 50mg"
-                                value={slot.dosage}
-                                onChangeText={(t) => updateSlotDosage(slot.timeSlotId, t)}
-                                placeholderTextColor="#B8A89A"
-                              />
-                            </View>
-                          );
-                        })}
-                    </View>
-                  )}
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-semibold text-neutral-800 mb-1">Purpose (Optional)</Text>
-                    <TextInput
-                      className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800 min-h-[100px]"
-                      placeholder="What is it for?"
-                      value={addFormData.purpose}
-                      onChangeText={(t) => setAddFormData({ ...addFormData, purpose: t })}
-                      placeholderTextColor="#B8A89A"
-                      multiline
-                      numberOfLines={3}
-                    />
-                  </View>
-                </>
-              )}
+                <View className="mb-5">
+                  <Text className="text-sm font-semibold text-neutral-800 mb-1">Purpose (Optional)</Text>
+                  <TextInput
+                    className="bg-white border border-neutral-200 rounded-xl px-4 py-3.5 text-base text-neutral-800 min-h-[100px]"
+                    placeholder="What is it for?"
+                    value={addFormData.purpose}
+                    onChangeText={(t) => setAddFormData({ ...addFormData, purpose: t })}
+                    placeholderTextColor="#B8A89A"
+                    multiline
+                    numberOfLines={3}
+                  />
+                </View>
+              </>
             </ScrollView>
 
             <View className="p-6 border-t border-neutral-200">
