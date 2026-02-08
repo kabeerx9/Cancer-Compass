@@ -372,7 +372,7 @@ export default function HomePage() {
           }
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View className="items-center pt-20">
+            <View className="flex-1 items-center justify-center px-6">
               {/* Enhanced empty state illustration */}
               <View className="mb-6 size-28 items-center justify-center rounded-full bg-teal-50">
                 <View className="size-20 items-center justify-center rounded-full bg-teal-100">
