@@ -1,6 +1,7 @@
 import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +31,9 @@ export default function TabLayout() {
   const tabBarHeight = Platform.OS === 'ios' ? Math.max(88, 60 + bottom) : Math.max(68, 52 + bottom);
 
   return (
-    <Tabs
+    <>
+      <StatusBar style="dark" />
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true,
@@ -149,6 +152,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </>
   );
 }
 
